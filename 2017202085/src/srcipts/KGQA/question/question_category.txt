@@ -1,0 +1,13 @@
+What papers have nr publishes  author2paper  1
+Which organization does nr belong to  author2affiliation  2
+Who has nr worked with  coauthor  3
+What areas is nr interested in  author2concept  4
+Which papers have been cited in this paper  citation  5
+Who is included in this organization  affliation2author  6
+Who are studying this concept  concept2author  7
+What are the papers related to this concept  concept2paper  8
+Which papers A and B have worked together  coauthor2paper  9
+
+
+
+
