@@ -1,0 +1,38 @@
+What papers has nr published\t1
+What papers had nr published\t1
+Which papers are published by nr\t1
+What papers did nr participate in\t1
+What papers does nr participate in\t1
+What papers did nr publish\t1
+Which organization does nr belong to\t2
+Which institution does nr belong to\t2
+Where does nr work\t2
+Which organization includes nr\t2
+Who has nr worked with\t3
+Who has nr cooperated with\t3
+Who did nr study with\t3
+Who does nr study with\t3
+Who did nr post the paper with\t3
+Who has nr published with\t3
+Who is a cooperative relationship with nr\t3
+What areas is nr interested in\t4
+What research fields does nr engage in\t4
+What concepts is nr interested in\t4
+What concepts did nr study\t4
+What concepts does nr do\t4
+Which papers have been cited in this paper(id:)\t5
+Which papers are cited in this paper(id:)\t5
+Which papers are referenced in this paper(id:)\t5
+see more papers from this paper(id:)\t5
+Who is included in this organization\t6
+Who is included in this affiliation\t6
+Who is this organization\t6
+Who is this affiliation\t6
+Who are the authors in this organization\t6
+Who are studying this concept\t7
+Who are studying these concepts\t7
+Who are the authors of this concept\t7
+Who studies these concepts\t7
+What are the papers related to this concept\t8
+Which papers nr and nr have worked together\t9
+What papers have been published jointly by nr and nr\t9
