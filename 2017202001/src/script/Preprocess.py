@@ -1,26 +1,49 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# In[25]:
+
 
 import json
 import cv2
 import matplotlib.pyplot as plt
 import os
+import pickle
 
 
+# In[22]:
 
+'''
 train_img = '/ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/train2014'
 val_img = '/ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/val2014'
-caption = '/ssd500g/kirlin/repos/self-critical.pytorch/data/dataset_coco.json'
+cap_path = '/ssd500g/kirlin/repos/self-critical.pytorch/data/dataset_coco.json'
+vocab_path = 'vocabulary.pkl'
+data_path = 'data.pkl'
+'''
 
+class Vocabulary(object):
+    '''建立vocabulary类，方便以后word<->index的查找'''
+    def __init__(self):
+        self.word2ind = dict()
+        self.ind2word = dict()
+        self.ind = 0         #记录最后当前所有词的最大index
+        
+    def add_word(self, word):
+        if word not in self.word2ind.keys():
+            self.word2ind[word] = self.ind
+            self.ind2word[ind] = word
+            self.ind += 1
+    
+    def __call__(self, word):
+        if word not in self.word2ind.keys():
+            return self.word2ind['<ukn>']
+        return self.word2ind[word]
+    
+    def __len__(self):
+        return len(self.word2ind)
 
 
 def read_caption(cap_path):
-    '''
-    读入字幕
-    args:字幕路径，为一个json格式文件
-    returns:一个字典，key为对应的图片文件字符串，value为一个列表，长度为5，为5个字幕，即每张图片有5个不同的字幕
-    '''
     with open(cap_path,'r') as load_f:
         load_dict = json.load(load_f)
     new_dict = {}
@@ -30,11 +53,10 @@ def read_caption(cap_path):
     return new_dict
 
 
+# In[5]:
+
 
 def read_images(train_img,val_img):
-    '''
-    读图片，由于数据集太大，无法一次性读入内存，此函数暂时不用
-    '''
     train = {}
     val = {}
     '''训练集'''
@@ -53,11 +75,11 @@ def read_images(train_img,val_img):
     return train,val
 
 
+# In[18]:
+
+
 def One_hot(cap_value,th = 5):  #字典的values,出现次数小于5的词去掉
-    '''
-    建立一个word<->index的双向字典
-    只有训练集的caption加入这里，验证集的不能加入，未见过的词为<ukn>
-    '''
+    '''只有训练集的caption加入这里，验证集的不能加入，未见过的词为<ukn>'''
     cnt_dict = {}
     #统计词频
     for cap in cap_value:
@@ -75,20 +97,26 @@ def One_hot(cap_value,th = 5):  #字典的values,出现次数小于5的词去掉
         for i in range(5):
             for word in cap[i]: #已经分词分好的字幕，所以是个列表
                 if word not in word2ind.keys() and cnt_dict[word] > th:
+                    ind += 1     #1 base，0为padding
                     word2ind[word] = ind
                     ind2word[ind] = word
-                    ind += 1
+                    
     
-    #将未见过的词，开始符号，结束符号也加入字典里
-    word2ind['<ukn>'] = ind
-    ind2word[ind] = '<ukn>'
-    word2ind['<start>'] = ind
-    ind2word[ind] = 'ukn'
-    word2ind['<end>'] = ind
-    ind2word[ind] = 'ukn'
+    #将未见过的词，padding，开始符号，结束符号也加入字典里
+    word2ind['<pad>'] = 0
+    ind2word[0] = '<pad>'
+    word2ind['<start>'] = ind + 1
+    ind2word[ind+1] = '<start>'
+    word2ind['<end>'] = ind + 2
+    ind2word[ind+2] = '<end>'
+    word2ind['<ukn>'] = ind + 3
+    ind2word[ind+3] = '<ukn>'
+    
     return word2ind,ind2word
     
 
+
+# In[7]:
 
 
 def cap2num(word2ind,caption):
@@ -112,6 +140,9 @@ def cap2num(word2ind,caption):
                         
 
 
+# In[8]:
+
+
 def collect(captions):
     '''
     将图片名与字幕统一起来，形成一个tuple
@@ -123,31 +154,38 @@ def collect(captions):
     return data
 
 
+# In[23]:
 
-def preprocess(cap_path,train_img,val_img):
+
+def preprocess(cap_path,vocab_path,data_path):
     '''读入字幕'''
     #train_img,val_img = read_images(train_img,val_img)
     caption = read_caption(cap_path)
-    print('reading done!')
+    #print('reading done!')
     
     '''生成one-hot字典'''
     word2ind,ind2word = One_hot(caption.values(),th = 5) 
+    vocab = Vocabulary()
+    vocab.word2ind = word2ind
+    vocab.ind2word = ind2word
+    vocab.ind = len(word2ind)
+    
     #不应该现在就转化，否则内存不够
     #caption = cap2num(word2ind,caption)  #将word转换为one-hot向量,每个字幕为一个二维列表，因此长度可变
-    print('one-hot done!')
+    #print('one-hot done!')
     #print(caption['COCO_val2014_000000391895.jpg'])
     
     '''合并字幕和图片，并转化成tuple格式'''
     data = collect(caption)
-    print('collect done!')
+    #print('collect done!')
     
-    return data,word2ind,ind2word
+    with open(vocab_path, 'wb') as f:
+        pickle.dump(vocab, f)
+        
+    with open(data_path, 'wb') as f:
+        pickle.dump(data, f)
     
 
-
-
-#data,d1,d2 = preprocess(caption,train_img,val_img)
-#print(data[0])
 
 
 
