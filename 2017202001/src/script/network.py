@@ -1,16 +1,10 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[2]:
-
-
 import torch
 import torch.nn as nn
 import torchvision.models as models
 from torch.nn.utils.rnn import pack_padded_sequence
-
-
-# In[2]:
 
 
 class Encoder(nn.Module):
@@ -39,9 +33,6 @@ class Encoder(nn.Module):
         
         return features
     
-
-
-# In[ ]:
 
 
 class Decoder(nn.Module):
@@ -84,7 +75,7 @@ class Decoder(nn.Module):
         for i in range(self.max_seq_len):
             '''输入lstm和linear后，找到最大值作为第i个词的输出'''
             hiddens, states = self.lstm(features, states)   #hiddens: (batch_size, 1, hidden_size)
-            outputs = self.linear(hiddens.squeeze(1))     #outputs: (batch_size, vaocab_size)
+            outputs = self.linear(hiddens.squeeze(1))       #outputs: (batch_size, vaocab_size)
             _, pred = outputs.max(1)                        #pred: (batch_size)
             
             '''保存至index列表，并将该词作为下一轮的输入'''

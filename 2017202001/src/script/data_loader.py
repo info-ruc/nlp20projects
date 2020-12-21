@@ -16,21 +16,6 @@ from Preprocess import preprocess
 from Preprocess import Vocabulary
 
 
-# In[6]:
-
-
-'''
-train_img = '/ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/train2014'
-val_img = '/ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/val2014'
-caption = '/ssd500g/kirlin/repos/self-critical.pytorch/data/dataset_coco.json'
-vocab_path = 'vocabulary.pkl'
-data_path = 'data.pkl'
-'''
-
-
-# In[28]:
-
-
 class My_Dataset(data.Dataset):
     def __init__(self, img_root, captions, vocab, transform=None):
         self.img_root = img_root
@@ -66,9 +51,6 @@ class My_Dataset(data.Dataset):
         return len(self.captions)
 
 
-# In[29]:
-
-
 def collate_fn(Data):
     """Creates mini-batch tensors from the list of tuples (image, caption).
     Args:
@@ -96,9 +78,6 @@ def collate_fn(Data):
     return images, targets, lengths
 
 
-# In[30]:
-
-
 def get_loader(train_img, captions, vocab, transform, batch_size, shuffle, num_workers):
     """Returns torch.utils.data.DataLoader for custom coco dataset."""
     # COCO caption dataset
@@ -113,40 +92,4 @@ def get_loader(train_img, captions, vocab, transform, batch_size, shuffle, num_w
                                               num_workers=num_workers,
                                               collate_fn=collate_fn)
     return data_loader
-
-
-# In[31]:
-
-
-'''
-#preprocess(caption,train_img,val_img,vocab_path,data_path)
-with open(vocab_path, 'rb') as f:
-    vocab = pickle.load(f)
-with open(data_path, 'rb') as f:
-    Data = pickle.load(f)
-    
-transform = transforms.Compose([
-        transforms.Resize((512,512)),
-        transforms.RandomHorizontalFlip(),
-        transforms.ToTensor(),
-        transforms.Normalize((0.485, 0.456, 0,406),
-                           (0.229, 0.224, 0.225))
-    ])
-
-data_loader = get_loader(train_img, Data, vocab, transform, 16, True, 2)
-'''
-
-
-# In[32]:
-
-
-'''
-for i, (images, captions, lengths) in enumerate(data_loader):
-    print(captions)
-    if i > 2:
-        break
-'''
-
-
-
 

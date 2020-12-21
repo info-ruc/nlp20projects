@@ -1,9 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[6]:
-
-
 import argparse
 import yaml
 import torch
@@ -18,13 +15,6 @@ from network import Encoder, Decoder
 from torch.nn.utils.rnn import pack_padded_sequence
 from torchvision import transforms
 
-
-# In[7]:
-
-
-#device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-#device = torch.device('cuda:0,1')
-#print(os.environ['CUDA_VISIBLE_DEVICES'])
 
 def train(args):
     #数据预处理，生成vocab和data
@@ -90,37 +80,11 @@ def train(args):
             args['model_path'], 'decoder-{}-{}.ckpt'.format(epoch+1, i+1)))
         torch.save(encoder.state_dict(), os.path.join(
             args['model_path'], 'encoder-{}-{}.ckpt'.format(epoch+1, i+1)))
-    
-
-
-# In[8]:
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('--c', type = str, default = 'show_and_tell.yaml')
-    
-    '''
-    #路径，数据参数设置
-    parser.add_argument('--model_path', type = str, default = 'models')
-    parser.add_argument('--crop_size', type = int, default = 224)
-    parser.add_argument('--vocab_path', type = str, default = '')
-    parser.add_argument('--train_img_path', type = str, default = '')
-    parser.add_argument('--data_path', type = str, default = '')
-    parser.add_argument('--log_step', type = int, default = 10)
-    parser.add_argument('--save_step', type = int, default = 100)
-    
-    #模型参数
-    parser.add_argument('--embed_size', type = int, default = 256)
-    parser.add_argument('--hidden_size', type = int, default = 512)
-    parser.add_argument('--num_layers', type = int, default = 1)
-    
-    #训练参数
-    parser.add_argument('--num_epochs', type = int, default = 10)
-    parser.add_argument('--batch_size', type = int, default = 128)
-    parser.add_argument('--num_workers', type = int, default = 2)
-    parser.add_argument('--learning_rate', type = float, default = 0.001)
-    '''
     args = parser.parse_args()
     
     with open(args.c, 'r', encoding='utf-8') as f:
@@ -129,10 +93,3 @@ if __name__ == '__main__':
           
     train(cfgs)
     
-
-
-# In[ ]:
-
-
-
-

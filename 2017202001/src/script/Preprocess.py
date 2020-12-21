@@ -1,8 +1,6 @@
 #!/usr/bin/env python
 # coding: utf-8
 
-# In[25]:
-
 
 import json
 import cv2
@@ -10,16 +8,6 @@ import matplotlib.pyplot as plt
 import os
 import pickle
 
-
-# In[22]:
-
-'''
-train_img = '/ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/train2014'
-val_img = '/ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/val2014'
-cap_path = '/ssd500g/kirlin/repos/self-critical.pytorch/data/dataset_coco.json'
-vocab_path = 'vocabulary.pkl'
-data_path = 'data.pkl'
-'''
 
 class Vocabulary(object):
     '''建立vocabulary类，方便以后word<->index的查找'''
@@ -53,9 +41,6 @@ def read_caption(cap_path):
     return new_dict
 
 
-# In[5]:
-
-
 def read_images(train_img,val_img):
     train = {}
     val = {}
@@ -73,9 +58,6 @@ def read_images(train_img,val_img):
         if os.path.isfile(path):        
             val[List[i]] = cv2.imread(path)
     return train,val
-
-
-# In[18]:
 
 
 def One_hot(cap_value,th = 5):  #字典的values,出现次数小于5的词去掉
@@ -113,11 +95,7 @@ def One_hot(cap_value,th = 5):  #字典的values,出现次数小于5的词去掉
     ind2word[ind+3] = '<ukn>'
     
     return word2ind,ind2word
-    
-
-
-# In[7]:
-
+ 
 
 def cap2num(word2ind,caption):
     '''将英文字幕转化为one-hot向量'''
@@ -137,10 +115,6 @@ def cap2num(word2ind,caption):
                 num_dict[key][j].append(arr)
    
     return num_dict
-                        
-
-
-# In[8]:
 
 
 def collect(captions):
@@ -154,14 +128,9 @@ def collect(captions):
     return data
 
 
-# In[23]:
-
-
 def preprocess(cap_path,vocab_path,data_path):
     '''读入字幕'''
-    #train_img,val_img = read_images(train_img,val_img)
     caption = read_caption(cap_path)
-    #print('reading done!')
     
     '''生成one-hot字典'''
     word2ind,ind2word = One_hot(caption.values(),th = 5) 
@@ -170,23 +139,11 @@ def preprocess(cap_path,vocab_path,data_path):
     vocab.ind2word = ind2word
     vocab.ind = len(word2ind)
     
-    #不应该现在就转化，否则内存不够
-    #caption = cap2num(word2ind,caption)  #将word转换为one-hot向量,每个字幕为一个二维列表，因此长度可变
-    #print('one-hot done!')
-    #print(caption['COCO_val2014_000000391895.jpg'])
-    
     '''合并字幕和图片，并转化成tuple格式'''
     data = collect(caption)
-    #print('collect done!')
     
     with open(vocab_path, 'wb') as f:
         pickle.dump(vocab, f)
         
     with open(data_path, 'wb') as f:
         pickle.dump(data, f)
-    
-
-
-
-
-
