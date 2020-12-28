@@ -1,0 +1,4168 @@
+<!DOCTYPE html>
+<html lang="en"     class="pb-page"  data-request-id="5b0b2cec-b629-473d-8cf6-3edfe81076c8"  
+><head data-pb-dropzone="head"><meta name="pbContext" content=";issue:issue:10.1162/neco.1997.9.issue-8;page:string:Article/Chapter View;ctype:string:Journal Content;article:article:10.1162/neco.1997.9.8.1735;website:website:mit-site;subPage:string:Access Denial;requestedJournal:journal:neco;journal:journal:neco;wgroup:string:Default Website Group;pageGroup:string:Publication Pages"/>
+
+
+
+
+        <link rel="schema.DC" href="http://purl.org/DC/elements/1.0/" /><meta name="dc.Title" content="Long Short-Term Memory" /><meta name="dc.Creator" content="Sepp  Hochreiter" /><meta name="dc.Creator" content="Jürgen  Schmidhuber" /><meta name="dc.Description" content="Learning to store information over extended time intervals by recurrent backpropagation takes a very long time, mostly because of insufficient, decaying error backflow. We briefly review Hochreiter..." /><meta name="Description" content="Learning to store information over extended time intervals by recurrent backpropagation takes a very long time, mostly because of insufficient, decaying error backflow. We briefly review Hochreiter..." /><meta name="dc.Publisher" content=" MIT Press  238 Main St., Suite 500, Cambridge, MA 02142-1046 USA journals-info@mit.edu  " /><meta name="dc.Date" scheme="WTN8601" content="2006-03-13" /><meta name="dc.Type" content="letter" /><meta name="dc.Format" content="text/HTML" /><meta name="dc.Identifier" scheme="publisher-id" content="neco.1997.9.8.1735" /><meta name="dc.Identifier" scheme="doi" content="10.1162/neco.1997.9.8.1735" /><meta name="dc.Source" content="http://dx.doi.org/10.1162/neco.1997.9.8.1735" /><meta name="dc.Language" content="en" /><meta name="dc.Coverage" content=" 238 Main St., Suite 500, Cambridge, MA 02142-1046 USA journals-info@mit.edu " />
+        
+        
+
+        
+            <link rel="meta" type="application/atom+xml" href="https://doi.org/10.1162%2Fneco.1997.9.8.1735" />
+            <link rel="meta" type="application/rdf+json" href="https://doi.org/10.1162%2Fneco.1997.9.8.1735" />
+            <link rel="meta" type="application/unixref+xml" href="https://doi.org/10.1162%2Fneco.1997.9.8.1735" />
+        
+    
+    
+            
+
+
+<title>Long Short-Term Memory | Neural Computation | MIT Press Journals</title>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<meta charset="UTF-8">
+
+
+
+
+<meta name="robots" content="noarchive,noindex,nofollow"/>
+<meta name="pb-robots-disabled">
+
+
+
+
+
+    
+
+
+
+
+
+
+
+    
+
+
+
+    
+    
+        
+    
+        
+    
+    
+    
+
+       
+
+
+    
+
+
+
+<!-- publications og tags -->
+
+
+
+
+
+
+    <meta property="og:title" content="Long Short-Term Memory" />
+
+
+
+
+    <meta property="og:type" content="" />
+
+
+    <meta property="og:url" content="https://www.mitpressjournals.org/doix/abs/10.1162/neco.1997.9.8.1735" />
+
+
+
+
+    <meta property="og:image" content="" />
+
+
+    <meta property="og:site_name" content="MIT Press Journals" />
+
+
+
+    <meta property="og:description" content="Long Short-Term Memory" />
+
+
+
+    <meta name="viewport" content="width=device-width,initial-scale=1"/>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" type="text/css" href="/wro/jqce~product.css"><link rel="stylesheet" type="text/css" href="/pb/css/t1608032950000-v1608032950000/default.css" id="pb-css" data-pb-css-id="t1608032950000-v1608032950000/default.css"/>
+
+
+<script type="text/javascript">
+    if (window.location.hash && window.location.hash == '#_=_') {
+        window.location.hash = '';
+    }
+</script>
+
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="/wro/jqce~product.js"></script>
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<script src="https://scholar.google.com/scholar_js/casa.js" async></script>
+
+
+
+
+
+    
+
+
+
+
+
+
+
+    
+        
+            <script type="text/javascript">
+                var _gaq = _gaq || [];
+                _gaq.push(['_setAccount', 'UA-4268393-1']);
+                _gaq.push(['_trackPageview']);
+
+                (function() {
+                    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+                    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+                    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+                })();
+            </script>
+        
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</head>
+<body class="pb-ui">
+
+
+    <!-- Google Tag Manager -->
+    
+    <script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':new Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src='https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);})(window,document,'script','dataLayer','GTM-TR6TWRH');</script>
+    
+    <!-- Google Tag Manager (noscript) -->
+    <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TR6TWRH" height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+    <!-- End Google Tag Manager (noscript) -->
+
+    <!-- End Google Tag Manager -->
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+
+    if(false) {
+        document.getElementById("skipNavigationLink").onclick =function skipElement () {
+            var element = document.getElementById('');
+            if(element == null || element == undefined) {
+                element = document.getElementsByClassName('').item(0);
+            }
+            element.setAttribute('tabindex','0');
+            element.focus();
+
+        }
+
+    }
+
+</script>
+
+
+
+
+
+    <div id="pb-page-content" data-ng-non-bindable>
+        <div data-pb-dropzone="main" data-pb-dropzone-name="Main">
+
+
+
+
+
+
+        <div data-widget-def="pageHeader" data-widget-id="282a676c-e82e-41d7-9c9a-55d23b9adf32"
+        
+        class="homepage-header">
+        
+        <header class="page-header">
+    <div data-pb-dropzone="main">
+    
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="6321e24d-dea2-420d-b129-102f33bd4b82">
+        
+        <link rel="stylesheet" href="/pb-assets/styles/mit-1597072006407.css" type="text/css">
+<link rel="stylesheet" href="/pb-assets/styles/mit-239_temp-1515722608547.css" type="text/css">
+<link rel="stylesheet" href="/pb-assets/styles/mit_internal-1542411761227.css" type="text/css">
+<link rel="stylesheet" href="/pb-assets/styles/fonts/font-awesome-4.6.3/css/font-awesome.min-1481322916563.css">
+<script src="/pb-assets/scripts/mit-1494969225330.js"></script>
+
+
+<!-- Google Tag Manager (noscript) -->
+<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-TR6TWRH"
+height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
+<!-- End Google Tag Manager (noscript) -->
+
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="literatumNoneSecureSession" data-widget-id="a7bd4b15-0cf6-4aeb-882c-d20e0fcfee12">
+        
+        
+
+
+
+
+
+
+
+
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="registrationPopup" data-widget-id="8d24cd96-b334-4238-b501-e842439ad0eb">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="registrationPopup" class="popup  registration-popup hidden">
+    <a href="#" class="close"><i class="icon-close_thin"></i></a>
+    <div class="content">
+        <h2>Create a new account</h2>
+
+        <div class="login-methods">
+            <div class="login-methods__item">
+                <div class="registration-form">
+                    <form action="/action/registration" class="registration-form" method="post"><input type="hidden" name="redirectUri" value="/doi/pdfplus/10.1162/neco.1997.9.8.1735" />
+                        <div class="input-group">
+                            <div class="label">
+                                <label for="8d24cd96-b334-4238-b501-e842439ad0eb.email">Email</label>
+                            </div>
+                            <input id="8d24cd96-b334-4238-b501-e842439ad0eb.email" class="email" type="email" name="email" value="" />
+                        </div>
+                        <div class="submit">
+                            <input class="button submit primary" type="submit" value="Register" />
+                        </div></form>
+                </div>
+            </div>
+            
+        </div>
+        <a href="/action/showLogin" class="show-login">
+            
+            Returning user
+        </a>
+    </div>
+</div>
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="requestResetPasswordPopup" data-widget-id="5323ab6b-5042-4e97-9de3-da91ee4f8ccf">
+        
+        
+
+
+
+<div class="top-drawer request-reset-password-drawer drawer hidden">
+    <div class="content">
+        <div class="form">
+            
+
+
+
+
+
+<p>Can't sign in? Forgot your password?</p>
+<p class="sub">Enter your email address below and we will send you the reset instructions</p>
+<div class="message error"></div>
+<form action="/action/requestResetPassword" class="request-reset-password-form" method="post"><input type="hidden" name="requestResetPassword" value="true" />
+    
+    <div class="input-group">
+        <div class="label">
+            <label for="5323ab6b-5042-4e97-9de3-da91ee4f8ccf.email">Email</label>
+        </div>
+        <input id="5323ab6b-5042-4e97-9de3-da91ee4f8ccf.email" class="email" type="text" name="email" value="" size="15" />
+    </div>
+    
+        
+
+
+
+
+    
+    
+    
+    
+            
+
+
+<div class="clearfix"></div>
+<div class="label">
+    <label for="captchaCode" class="prompt" style="white-space: nowrap">Retype the code from the picture:</label>
+</div>
+<link type="text/css" rel="stylesheet" href="/botdetectcaptcha?get=layoutStyleSheet" />
+
+<div class="LBD_CaptchaDiv" id="sampleCaptcha" style="width: 280px !important; height: 50px !important"><!--
+   --><div class="LBD_CaptchaImageDiv" id="sampleCaptcha_CaptchaImageDiv" style="width: 250px !important; height: 50px !important"><!--
+   --><a target="_blank" href="http://captcha.com/java-captcha-info.html" onclick="sampleCaptcha.OnHelpLinkClick(); return sampleCaptcha.FollowHelpLink;"><img class="LBD_CaptchaImage" id="sampleCaptcha_CaptchaImage" src="/botdetectcaptcha?get=image&amp;c=sampleCaptcha&amp;t=bc6706f8640c4b1788f9f610a3cd9a95" alt="CAPTCHA" /></a></div><!--
+   --><div class="LBD_CaptchaIconsDiv" id="sampleCaptcha_CaptchaIconsDiv" style="width: 24px !important;"><!--
+   --><a class="LBD_ReloadLink" id="sampleCaptcha_ReloadLink" href="#" onclick="sampleCaptcha.ReloadImage(); this.blur(); return false;" title="Change the CAPTCHA code"> <img class="LBD_ReloadIcon" id="sampleCaptcha_ReloadIcon" src="/botdetectcaptcha?get=ReloadIcon" alt="Change the CAPTCHA code" /></a><!--
+   --><a id="sampleCaptcha_SoundLink" class="LBD_SoundLink" href="/botdetectcaptcha?get=sound&amp;c=sampleCaptcha&amp;t=bc6706f8640c4b1788f9f610a3cd9a95" onclick="sampleCaptcha.PlaySound(); this.blur(); return false;" title="Speak the CAPTCHA code"> <img class="LBD_SoundIcon" id="sampleCaptcha_SoundIcon" src="/botdetectcaptcha?get=SoundIcon" alt="Speak the CAPTCHA code" /></a><!--
+   --><div class="LBD_Placeholder" id="sampleCaptcha_AudioPlaceholder">&nbsp;</div><!--
+   --></div>
+
+<script type="text/javascript" src="/botdetectcaptcha?get=clientScriptInclude"></script>
+<script type="text/javascript">
+    //<![CDATA[
+     BotDetect.Init('sampleCaptcha', 'bc6706f8640c4b1788f9f610a3cd9a95', 'captchaCode', true, true, true, true, 1200, 7200, 0);
+    //]]>
+    </script>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+      try{(function(){var bdrsn = document.createElement('script'); bdrsn.type = 'text/javascript'; bdrsn.async = true; bdrsn.src = document.location.protocol + '//remote.captcha.com/include.js?i=ATABMwExATMBMAJBMhI_Vz8_LD98Pz5wbD9XPz8IPz8'; var fsn = document.getElementsByTagName('script')[0]; fsn.parentNode.insertBefore(bdrsn, fsn);})();} catch(err){}
+    //]]>
+    </script>
+
+   <input type="hidden" id="LBD_VCID_sampleCaptcha" name="LBD_VCID_sampleCaptcha" value="bc6706f8640c4b1788f9f610a3cd9a95" />
+</div>
+
+<input type="hidden" value="0" id="LBD_BackWorkaround_sampleCaptcha">
+<div class="validationDiv">
+    <input type="hidden" name="loginBotCaptcha" value="">
+    <input id="captchaCode" type="text" name="captchaCode"/>
+</div>
+        
+
+    
+    <input class="button primary submit" type="submit" name="submit" value="Submit" disabled="disabled" /></form>
+            
+            <div class="center">
+                <a href="#" class="cancel">Cancel</a>
+            </div>
+        </div>
+        <div class="success-template hidden">
+            <p>If the address matches an existing account you will receive an email with instructions to reset your password.</p>
+            <div class="center">
+                <a href="#" class="cancel">
+                    Close
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="requestUsernamePopup" data-widget-id="ee0aef4e-55d3-4524-86a1-377e89d330ef">
+        
+        
+
+
+
+
+<div class="top-drawer request-username-drawer hidden">
+    <div class="content">
+        <div class="form">
+            <p>Can't sign in? Forgot your username?</p>
+            <p class="sub">Enter your email address below and we will send you your username</p>
+            <div class="message error"></div>
+            <form action="/action/requestUsername" method="post"><input type="hidden" name="requestUsername" value="requestUsername" />
+                <div class="input-group">
+                    <div class="label">
+                        <label for="ee0aef4e-55d3-4524-86a1-377e89d330ef.email">Email</label>
+                    </div>
+                    <input id="ee0aef4e-55d3-4524-86a1-377e89d330ef.email" class="email" type="text" name="email" value="" size="15" />
+                </div>
+                
+                    
+
+
+
+
+    
+    
+    
+    
+            
+
+
+<div class="clearfix"></div>
+<div class="label">
+    <label for="captchaCode" class="prompt" style="white-space: nowrap">Retype the code from the picture:</label>
+</div>
+<link type="text/css" rel="stylesheet" href="/botdetectcaptcha?get=layoutStyleSheet" />
+
+<div class="LBD_CaptchaDiv" id="requestUsernamePopupSampleCaptcha" style="width: 280px !important; height: 50px !important"><!--
+   --><div class="LBD_CaptchaImageDiv" id="requestUsernamePopupSampleCaptcha_CaptchaImageDiv" style="width: 250px !important; height: 50px !important"><!--
+   --><a target="_blank" href="http://captcha.com/java-captcha-info.html" onclick="requestUsernamePopupSampleCaptcha.OnHelpLinkClick(); return requestUsernamePopupSampleCaptcha.FollowHelpLink;"><img class="LBD_CaptchaImage" id="requestUsernamePopupSampleCaptcha_CaptchaImage" src="/botdetectcaptcha?get=image&amp;c=requestUsernamePopupSampleCaptcha&amp;t=5bbdac84091f487d9b26c571a27c87c7" alt="CAPTCHA" /></a></div><!--
+   --><div class="LBD_CaptchaIconsDiv" id="requestUsernamePopupSampleCaptcha_CaptchaIconsDiv" style="width: 24px !important;"><!--
+   --><a class="LBD_ReloadLink" id="requestUsernamePopupSampleCaptcha_ReloadLink" href="#" onclick="requestUsernamePopupSampleCaptcha.ReloadImage(); this.blur(); return false;" title="Change the CAPTCHA code"> <img class="LBD_ReloadIcon" id="requestUsernamePopupSampleCaptcha_ReloadIcon" src="/botdetectcaptcha?get=ReloadIcon" alt="Change the CAPTCHA code" /></a><!--
+   --><a id="requestUsernamePopupSampleCaptcha_SoundLink" class="LBD_SoundLink" href="/botdetectcaptcha?get=sound&amp;c=requestUsernamePopupSampleCaptcha&amp;t=5bbdac84091f487d9b26c571a27c87c7" onclick="requestUsernamePopupSampleCaptcha.PlaySound(); this.blur(); return false;" title="Speak the CAPTCHA code"> <img class="LBD_SoundIcon" id="requestUsernamePopupSampleCaptcha_SoundIcon" src="/botdetectcaptcha?get=SoundIcon" alt="Speak the CAPTCHA code" /></a><!--
+   --><div class="LBD_Placeholder" id="requestUsernamePopupSampleCaptcha_AudioPlaceholder">&nbsp;</div><!--
+   --></div>
+
+<script type="text/javascript" src="/botdetectcaptcha?get=clientScriptInclude"></script>
+<script type="text/javascript">
+    //<![CDATA[
+     BotDetect.Init('requestUsernamePopupSampleCaptcha', '5bbdac84091f487d9b26c571a27c87c7', 'captchaCode', true, true, true, true, 1200, 7200, 0);
+    //]]>
+    </script>
+
+
+<script type="text/javascript">
+    //<![CDATA[
+      try{(function(){var bdrsn = document.createElement('script'); bdrsn.type = 'text/javascript'; bdrsn.async = true; bdrsn.src = document.location.protocol + '//remote.captcha.com/include.js?i=ATABMwExATMBMAJBMhI_Vz8_LD98Pz5wbD9XPz8IPz8'; var fsn = document.getElementsByTagName('script')[0]; fsn.parentNode.insertBefore(bdrsn, fsn);})();} catch(err){}
+    //]]>
+    </script>
+
+   <input type="hidden" id="LBD_VCID_requestUsernamePopupSampleCaptcha" name="LBD_VCID_requestUsernamePopupSampleCaptcha" value="5bbdac84091f487d9b26c571a27c87c7" />
+</div>
+
+<input type="hidden" value="0" id="LBD_BackWorkaround_requestUsernamePopupSampleCaptcha">
+<div class="validationDiv">
+    <input type="hidden" name="loginBotCaptcha" value="true">
+    <input id="captchaCode" type="text" name="captchaCode"/>
+</div>
+        
+
+                    
+                
+                <input class="button primary submit" type="submit" name="submit" value="Submit" disabled="disabled" /></form>
+            <div class="center">
+                <a href="#" class="cancel">Cancel</a>
+            </div>
+        </div>
+        <div class="success-template hidden">
+            <p>If the address matches an existing account you will receive an email with instructions to retrieve your username</p>
+            <div class="center">
+                <a href="#" class="cancel">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="changePasswordPopup" data-widget-id="535deca5-eda9-467a-b71d-d5c86e323900">
+        
+        
+
+
+
+
+
+
+
+
+<div class="top-drawer change-password-drawer drawer hidden">
+    <div class="content">
+        <div class="form">
+            <h2>Change Password </h2>
+            <form action="/action/changePassword" method="post"><div class="message error"></div>
+                <input type="hidden" name="submit" value="submit" />
+                <div class="input-group">
+                    <div class="label">
+                        <label for="535deca5-eda9-467a-b71d-d5c86e323900-old">Old Password</label>
+                    </div>
+                    <input id="535deca5-eda9-467a-b71d-d5c86e323900-old" class="old" type="password" name="old" value="" autocomplete="off" />
+                    <span class="password-eye-icon icon-eye hidden"></span>
+                </div>
+                <div class="input-group">
+                    <div class="label">
+                        <label for="535deca5-eda9-467a-b71d-d5c86e323900-new">New Password</label>
+                    </div>
+                    <input id="535deca5-eda9-467a-b71d-d5c86e323900-new" class="pass-hint new" type="password" name="new" value="" autocomplete="off" />
+                    <span class="password-eye-icon icon-eye hidden"></span>
+                    
+                        
+
+
+
+
+
+
+
+    
+
+
+    
+
+
+    
+
+
+<div class="password-strength-indicator" data-min="8" data-max="20" data-strength="2">
+    <span class="text too-short">Too Short</span>
+    <span class="text weak">Weak</span>
+    <span class="text medium">Medium</span>
+    <span class="text strong">Strong</span>
+    <span class="text very-strong">Very Strong</span>
+    <span class="text too-long">Too Long</span>
+</div>
+                    
+                </div>
+                <input class="button primary submit" type="submit" value="Submit" disabled="disabled" /></form>
+            <div class="center">
+                <a href="#" class="cancel">Cancel</a>
+            </div>
+        </div>
+        <div class="success-template hidden">
+            <h2>Password Changed Successfully</h2>
+            <p>Your password has been changed</p>
+            <div class="center">
+                <a href="#" class="cancel">Close</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="loginPopup" data-widget-id="07a03dd2-272c-49b4-94f4-cd59341bb7ec">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div id="loginPopup" class="popup login-popup hidden">
+
+    <a href="#" class="close" role="button" aria-label="Cancel Login"><i class="icon-close_thin"></i></a>
+    <div class="content">
+        <h2>
+            LOGIN TO YOUR ACCOUNT
+        </h2>
+        <div class="login-methods">
+            <div class="login-methods__item">
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="login-form">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <form action="/action/doLogin" method="post"><input type="hidden" name="id" value="07a03dd2-272c-49b4-94f4-cd59341bb7ec" />
+        
+
+
+
+
+<input type="hidden" name="redirectUri" value="/doi/pdfplus/10.1162/neco.1997.9.8.1735" />
+        
+            <input type="hidden" name="popup" value="true" />
+        
+        
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        
+    
+    
+    
+        
+    
+    <div class="input-group">
+        <div class="label ">
+
+            
+                    <label for="login">Username</label>
+                
+            
+        </div>
+        
+        
+        <input id="login" class="login" type="text" name="login" value="" size="15" placeholder="" />
+        
+                    <div class="actions">
+                        
+                            <a href="/action/requestUsername" class="link show-request-username">Forgot username?</a>
+                        
+                    </div>
+                
+    </div>
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <div class="input-group">
+        <div class="label ">
+            <label for="password">Password</label>
+            
+        </div>
+        
+        
+        <input id="password" class="password" type="password" name="password" value="" autocomplete="off" placeholder="" />
+        <span class="password-eye-icon icon-eye hidden"></span>
+        
+                    <div class="actions">
+                        <a href="/action/requestResetPassword" class="link show-request-reset-password pop-up">Forgot password?</a>
+                    </div>
+                
+    </div>
+
+            
+
+        <div class="remember">
+            <div class="keepMeLogin">
+                <span class="label">Keep me logged in</span>
+            </div>
+            <div class="switch small-switch">
+                
+                        <input id="07a03dd2-272c-49b4-94f4-cd59341bb7ec-remember" class="cmn-toggle cmn-toggle-round-flat" type="checkbox" name="remember" value="true" />
+                    
+                <label class="tgl-btn" for="07a03dd2-272c-49b4-94f4-cd59341bb7ec-remember"></label>
+            </div>
+        </div>
+        
+                <div class="submit">
+                    <input class="button submit primary" type="submit" name="loginSubmit" value="Login" />
+                </div></form>
+</div>
+            </div>
+            
+        </div>
+
+        <div class="login-container">
+            <a href="/action/registration" class="show-registration">
+                
+                <div class="center">
+                    New User
+                </div>
+            </a>
+            
+                <a href="/action/ssostart?redirectUri=%2Fdoi%2Fpdfplus%2F10.1162%2Fneco.1997.9.8.1735" class="float-right">
+                    
+                    <div class="institution-login">
+                        Institutional Login
+                    </div>
+                </a>
+            
+        </div>
+    </div>
+</div>
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="literatumAd" data-widget-id="f7c105e3-e179-4fdf-b65c-740cb5dc5b8c">
+        
+        
+
+
+
+        
+    
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="9b05d3d2-8c1a-4f21-8afa-927ae7ed9803"
+        
+        class="fix-width">
+        
+        <div class='header-layout fix-width'>
+	<div class='logo-nav-col'>
+		<div class='logo-container'>
+			
+
+
+
+
+
+        <div data-widget-def="general-image" data-widget-id="85ebd1ea-43b6-4e57-9a09-42f02cf783df"
+        
+        class="logo">
+        
+        <a href="/"
+>
+<img src="/pb-assets/images/logos/mitpress-logo-main-1483476130433.svg"
+/>
+</a></div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="2ed11b26-6b72-407a-b136-828122b69219"
+        
+        class="logo-text-container">
+        
+        <a href="http://www.mitpressjournals.org"><span class='logo-text logo-text-primary'>The MIT Press</span><span class='logo-text journals'>Journals</span></a>
+
+</div>
+    
+
+
+		</div>
+		<div class='nav-container'>
+			
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="f08251d1-ccaa-4fff-90df-edc532a17c40">
+        
+        <nav>
+	<ul class="inline-list" style="width: 675px">
+
+		<li>
+			<a href="https://mitpress.mit.edu">Books</a>
+		</li>
+		<li class="active">
+			<a href="/action/showPublications">Journals</a>
+		</li>
+		<li>
+			<a href="https://www.mitpressjournals.org/digital">Digital</a>
+		</li>
+		<li class="has-items">
+			<a href="#">Resources</a>
+			<ul class="mega-menu mega-resources collapsed"> 
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="b5c1e7c3-2ba0-4ccb-ad1d-4259d62e7245"
+        
+        class="fix-width">
+        
+        <li class='mega-column'>
+	<h4><a href="/librarians">For Librarians</a></h4>
+	<ul class='secondary-items'>
+		<li><a href="/action/institutionAdminActivation">Institutional Activation</a></li>
+		<li><a href='/pb-assets/pdfs/Journals Institutional License-1583367214240.pdf'>Institutional License Agreement</a></li>
+		<li><a href="/action/showInstitutionUsageReport">Usage Stats</a></li>
+		<li><a href="/document_delivery">Document Delivery</a></li>
+						<li><a href="/pb-assets/pdfs/VPAT_MITP_journals-1589812689503.pdf">MIT Press Journals VPAT</a></li>
+		<li><a href="/subscribe">Join Our Librarian Mailing List</a></li>
+		
+		<li><a href="https://www.mitpressjournals.org/inst_getting_started">Librarian FAQ</a></li>
+		<li><a href="https://www.mitpressjournals.org/migration_faq">Journals Migration FAQ</a></li>
+	</ul>
+	<h5><a href="#">Quick Guides</a></h5>
+	<ul class='secondary-items guides'>
+	    
+	    <li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="/pb-assets/pdfs/2021 MITPJ Institution Price list-1603219288990.pdf">2021 Institutional Pricing</a>
+		</li>	    
+	    <li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="/pb-assets/pdfs/2020%20MITPJ%20Institution%20Price%20list-1571760603270.pdf">2020 Institutional Pricing</a>
+		</li>
+		<li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="https:/pb-assets/pdfs/Single_issue_pricelist-1565285176507.pdf">Single Issue Pricing</a>
+		</li>
+		<li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="/pb-assets/pdfs/2021 MITPJ Package pricelist-1598485810710.pdf">2021 MIT Package Pricelist</a>
+		</li>
+		<li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="/pb-assets/pdfs/2020 MIT Package pricelist-1565110893473.pdf">2020 MIT Package Pricelist</a>
+		</li>
+	</ul>
+</li>
+<li class='mega-column'>
+	<h4><a href="/for_authors">For Authors</a></h4>
+	<ul class='secondary-items'>
+		<li><a href="/for_authors#subpubagreements">Submitting Publication Agreements</a></li>
+		<li><a href="/for_authors#authorposting">Author Posting Guidelines</a></li>
+		<li><a href="/for_authors#copyright">Copyright Information</a></li>
+		<li><a href="/for_authors#authorreprints">Author Reprints</a></li>
+		<li><a href="/for_authors#publishingoa">Publishing Open Access</a></li>
+		<li><a href="/for_authors#nihpublicaccess">NIH Public Access Policy</a></li>
+		<li><a href="/for_authors#authordiscounts">Author Discounts</a></li>
+		<li><a href="https://www.mitpressjournals.org/data_policy">The MIT Press Research Data Policy</a></li>
+		
+		
+	</ul>
+	<h5 hidden=""><a href="#">Quick Guides</a></h5>
+	<ul hidden="" class='secondary-items guides'>
+		<li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="#">Guide1</a>
+		</li>
+		<li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="#">Guide2</a>
+		</li>
+		<li>
+			<i class='fa fa-file-o'></i>
+			<a target="_blank" href="#">Guide3</a>
+		</li>
+	</ul>
+</li>
+<li class='mega-column'>
+	<h5><a href="/rights_permission">Request Permissions</a></h5>
+	<h5><a href="https://mitpress.mit.edu/giving/">Give to the Frank Urbanowski Fund</a></h5>
+	<h5><a href="/trade_sales">Trade Sales</a></h5>
+	<h5><a href="/advertising">Advertising Info</a></h5>
+	<h5><a href="/schedule">Release Schedule</a></h5>
+	<h5><a href="/faq">FAQ</a></h5>
+	<h5><a href="/terminated_journals">Terminated Journals</a></h5>
+	<h5><a href="/pay_invoices">Paying an MIT Press Journals Permission Invoice</a></h5>
+</li>
+<li class='mega-column'>
+	<i class='icon-close_thin close-mega'></i>
+</li>
+
+</div>
+    
+
+ </ul>
+		</li>
+		<li class="has-items">
+			<a href="#">About</a>
+			<ul class="mega-menu mega-about collapsed"> 
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="15277695-0990-474d-bd62-10816ed901e0"
+        
+        class="fix-width">
+        
+        <li class='mega-column'>
+	<div class='message'>
+		The MIT Press is a leading publisher of books and journals at the intersection of science, technology, and the arts. MIT Press books and journals are known for their intellectual daring, scholarly standards, and distinctive design.
+	</div>
+	<div class='links'>
+		<div>
+			<h5><a href="/aboutMITPJ">About MITPJ Statement</a></h5>
+			<h5><a href="/ethics">Statement of Publication Ethics</a></h5>
+		</div>
+
+		<div>
+			<h5><a href="/events">Events &amp; Conferences</a></h5>
+			<h5><a href="/publishing_services">Publishing Services</a></h5>
+		</div>
+				<div>
+			<h5><a href="/mitpj-staff">MIT Press Journals Staff</a></h5>
+			<h5><a href="/analytics">How We Use Analytics</a></h5>
+		</div>
+	</div>
+</li>
+<li class='mega-column'>
+	<i class='icon-close_thin close-mega'></i>
+</li>
+
+</div>
+    
+
+ </ul>
+		</li>
+		<li class="has-items">
+			<a href="#">Contact</a>
+			<ul class="mega-menu mega-contact collapsed"> 
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="e1b998ae-a51c-448a-b704-35165ac4a8b3"
+        
+        class="fix-width">
+        
+        <li class='mega-column'>
+	<h5>Location</h5>
+	<div class='location'>
+		<div>The MIT Press</div>
+		<div>One Rogers Street</div>
+		<div>Cambridge, MA 02142-1209</div>
+	</div>
+	<div class='map'>
+		<img src="/pb-assets/images/fpo-map-1493476240117.png" style="height:230px;">
+	</div>
+</li>
+<li class='mega-column'>
+	<h5>Phone</h5>
+	<div class='number'>(800) 207-8354</div>
+	<div class='description'>(US &amp; Canada)</div>
+	<div class='number'>(617) 253-2889</div>
+	<div class='description'>(Outside US and Canada)</div>
+	<div class='number'>(617) 577-1545</div>
+	<div class='description'>Fax</div>
+	<br>
+	<p>MIT Press business hours are M-F, 9:00 a.m. - 5:00 p.m. Eastern Time</p> 
+
+	<h5>Connect</h5>
+	<ul class='social'>
+	    <li>
+            <a href="https://www.facebook.com/mitpress"><img src="/pb-assets/images/social-icons/facebook-1487700850557.svg" width="18" height="18" title="Facebook" alt="Facebook"></a>
+	    </li>
+	    <li>
+            <a href="http://www.twitter.com/mitpress"><img src="/pb-assets/images/social-icons/twitter-1487700851690.svg" width="18" height="18" title="Twitter" alt="Twitter"></a>
+        </li>
+        <li>
+            <a href="https://plus.google.com/106848724929282487337?prsrc=3"><img src="/pb-assets/images/social-icons/google%2B-1487700850797.svg" width="18" height="18" title="Google +" alt="Google +"></a>
+        </li>
+        <li>
+            <a href="https://www.pinterest.com/mitpress/"><img src="/pb-assets/images/social-icons/pinterest-1487700851413.svg" width="18" height="18" title="Pinterest" alt="Pinterest"></a>
+        </li>
+        <li>
+            <a href="https://www.instagram.com/mitpress/"><img src="/pb-assets/images/social-icons/instagram-1487700850833.svg" width="18" height="18" title="Instagram" alt="Instagram"></a>
+        </li>
+        <li>
+            <a href="https://www.youtube.com/channel/UCeH0hmlPjGW2DN0Ntmd0FCQ"><img src="/pb-assets/images/social-icons/you-tube-1487700851720.svg" width="18" height="18" title="YouTube" alt="YouTube"></a>
+        </li>
+	</ul>
+</li>
+<li class='mega-column'>
+	<a href="/contact_info" class='button gray'>
+		<span>Send us a message</span>
+		<i class='fa fa-angle-right'></i>
+	</a>
+	
+	<h5>Quick Email Links</h5>
+	<ul class='quick-email'>
+	    <li><a href="https://mitpressjournals.mit.edu/shop/customer/account/">Change Your Address</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#b1dbdec4c3dfd0ddc29cd0d5c2f1dcd8c59fd4d5c4">Advertising Inquiries</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#03696c76716d626f702e6a6d656c436e6a772d666776">List Exchange &amp; Purchasing</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#1973766c6b7778756a346b707e716d6a5974706d377c7d6c">Rights &amp; Permissions</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#167c726675653b617f647365567b7f6238737263">Payments &amp; Wire Transfer</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#b8d2dcc8dbcb95d4d1dbddd6cbddcbf8d5d1cc96dddccd">License Agreements &amp; Consortia</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#711b1e04031f101d025c1202311c18055f141504">Subscriptions &amp; Back Issues</a></li>
+	    <li><a href="/cdn-cgi/l/email-protection#a7cdc8d2d5c9c6cbd48ac6c4c4c2d4d4e7caced389c2c3d2">Electronic Access Queries</a></li>
+	</ul>
+	<p class='submit-proposals'>
+	    To submit proposals to either launch new journals or bring an existing journal to MIT Press, please contact Director for Journals and Open Access, Nick Lindsay at <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="4b252722252f382a320b26223f652e2f3e65">[email&#160;protected]</a> To submit an article please follow the submission guidelines for the appropriate journal(s).
+	</p>
+
+</li>
+<li class='mega-column'>
+	<i class='icon-close_thin close-mega'></i>
+</li>
+
+</div>
+    
+
+ </ul>
+		</li>
+	</ul>
+</nav>
+
+        </div>
+    
+
+
+		</div>
+	</div>
+	<div class='login-icons-col'>
+		<div class='login-container'>
+			
+
+
+
+
+
+        <div data-widget-def="literatumNavigationLoginBar" data-widget-id="d6087f2e-a066-4956-844c-2b421f6e662c">
+        
+        
+
+
+
+
+    
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    
+
+
+
+
+
+
+
+<div class="loginBar login-open">
+    <a href="/action/showLogin?uri=%2Fdoi%2Fpdfplus%2F10.1162%2Fneco.1997.9.8.1735" class="show-login">
+        <span class="icon-profile_empty" title='Register/Sign In'></span>
+        <span class="sign-in-label">Sign In / Register</span>
+    </a>
+</div>
+
+
+
+    
+
+        </div>
+    
+
+
+		</div>
+		<div class='icons-container'>
+			
+
+
+
+
+
+        <div data-widget-def="literatumInstitutionBanner" data-widget-id="cea3cca5-5a9b-4277-9358-4b212ea23f7f">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="welcome">
+    
+    
+        <span class="bannerText">
+            
+                    Access provided by RENMIN UNIV OF CHINA LIBRARY
+                
+        </span>
+    
+    
+</div>
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="0dcd227b-191d-4547-b9e5-582d1094c021">
+        
+        <ul class='inline-list block-icon'>
+    <li>
+    	
+
+
+
+
+
+        <div data-widget-def="responsiveQuickSearchWidget" data-widget-id="30e6a511-d1c5-442c-b452-a5afb21e4557"
+        
+        class="responsiveQuickSearchWidget page-header-quick-search">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="quickSearchFormContainer">
+    
+        <a class="mini-search" href="#">
+            <span class="icon-search" href="#"></span>
+            <span class="search-text">Enter words / phrases / DOI / ISBN / authors / keywords / etc.</span>
+        </a>
+    
+
+    
+
+    
+
+    <form action="/action/doSearch" name="quickSearch" class="quickSearchForm search-open resQuickSearchForm" title="Quick Search" method="get"><div class="container">
+        
+        
+
+        
+        
+            
+
+            
+                <input type="hidden" name="SeriesKey" value="neco" />
+            
+        
+
+        
+                <div class="quicksearch-container">
+                    
+                        
+
+
+
+
+
+<span class="citationSearchBoxContainer hidden">
+    <input name="quickLinkJournal"
+           class="journalName mediumTextInput textIndent autocomplete ui-autocomplete-input"
+           value="Neural Computation"
+           type="text"
+           title="Journal"
+           placeholder="Journal"
+           autoComplete="off"
+           autoPopulate="true"
+           data-auto-complete-target="title-auto-complete"
+           data-history-items-conf="3"
+           data-publication-titles-conf="3"
+           data-topics-conf="3"
+           data-contributors-conf="3"/>
+
+    <input type="hidden" name="quickLink" value="true" />
+    <input class="year smallTextInput" title="Year" type="text" name="quickLinkYear" value="" size="15" autocomplete="false" placeholder="Year"pattern="([0-9]){1,4}$" />
+    <input class="volume smallTextInput" title="Volume" type="text" name="quickLinkVolume" value="" size="15" autocomplete="false" placeholder="Volume" />
+    <input class="issue smallTextInput" title="Issue" type="text" name="quickLinkIssue" value="" size="15" autocomplete="false" placeholder="Issue" />
+    <input class="page smallTextInput" title="Page" type="text" name="quickLinkPage" value="" size="15" autocomplete="false" placeholder="Page" />
+</span>
+
+                    
+                    <div class="simpleSearchBoxContainer">
+                            <input name="AllField"
+               class="searchText magicsuggest main-search-field autocomplete"
+               value=""
+               type="search" id="searchText"
+               title="Type search term here"
+               placeholder="Enter words / phrases / DOI / ISSN / authors / keywords / etc." autocomplete="off"
+               data-history-items-conf="3"
+               data-publication-titles-conf="3"
+               data-group-titles-conf="3"
+               data-publication-items-conf="3"
+               data-topics-conf="3"
+               data-contributors-conf="3"
+               data-display-labels="true"
+               data-auto-complete-target="auto-complete"
+               data-fuzzy-suggester="false"
+               data-auto-complete-max-words="7"
+               data-auto-complete-max-chars="32"/>
+                <button class="mainSearchButton"></button>
+                            <input name="ConceptID"
+               value=""
+               type="hidden"/>
+                    </div>
+
+                    <div class="quicksearch-actions">
+                        <input class="mainSearchButton searchButtons pointer" title="search" type="submit" value="Search" />
+                        <a class="responsiveAdvanceSearch" href="/search/advanced" title="Advanced Search">
+                            <span>
+                                Advanced Search
+                            </span>
+                        </a>
+                        <a href="#" class="icon-tools_close mini-search active"></a>
+                    </div>
+                </div>
+            
+
+        
+
+        
+
+        
+        
+            </div></form>
+</div>
+
+
+    <div class="search-bg overlay-fixed"></div>
+
+
+
+<div class="advancedSearchLinkDropZone" data-pb-dropzone="advancedSearchLinkDropZone">
+    
+</div>
+
+
+
+</div>
+    
+
+
+    </li>
+    <li>
+      
+
+
+
+
+
+        <div data-widget-def="literatumNavigationLoginBar" data-widget-id="4752c471-3a59-46a6-ad05-4479cb551c59"
+        
+        class="login-icon-dropdown">
+        
+        
+
+
+
+
+    
+
+
+
+
+
+
+
+
+        
+
+
+
+
+    
+
+
+
+
+
+
+
+<div class="loginBar login-open">
+    <a href="/action/showLogin?uri=%2Fdoi%2Fpdfplus%2F10.1162%2Fneco.1997.9.8.1735" class="show-login">
+        <span class="icon-profile_empty" title='Register/Sign In'></span>
+        <span class="sign-in-label"></span>
+    </a>
+</div>
+
+
+
+    
+</div>
+    
+
+
+    </li>
+    <li>
+      
+
+
+
+
+
+        <div data-widget-def="eCommerceCartIndicatorWidget" data-widget-id="ba24a655-6d5d-45ab-9ab2-43d2f64075f1">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<input type="hidden" name="isExternalCartEnabled" value="true"/>
+<input type="hidden" name="externalCartLink" value="https://mitpressjournals.mit.edu/shop/enter"/>
+<a href="/action/showCart?FlowID=1" id="cartLabel" aria-describedby="cartText">
+    <div class="cartLabel">
+        <span class="icon-shoppingcart"></span>
+        <span class="filter-count filter-count-bubble shopping-cart hidden"
+              data-id="cart-size">0</span>
+            
+        <span class="cartText"></span>
+    </div>
+</a>
+        </div>
+    
+
+
+    </li>
+</ul>
+        </div>
+    
+
+
+		</div>
+	</div>
+</div></div>
+    
+
+    </div>
+</header>
+</div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="pageBody" data-widget-id="4a47ea85-a6b0-44ad-8d8a-60b3a0a0d945"
+        
+        class="fix-width">
+        
+        <!--begin pagefulltext-->
+<div class="page-body pagefulltext">
+    <div data-pb-dropzone="main">
+    
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="84db9352-c196-4173-8acc-9c94e0505c35"
+        
+        class="fix-width">
+        
+        <div data-pb-dropzone="contents">
+    
+
+
+
+
+
+        <div data-widget-def="responsive-layout" data-widget-id="5b261e87-baf2-4120-b5e9-caa998d80639"
+        
+        class="upperNavContainer">
+        
+        
+
+
+
+
+        
+    
+<div class="container-fluid">
+    <div class="row row-md  ">
+        
+            <div class="col-md-17-24 ">
+                <div class="contents" data-pb-dropzone="contents0">
+                    
+                    
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="literatumBreadcrumbs" data-widget-id="7b551c9f-989e-4745-a9be-e71aade8825a"
+        
+        class="journalBreadcrumbs">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<!-- Service: showPdfPlus -->
+
+
+    
+    
+        
+        
+                
+            
+    
+
+
+
+    
+    
+            
+        
+
+    
+    
+
+    
+    
+    
+            
+                    
+                            
+                        
+                    
+                
+
+            
+        
+
+    
+    
+
+    
+    
+
+            
+            
+                    
+                            
+                        
+                
+
+        
+    
+
+
+
+
+
+<nav aria-label="breadcrumbs">
+    <ul class="breadcrumbs">
+        
+        
+            <li class="">
+
+                
+                    <a href="/">
+                    Home
+                    </a>
+                    
+                        <span class="divider">&gt;</span>
+                    
+                    
+            </li>
+        
+            <li class="">
+
+                
+                    <a href="/loi/neco">
+                    Neural Computation
+                    </a>
+                    
+                        <span class="divider">&gt;</span>
+                    
+                    
+            </li>
+        
+            <li class="">
+
+                
+                    <a href="/loi/neco">
+                    List of Issues
+                    </a>
+                    
+                        <span class="divider">&gt;</span>
+                    
+                    
+            </li>
+        
+            <li class="">
+
+                
+                    <a href="/toc/neco/9/8">
+                     Volume 9 , No. 8
+                    </a>
+                    
+                        <span class="divider">&gt;</span>
+                    
+                    
+            </li>
+        
+            <li class="">
+
+                
+                        
+                        Long Short-Term Memory
+            </li>
+        
+    </ul>
+</nav>
+
+
+
+
+
+
+
+
+
+
+        
+    
+
+
+</div>
+    
+
+
+                        
+                    
+                </div>
+            </div>
+        
+            <div class="col-md-7-24 ">
+                <div class="contents" data-pb-dropzone="contents1">
+                    
+                    
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="2f633498-14d7-48d0-822c-af9d758c0915"
+        
+        class="articleNavContainer">
+        
+        <div data-pb-dropzone="contents">
+    
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="9bb1c636-355e-4cde-842d-963d0ff132c1"
+        
+        class="articleNavText">
+        
+        <span>Article navigation</span>
+
+</div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="literatumBookIssueNavigation" data-widget-id="1dda2f28-07bf-48c3-8007-d1aa0fa19948">
+        
+        
+
+
+
+
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="pager issueBookNavPager">
+    <span class="journalNavLeftTd">
+        
+            <span class="prev placedLeft">
+            
+                    <a href="/doi/10.1162/neco.1997.9.8.1711">
+                        Previous
+                    </a>
+                
+            </span>
+        
+    </span>
+    
+        
+    
+    <span class="journalNavRightTd">
+        
+
+
+
+
+
+
+
+     <span class="next">
+       <a href="/doi/10.1162/neco.1997.9.8.1781">
+           Next
+       </a>
+   </span>
+    
+
+    </span>
+</div>
+    
+
+        </div>
+    
+
+</div>
+
+</div>
+    
+
+
+                        
+                    
+                </div>
+            </div>
+        
+    </div>
+</div></div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="a709b79f-b341-4403-9502-e6f9b22db336"
+        
+        class="journalHome">
+        
+        <div data-pb-dropzone="contents">
+    
+
+
+
+
+
+        <div data-widget-def="responsive-layout" data-widget-id="358dec2a-b35c-48f7-977d-7d7dce60e448"
+        
+        class="firstHorizontal">
+        
+        
+
+
+
+
+        
+    
+<div class="container-fluid">
+    <div class="row row-xs  ">
+        
+            <div class="col-xs-1-4 publicationPagesCol1">
+                <div class="contents" data-pb-dropzone="contents0">
+                    
+                    
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="literatumCoverDisplayWidget" data-widget-id="962827fe-a373-451f-b25c-dd7e20d097c2">
+        
+        
+
+    
+
+
+
+
+
+<div class="publicationCoverImage">
+    <img src="/na101/home/literatum/publisher/mit/journals/covergifs/neco/1997/neco.1997.9.issue-8/cover.jpg" alt="Publication Cover" />
+</div>
+        </div>
+    
+
+
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="3e500b91-c7fe-4248-aadd-c0134ef7e087">
+        
+        <div id="jrn_meta_snippet" style="margin-bottom:1em; margin-top: 1em;">
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta" id="jrn_cycle"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_pages"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_dimensions"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_founded"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_impact"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_hfive"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_issn"></span>
+    <span style="display:block; margin-bottom: 0.3em" class="jrn_meta"  id="jrn_eissn"></span>
+</div>
+
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+    function run() {
+    
+    json_path = "/pb-assets/HTML-snippets/journal_meta-1607019043563.json"
+    $.getJSON(json_path, function (data) {
+    
+    d = data.journals
+    
+    d.forEach(function(element) {
+    if (element.code == "neco"){
+    if(element.cycle != ""){
+    document.getElementById("jrn_cycle").innerHTML = element.cycle;
+    }
+
+if(element.pages != ""){
+document.getElementById("jrn_pages").innerHTML = element.pages + "pp. per issue";
+    }
+    if(element.dimensions != ""){
+    document.getElementById("jrn_dimensions").innerHTML = element.dimensions;
+    }
+    if(element.founded != ""){
+    document.getElementById("jrn_founded").innerHTML = "Founded: " + element.founded;
+    }
+    if(element.issn != ""){
+    document.getElementById("jrn_issn").innerHTML = "ISSN: " + element.issn;
+    }
+    if(element.eissn != ""){
+    document.getElementById("jrn_eissn").innerHTML = "E-ISSN: " + element.eissn;
+    }
+    if(element.impact != ""){
+    document.getElementById("jrn_impact").innerHTML = "2019 Impact Factor: " + element.impact;
+    }
+    if(element.hfive != ""){
+    document.getElementById("jrn_hfive").innerHTML = "2019 Google Scholar h5-index: "+ element.hfive;
+    }
+    }
+    
+    });
+ 
+    
+    });
+    }
+    
+    run()
+</script>
+
+        </div>
+    
+
+
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="e2049003-b1a7-40f6-8d30-afc4dc36a500"
+        id="journalResourcesHeader"
+        >
+        
+        <div class="journalResources">
+    <div class="resourcesJournalTitle">
+        <h4>More About <i>NC</i></h4>
+    </div>
+    <div class="journalExpand">
+        <a href="#" onclick="journalHomeLeftToggle('journalResources'); return false;">
+            <img class="journalExpandImage" src="/pb-assets/images/arrow-button-1488499533633.svg">
+        </a>
+    </div>
+</div>
+
+</div>
+    
+
+
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="ebcf0685-c3e0-41d8-8014-72c6195eebae"
+        
+        class="pubPagesLeftColumn">
+        
+        <div data-pb-dropzone="contents">
+    
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="3e942c2c-284a-41f7-95db-57917167be38"
+        id="journalResourcesContent"
+        >
+        
+        <h4>Journal Resources</h4>
+<a href="/journals/neco/editorial" target="_blank">Editorial Info</a><br>
+<a href="/journals/neco/aandi" target="_blank">Abstracting and Indexing</a>
+<br><a href="/schedule" target="_blank">Release Schedule</a> <br>
+<a href="/advertising" target="_blank">Advertising Info</a>
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="2fca01b9-e89a-4109-aac9-bef4631a3193">
+        
+        <a href="http://neuralcomp.allentrack.net/" target="_blank">Peer Review site</a> <br> 
+
+
+        </div>
+    
+
+
+<hr>
+<h4>Author Resources</h4>
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="3b4a05b8-a4d6-4ff1-bba4-5ee865a7d9ea">
+        
+        <a href="/journals/neco/sub" target="_blank">Submission Guidelines</a><br>
+
+
+        </div>
+    
+
+
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="3fd8c394-bd27-4845-88aa-d7c56bc65bb8">
+        
+         <a target="_blank" href="/pb-assets/pdfs/NECO_pub_agreement-1556729039600.pdf">Author Publication Agreement&nbsp;</a> <br>
+
+
+        </div>
+    
+
+
+    <!--<a href='https://www.mitpressjournals.org/ethics'>Publication Ethics</a>-->
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="c174187c-f88c-433d-ae49-e5d2bf044698">
+        
+        <a href="http://www.mitpressjournals.org/for_authors#authorreprints" target="_blank">Author Reprints</a><br>
+
+
+        </div>
+    
+
+
+
+<hr>
+<h4>Reader Resources</h4>
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="95c4cba1-826e-4ed9-a3c3-c1df2520b440">
+        
+        <a href="/rights_permission" target="_blank">Rights and Permissions</a><br>
+
+
+        </div>
+    
+
+
+
+<a class="mostReadCited" href="/action/showMostReadArticles?journalCode=neco" target="_blank">Most Read</a><br>
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="a195b57c-6b93-4b56-9b51-18c616bfa93d">
+        
+        <a href="/action/showMostCitedArticles?journalCode=neco" target="_blank">Most Cited: Crossref</a>
+
+
+        </div>
+    
+
+
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="a48f9fad-355c-44ea-891c-ab11ed451074">
+        
+        <a href="https://scholar.google.com/scholar?as_q=&amp;as_epq=&amp;as_oq=&amp;as_eq=&amp;as_occt=any&amp;as_sauthors=&amp;as_publication=neural+computation&amp;as_ylo=&amp;as_yhi=&amp;btnG=&amp;hl=en&amp;as_sdt=0%2C22" target="_blank">Most Cited: Google Scholar</a> <br>
+
+
+        </div>
+    
+
+
+</div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="45fe5db7-98bf-4eff-9d72-14489cd5fa13">
+        
+        <!-- <div class="articleMetricsHeader" id="articleMetricsHeader">
+    <h4>Metrics</h4>
+    <div class="journalExpand">
+        <a href="#" onclick="journalHomeLeftToggle('articleMetrics'); return false;">
+            <img class="journalExpandImage" src="/pb-assets/images/arrow-button-1488499533633.svg">
+        </a>
+    </div>
+</div>-->
+<br/>
+
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="literatumArticleMetricsWidget" data-widget-id="8be639af-9aa7-44ad-bf2a-94eca61e7034"
+        id="articleMetricsContent"
+        >
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="articleMetricsContainer">
+
+
+    <div class="content ">
+
+        <h2>
+            Article Metrics
+        </h2>
+
+        
+
+        
+
+        
+                <div class="section altmetric-container">
+                    <div class="title">
+                     <h4>   Altmetric</h4>
+                    </div>
+                    
+<script type='text/javascript' src='https://d1bxh8uas1mnw7.cloudfront.net/assets/embed.js'></script>
+
+
+
+
+<div class="metrics-badge linkToPopup">
+    <div class='altmetric-embed' data-badge-type='large-donut' data-badge-details='right'
+         data-condensed='true'
+        data-doi="10.1162/neco.1997.9.8.1735"
+         data-hide-less-than="5">
+    </div>
+</div>
+
+
+
+                    <div class="altmetricsPopup"></div>
+                </div>
+            
+        
+            <div class="metricsAbout">
+                <strong>About article usage data:</strong> <p> Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aenean euismod bibendum laoreet. Proin gravida dolor sit amet lacus accumsan et viverra justo commodo. Proin sodales pulvinar tempor. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+            </div>
+    </div>
+</div></div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="3c35b085-1f56-404e-b480-6ee555a0cc2b"
+        id="jumpTo"
+        >
+        
+        <div data-pb-dropzone="contents">
+    </div>
+
+</div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="c57a3283-b931-4a7e-a8a4-0289a44f9ccf">
+        
+        <!-- documentation for badge: https://badge.dimensions.ai/#build -->
+
+<br/>
+<span class="__dimensions_badge_embed__" 
+    data-doi='10.1162/neco.1997.9.8.1735' 
+    data-legend="always" 
+    data-style="small_circle" 
+    data-hide-zero-citations="true"  
+    style="padding-left:0.3em">
+</span>
+<script async src="https://badge.dimensions.ai/badge.js" charset="utf-8"></script>
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="f963593c-cb1f-4300-a3f6-53d9fe82eee0">
+        
+        <div data-pb-dropzone="contents">
+    </div>
+
+
+        </div>
+    
+
+</div>
+
+</div>
+    
+
+
+                        
+                    
+                </div>
+            </div>
+        
+            <div class="col-xs-11-24 publicationPagesCol2">
+                <div class="contents" data-pb-dropzone="contents1">
+                    
+                    
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="56b9b37f-ff60-46a9-8fa4-a621b84c390f">
+        
+        <div data-pb-dropzone="contents">
+    
+
+
+
+
+
+        <div data-widget-def="literatumSerialDetails" data-widget-id="49e20879-068f-4e62-84df-1b5c824e9ae2"
+        
+        class="denialtitle">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+            <span class="serial-item serialDetailsIssn">
+                    Long Short-Term Memory
+            </span>
+        
+
+
+
+
+
+
+
+    
+
+
+
+
+</div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="0ba828ef-422f-4720-9f87-4389fa685fd8">
+        
+        <style>.denialtitle{font-size:2em;font-weight:bold;}</style>
+
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="accessDenialWidget" data-widget-id="f0b4a54a-78b4-4bf3-a32a-a27149e41f0d">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</br>
+
+    <div class="publicationContentAuthors"><div class="hlFld-ContribAuthor js__articleAuthorContainer" data-max-authors="5" data-authorname-selector=".contribDegrees" data-author-container-selector=".NLM_contrib-group"><div class="authors"><span class="contribDegrees contrib"><a class="entryAuthor" href="/author/Hochreiter%2C+Sepp"> Sepp Hochreiter</a> and </span><span class="contribDegrees contrib"><a class="entryAuthor" href="/author/Schmidhuber%2C+J%C3%BCrgen"> Jürgen Schmidhuber</a></span></div></div></div>
+
+
+<div class="responsiveAccessDenialDropZone1" data-pb-dropzone="responsiveAccessDenialDropZone1">
+    
+        
+            
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="8509fa2b-2ea0-4147-981f-67df9e863a4e">
+        
+        <div>
+	<br>
+	<span class="articleInfo">Posted Online March 13, 2006</span><br>
+	<span class="articleInfo"><a href="https://doi.org/10.1162/neco.1997.9.8.1735">https://doi.org/10.1162/neco.1997.9.8.1735</a></span>
+	<br>
+	<p class="articleInfo js-copyright-statement"></p>
+	<h3 class="journalTitle">Neural Computation</h3>
+
+
+	
+		
+			
+				<span class="articleVolume">Volume 9 
+			
+		
+		
+	
+	
+		
+		 | Issue 8 |
+		 		
+	
+	
+	
+		November 15, 1997
+	
+
+	</span><br>
+	<span class="pageRange">p.1735-1780<span>
+</div>
+
+        </div>
+    
+
+
+        
+    
+</div>
+
+<div class="res-publication-content">
+<div class="tabs tabs-widget publication-tabs " role="tabpanel">
+    
+
+    
+        <div class="ecommAbs ja">
+            <article class="article">
+                
+
+
+
+
+
+
+
+
+<div class="tabs tabs-widget">
+    
+        
+            
+
+
+
+
+
+
+<ul class="tab-nav" role="tablist">
+    
+
+
+
+
+
+    
+        <li role="tab">
+            <a href="/doi/abs/10.1162/neco.1997.9.8.1735" class="show-abstract">
+                
+                        
+                                Abstract
+                            
+                    
+            </a>
+        </li>
+    
+
+    
+    
+
+    
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+    
+    
+    
+    
+
+</ul>
+        
+        
+        
+        <div class="tab-content ">
+            <a id="top-content-scroll"></a>
+            <div class="tab tab-pane active" id="tab-html-content">
+                <article class="article">
+                    
+                            <!-- abstract content --><div class="hlFld-Abstract"><a name="abstract" class="scroll-offset"></a><div class="sectionInfo abstractSectionHeading"><div class="sectionHeading">Abstract</div></div><div class="abstractSection abstractInFull"> <p>Learning to store information over extended time intervals by recurrent backpropagation takes a very long time, mostly because of insufficient, decaying error backflow. We briefly review Hochreiter's (1991) analysis of this problem, then address it by introducing a novel, efficient, gradient based method called long short-term memory (LSTM). Truncating the gradient where this does not do harm, LSTM can learn to bridge minimal time lags in excess of 1000 discrete-time steps by enforcing constant error flow through constant error carousels within special units. Multiplicative gate units learn to open and close access to the constant error flow. LSTM is local in space and time; its computational complexity per time step and weight is <i>O</i>. 1. Our experiments with artificial data involve local, distributed, real-valued, and noisy pattern representations. In comparisons with real-time recurrent learning, back propagation through time, recurrent cascade correlation, Elman nets, and neural sequence chunking, LSTM leads to many more successful runs, and learns much faster. LSTM also solves complex, artificial long-time-lag tasks that have never been solved by previous recurrent network algorithms.</p> </div></div><!-- /abstract content --><span class="copyright-statement-info hidden">© 1997 Massachusetts Institute of Technology</span><div class="response"><div class="sub-article-title"></div></div>
+                        
+                    
+                </article>
+            </div>
+            <div class="authors-content" id="authors-content">
+        
+</div>
+            
+            
+
+        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+</div>
+            </article>
+        </div>
+    
+<div class="purchaseArea">
+    <h2>Access content</h2>
+    <span class="purchaseDescription">To read the full-text, please, use one of the options below to sign in or purchase access</span>
+
+    <ul>
+        
+            <li>
+                <a href="#" class="expand-link ">Personal login</a>
+                <div class="content hidden">
+                    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="login-form">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <div class="social-icons">
+        
+        
+            <a href="/action/oauth/linkedin?start=1&amp;redirectUri=%2Fdoi%2Fpdfplus%2F10.1162%2Fneco.1997.9.8.1735" id="linkedInLogin" title="Use your LinkedIn credentials to sign in on this site">
+                <span class="icon icon-linkedin2" aria-label="login with LinkedIn"></span>
+            </a>
+        
+        
+            <a href="/action/oauth/facebook?start=1&amp;redirectUri=%2Fdoi%2Fpdfplus%2F10.1162%2Fneco.1997.9.8.1735" id="facebookLogin" title="Use your Facebook credentials to sign in on this site">
+                <span class="icon icon-facebook2" aria-label="login with Facebook"></span>
+            </a>
+        
+        
+        
+            <a href="/action/oauth/twitter?start=1&amp;redirectUri=%2Fdoi%2Fpdfplus%2F10.1162%2Fneco.1997.9.8.1735" id="twitterLogin" title="Use your Twitter credentials to sign in on this site">
+                <span class="icon icon-twitter2" aria-label="login with Twitter"></span>
+            </a>
+        
+        
+        <hr class="socialHr"/>
+    </div>
+
+    
+    <form action="/action/doLogin" method="post"><input type="hidden" name="id" value="f0b4a54a-78b4-4bf3-a32a-a27149e41f0d-login-10001606" />
+        
+
+
+
+
+<input type="hidden" name="redirectUri" value="/doi/pdfplus/10.1162/neco.1997.9.8.1735" />
+        
+            <input type="hidden" name="popup" value="true" />
+        
+        
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        
+    
+    
+    
+        
+    
+    <div class="input-group">
+        <div class="label ">
+
+            
+                    <label for="login">Username</label>
+                
+            
+        </div>
+        
+        
+        <input id="login" class="login" type="text" name="login" value="" size="15" placeholder="" />
+        
+                    <div class="actions">
+                        
+                            <a href="/action/requestUsername" class="link show-request-username">Forgot username?</a>
+                        
+                    </div>
+                
+    </div>
+
+                
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    <div class="input-group">
+        <div class="label ">
+            <label for="password">Password</label>
+            
+        </div>
+        
+        
+        <input id="password" class="password" type="password" name="password" value="" autocomplete="off" placeholder="" />
+        <span class="password-eye-icon icon-eye hidden"></span>
+        
+                    <div class="actions">
+                        <a href="/action/requestResetPassword" class="link show-request-reset-password pop-up">Forgot password?</a>
+                    </div>
+                
+    </div>
+
+            
+
+        <div class="remember">
+            <div class="keepMeLogin">
+                <span class="label">Keep me logged in</span>
+            </div>
+            <div class="switch small-switch">
+                
+                        <input id="f0b4a54a-78b4-4bf3-a32a-a27149e41f0d-remember" class="cmn-toggle cmn-toggle-round-flat" type="checkbox" name="remember" value="true" />
+                    
+                <label class="tgl-btn" for="f0b4a54a-78b4-4bf3-a32a-a27149e41f0d-remember"></label>
+            </div>
+        </div>
+        
+                <div class="submit">
+                    <input class="button submit primary" type="submit" name="loginSubmit" value="Login" />
+                </div></form>
+</div>
+                </div>
+            </li>
+        
+        
+        
+        
+        
+        
+            <li>
+                <div class="purchaseAccessDropZone" data-pb-dropzone="purchaseAccessDropZone">
+                    
+                        
+
+
+
+
+
+        <div data-widget-def="eCommercePurchaseAccessWidget" data-widget-id="e0be6f52-3e2d-4ca4-b7c2-b0fd7e32b50b">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+    <div class="eCommercePurchaseAccessWidgetContainer ">
+        <span class="purchaseAreaList_expand" id="purchaseLink">Purchase</span>
+        
+                <a data-bind="saveItem" data-doi="10.1162/neco.1997.9.8.1735" class="save-for-later-link" href="/action/saveItem?doi=10.1162/neco.1997.9.8.1735">
+                    Save for later
+                </a>
+                <a class="saved-go-cart hidden"  href="/action/showCart?FlowID=2"><span class="icon-cart-icon-material"></span> Item saved, go to cart </a>
+            
+        <div class="purchaseAreaList_expanded" id="#purchasePanel">
+            
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="purchase-options-container">
+    
+
+    
+        <div class="savedItem-info hidden">
+            <p></p>
+        </div>
+    
+
+    
+        <div class="add-journal-to-cart">
+                
+                    
+                    
+                            <ul class="purchase-items-list">
+                                <li class="purchase-items">
+                                    <div class="add-journal-to-cart">
+                                        
+                                            <header>
+                                                <a data-bind="addItem" data-key="PPV-NECO-ELECTRONIC-USD-10.1162/NECO.1997.9.8.1735-67" data-entity="PPV-NECO-ELECTRONIC-USD-10.1162/NECO.1997.9.8.1735-67" class="purchase-item add-article-to-cart" href="/action/addToCart?id=PPV-NECO-ELECTRONIC-USD-10.1162/NECO.1997.9.8.1735-67">
+                                                <span class="add-article-to-cart__title title">
+                                                    
+                                                            Single Article from "Neural Computation"
+                                                        
+                                                    
+                                                        
+
+
+
+
+
+
+
+<div class="usageRight">
+    
+    
+        
+        
+
+    
+        
+        
+
+    
+        
+        
+
+    
+        
+        
+
+    
+</div>
+                                                    
+                                                </span>
+                                                    <span class="add-article-to-cart__price price">$15.00</span>
+                                                    <span class="add-to-cart-msg">
+                                                    <span class="icon-cart-icon-material"></span>
+                                                    Add to cart
+                                                </span>
+                                                </a>
+                                                <div class="purchaseMessage hidden info" data-item="PPV-NECO-ELECTRONIC-USD-10.1162/NECO.1997.9.8.1735-67">
+                                                    <p></p>
+                                                </div>
+                                            </header>
+                                        
+                                        <div class="addedMessage hidden" data-item="PPV-NECO-ELECTRONIC-USD-10.1162/NECO.1997.9.8.1735-67">
+                                            <span class="article-title">
+                                                <span class="article-title-content">
+
+                                                    <span class="icon-check_circle"></span>
+                                                    <span class="text">
+                                                        
+                                                                Single Article from "Neural Computation"
+                                                            
+                                                    </span>
+                                                    
+                                                        
+
+
+
+
+
+
+
+<div class="usageRight">
+    
+    
+        
+        
+
+    
+        
+        
+
+    
+        
+        
+
+    
+        
+        
+
+    
+</div>
+                                                                                                    </span>
+                                                <a href="/action/showCart?FlowID=2" class="show-cart-link">
+                                                    <span class="text">
+                                                        Checkout
+                                                    </span>
+                                                </a>
+                                            </span>
+                                        </div>
+                                    </div>
+                                </li>
+                            </ul>
+                        
+                
+        </div>
+        
+
+    
+</div>
+        </div>
+    </div>
+
+
+
+        </div>
+    
+
+
+                    
+                </div>
+            </li>
+        
+        
+        
+        
+            <li>
+                <a href="/action/showAccessTokenPage" class="expand-link">Claim</a>
+                <div class="content hidden">
+                    <ul class="claim-options">
+                        
+                        
+                            
+                            <li>
+                                
+                                <div class="content " aria-labelledby="claimPrepaidLink" id="claimPrepaid">
+                                    
+
+
+
+
+
+
+
+
+<form action="/action/sessiontoken" method="post"><input type="hidden" name="id" value="f0b4a54a-78b4-4bf3-a32a-a27149e41f0d-sessionToken-10001606" />
+    
+        <input type="hidden" name="redirectUri" value="/doi/pdfplus/10.1162/neco.1997.9.8.1735" />
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+        
+    
+    
+    
+        
+    
+    <div class="input-group">
+        <div class="label ">
+
+            
+                    <label for="tokenAccess">Claim Number</label>
+                
+            
+        </div>
+        
+        
+        <input id="tokenAccess" class="token" type="text" name="tokenAccess" value="" size="15" placeholder="" />
+        
+    </div>
+
+    <input class="submit button primary" type="submit" name="submit" value="Submit" disabled="disabled" /></form>
+                                </div>
+                            </li>
+                        
+                    </ul>
+                </div>
+            </li>
+        
+        
+    </ul>
+</div>
+</div>
+</div>
+        </div>
+    
+
+</div>
+
+
+        </div>
+    
+
+
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="a82a5f4a-6240-4a53-a833-3fc6ee305f08"
+        
+        class="mostCitedReadContainer">
+        
+        <div data-pb-dropzone="contents">
+    </div>
+
+</div>
+    
+
+
+                        
+                    
+                </div>
+            </div>
+        
+            <div class="col-xs-7-24 publicationPagesCol3">
+                <div class="contents" data-pb-dropzone="contents2">
+                    
+                    
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="layout-frame" data-widget-id="76fd87d5-501a-45c2-b1d5-ac91ac384a1d">
+        
+        <div data-pb-dropzone="contents">
+    
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="4b27a3ed-2d9c-4265-adef-b4a457755a9b">
+        
+        	<div class="orderSubscribeContainer upperRightButtonContainer">	
+
+		<a class="upperRightButton" href="https://mitpressjournals.mit.edu/shop/journal/?issn=0899-7667">
+ 
+			<img src="/pb-assets/images/add-to-cart-1488498861687.svg">
+			Order/Subscribe
+			<img src="/pb-assets/images/arrow-button-1488499533633.svg">
+		</a>
+	</div>
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="3b8498f9-f885-40c5-bc47-49a98b3d98ef">
+        
+        	<div class="readingOptionsContainer upperRightButtonContainer">	
+		<a class="upperRightButton" href="#" onclick="panelToggle('readingOptionsMenu'); return false;">
+			<img src="/pb-assets/images/preview-1489555631417.svg">
+			Download Options
+			<img class="imgToggle" src="/pb-assets/images/arrow-button-1488499533633.svg">
+		</a>
+	</div>
+	
+	<div id="readingOptionsMenu">
+	
+
+
+
+
+
+        <div data-widget-def="literatumPublicationContentWidget" data-widget-id="23daaeb5-cb0a-43a3-bb18-11654138c337">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+<script type="text/javascript">
+<!-- // hide it from old browsers
+
+var anyDbId = -1;
+var sideParts = {
+    citation: "<tr><td class=\"black9pt\" width=\"15\" valign=\"top\">&nbsp;&bull;&nbsp;<\/td><td class=\"black9pt\" valign=\"top\"><a href=\"javascript:newWindow('{$linkoutUrl}')\">{$display}<\/a><\/td><\/tr>",
+    citingIsi: "<tr><td class=\"black9pt\" width=\"15\" valign=\"top\">&nbsp;&bull;&nbsp;<\/td><td class=\"black9pt\" valign=\"top\">Search for citing articles in:<br/>&nbsp;<a href=\"javascript:newWindow('/servlet/linkout?suffix=s0&dbid=128&doi={$doi}&url={$urlEnc}')\">ISI Web of Science<\/a> ({$citNum} or more)<\/a><\/td><\/tr>",
+    citingCrossref: "<tr><td class=\"black9pt\" width=\"15\" valign=\"top\">&nbsp;&bull;&nbsp;<\/td><td class=\"black9pt\" valign=\"top\"><a href=\"{$url}\">Citing articles in Crossref<\/a><\/td><\/tr>",
+    quicksearch: "<option value=\"{$value}\">{$display}<\/option>",
+    related: ", <a href=\"javascript:newWindow('{$linkoutUrl}')\">{$display}<\/a>"
+};
+
+function genSide(part, dbid, linkoutUrl, display, doi, url, citNum, value) {
+    if (dbid != anyDbId && (562949953421311 & dbid) == 0) return;
+    var content = sideParts[part];
+    if (linkoutUrl) { content = content.replace(/{\$linkoutUrl}/g, linkoutUrl); }
+    if (display) { content = content.replace(/{\$display}/g, display); }
+    if (doi) { content = content.replace(/{\$doi}/g, doi); }
+    if (url) {
+        content = content.replace(/{\$url}/g, url);
+        content = content.replace(/{\$urlEnc}/g, encodeURIComponent(encodeURIComponent(url)));
+    }
+    if (citNum) { content = content.replace(/{\$citNum}/g, citNum); }
+    if (value) { content = content.replace(/{\$value}/g, value); }
+    document.write(content);
+}
+
+function hasSfxLinks() {
+	return false;
+}
+
+
+function genSfxLinks(id, url, doi) {
+    if (! doi) { doi = ""; }
+
+}
+function popSfxLink(prefix, id, url, doi) {
+    if (doi) {
+        url += "&id=doi:"+doi;
+    } else {
+        doi = "10.1162%2Fneco.1997.9.8.1735";
+    }
+    var redirect = prefix + encodeURIComponent("?sid=literatum:mit&genre=article"+url);
+    var href = "/servlet/linkout?suffix="+id+"&dbid=16384&doi="+doi+"&url=" + encodeURIComponent(redirect);
+    return newWindow(href);
+}
+
+var sfxRefDisplay = {
+64:"ADS",
+32:"CAS",
+8192:"CIS",
+256:"CSA",
+16:"Crossref",
+128:"ISI",
+4096:"JSTOR",
+8:"Medline",
+1099511627776: "Ichushi",
+17592186044416: "Medical Online",
+8796093022208: "J-Stage",
+2199023255552: "Medical Finder",
+4398046511104: "Pier Online"
+};
+
+window.onload=disableRefLinkWrite ;
+
+function genRefLink(dbid, id, key, textOfLink) {
+    if (562949953421311 & dbid != 0) {
+        if (typeof textOfLink === "undefined") {
+            if (sfxRefDisplay[dbid].substring(0,1) == "[") {
+                textOfLink = sfxRefDisplay[dbid];
+            } else {
+                textOfLink = "["+sfxRefDisplay[dbid]+"]";
+            }
+            // ToDo: move '[' and ']' to sfxRefDisplay (UPDATE: finish changing sfxRefDisplays and remove this branch)
+        }
+        else{ textOfLink = unescape(textOfLink)};
+
+        if(document.disableRefLinkWrite == null){
+            document.write("<a class='ref' href=\"javascript:popRefLink("+dbid+",'"+id+"','"+key+"')\">"+textOfLink+"<\/a>");
+        }
+    }
+}
+
+function disableRefLinkWrite () {
+    document.disableRefLinkWrite = true;
+}
+
+function popRefLink(dbid, id, key) {
+    var redirect = "/servlet/linkout?suffix=" + id + "&dbid=" + dbid + "&doi=10.1162%2Fneco.1997.9.8.1735&key=" + key;
+    return newWindow(redirect);
+}
+function popRefFull(rid, citart, ptype, area) {
+    return popRefImplFull(rid, citart, ptype, area, 600, 500);
+}
+function popRefImplFull(rid, citart, ptype, area, width, height) {
+    var doi = "10.1162%2Fneco.1997.9.8.1735";
+    if (! ptype) { ptype = ""; }
+    var pt = rid.charAt(0) + "neco1997981735" + ptype;
+    return popupFull(rid, doi, pt, area, width, height);
+}
+function popRef(rid, citart, ptype, area) {
+    return popRefImpl(rid, citart, ptype, area, 600, 500);
+}
+function popRef2(rid, citart, ptype, area) {
+    return popRefImpl(rid, citart, ptype, area, 400, 100);
+}
+function popRefImpl(rid, citart, ptype, area, width, height) {
+    var doi = "10.1162%2Fneco.1997.9.8.1735";
+    if (! citart) { citart = "citart1"; }
+    if (! ptype) { ptype = ""; }
+    var pt = rid.charAt(0) + "neco1997981735" + ptype;
+    return popupRef(citart, rid, doi, pt, area, width, height);
+}
+
+
+
+function genCitingCrossref() {
+}
+
+var citLinkDisplay = {
+    
+    0:"SYSTEM",
+4:"SYSTEM",
+20:"SYSTEM",
+64:"ADS",
+32:"CAS",
+8192:"CIS",
+256:"CSA",
+16:"Crossref",
+128:"ISI",
+4096:"JSTOR",
+8:"MEDLINE"
+};
+var feeBasedMask = 4480;
+
+function genCitLink(dbid, suffix, key) {
+    if (dbid != anyDbId && (feeBasedMask & dbid) != 0 && (562949953421311 & dbid) == 0) return;
+
+    var param = "/servlet/linkout?suffix=" + suffix + "&dbid=" + dbid + "&doi=10.1162%2Fneco.1997.9.8.1735&key=" + key;
+    var display = citLinkDisplay[dbid];
+    var img = "/templates/jsp/_style2/_mit/images/" + display + "_btn.gif";
+
+
+
+    document.write("<a class='ref' href='javascript:newWindow(\"" + param + "\")'>");
+    document.write("<" + "img src='"+img+"' width='85' height='20' align='BOTTOM' alt='"+display+" Abstract' border='0'/>");
+    document.write("<\/a>");
+}
+// stop hiding -->
+</script>
+<script type="text/javascript" src="/swfobject.js"></script>
+<script type="text/javascript">
+function addFlashMovie(id, flv) {
+    var flashvars = {file: flv ,type: 'flv'};
+    var params = {allowfullscreen :true};
+    var attributes = {};
+    swfobject.embedSWF('/flvplayer.swf', id, "352", "288", "7.0.0", false, flashvars, params, attributes);
+}
+
+function addFlashMovie(id, flv, image) {
+    var flashvars = {file: flv ,type: 'flv', image: image};
+    var params = {allowfullscreen :true};
+    var attributes = {};
+    swfobject.embedSWF('/flvplayer.swf', id, "352", "288", "7.0.0", false, flashvars, params, attributes);
+}
+</script>
+
+
+
+
+
+
+
+
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+
+
+
+
+
+
+        
+    
+
+
+<div class="articleMeta ja">
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div class="hlFld-Title"> 
+    <div class="publicationContentTitle">
+        
+
+
+
+
+        
+        
+                <h1 class = "chaptertitle">
+                    
+                    
+                        Long Short-Term Memory
+                    
+                    
+                </h1>
+            
+
+
+    </div>
+
+    
+    
+</div>
+
+<div class="copyrightStatement">
+    
+</div>
+
+<div class="articleMetaDrop publicationContentDropZone" data-pb-dropzone="articleMetaDropZone">
+    
+</div>
+
+
+    <div class="publicationContentAuthors" style="margin-top: 10px"><div class="hlFld-ContribAuthor js__articleAuthorContainer" data-max-authors="5" data-authorname-selector=".contribDegrees" data-author-container-selector=".NLM_contrib-group"><div class="authors"><span class="contribDegrees contrib"><a class="entryAuthor" href="/author/Hochreiter%2C+Sepp"> Sepp Hochreiter</a> and </span><span class="contribDegrees contrib"><a class="entryAuthor" href="/author/Schmidhuber%2C+J%C3%BCrgen"> Jürgen Schmidhuber</a></span></div></div></div>
+
+
+
+
+    <div class="articleMetaDrop publicationContentDropZone publicationContentDropZone1" data-pb-dropzone="articleMetaDropZone1">
+        
+    </div>
+
+
+
+
+    
+    
+        <div class="publicationContentDoi"><a href="https://doi.org/10.1162/neco.1997.9.8.1735">https://doi.org/10.1162/neco.1997.9.8.1735</a></div>
+    
+
+
+
+
+
+
+
+    <div class="publicationContentReceivedDate dates">
+
+
+
+
+
+
+Received: August 28, 1995</div>
+
+
+
+    <div class="publicationContentAcceptedDate dates">
+
+
+
+
+
+
+Accepted: February 24, 1997</div>
+
+
+
+
+    <div class="publicationContentEpubDate dates">
+        Published Online: March 13, 2006
+    </div>
+
+
+<div class="copyrightline">
+    
+    
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+</div>
+
+
+    <div class="publication-tabs ja publication-tabs-dropdown">
+        
+
+
+
+
+
+
+
+
+<div class="tabs tabs-widget">
+    
+        
+            
+
+
+
+
+
+
+<ul class="tab-nav" role="tablist">
+    
+
+
+
+
+
+    
+
+    
+    
+
+    
+        <li role="tab">
+    <div class="author"><a href="#authors-content" class="show-authors lazy-tabs-widget">Authors</a></div>
+</li>
+    
+
+    
+
+    
+
+
+
+
+
+    
+    
+    
+
+    
+        
+                
+            
+        <li role="tab">
+            <a href="/doi/pdf/10.1162/neco.1997.9.8.1735" class="show-pdf" target="_self">
+                
+                        PDF
+                    
+            </a>
+        </li>
+    
+    
+        
+                
+            
+        <li role="tab">
+            <a href="/doi/pdfplus/10.1162/neco.1997.9.8.1735" target="_self">
+                
+                        PDF Plus
+                    
+            </a>
+        </li>
+    
+    
+    
+    
+
+</ul>
+        
+        
+        
+        <div class="tab-content ">
+            <a id="top-content-scroll"></a>
+            <div class="tab tab-pane active" id="tab-html-content">
+                <article class="article">
+                    
+                            <!-- abstract content --><div class="hlFld-Abstract"><a name="abstract" class="scroll-offset"></a><div class="sectionInfo abstractSectionHeading"><div class="sectionHeading">Abstract</div></div><div class="abstractSection abstractInFull"> <p>Learning to store information over extended time intervals by recurrent backpropagation takes a very long time, mostly because of insufficient, decaying error backflow. We briefly review Hochreiter's (1991) analysis of this problem, then address it by introducing a novel, efficient, gradient based method called long short-term memory (LSTM). Truncating the gradient where this does not do harm, LSTM can learn to bridge minimal time lags in excess of 1000 discrete-time steps by enforcing constant error flow through constant error carousels within special units. Multiplicative gate units learn to open and close access to the constant error flow. LSTM is local in space and time; its computational complexity per time step and weight is <i>O</i>. 1. Our experiments with artificial data involve local, distributed, real-valued, and noisy pattern representations. In comparisons with real-time recurrent learning, back propagation through time, recurrent cascade correlation, Elman nets, and neural sequence chunking, LSTM leads to many more successful runs, and learns much faster. LSTM also solves complex, artificial long-time-lag tasks that have never been solved by previous recurrent network algorithms.</p> </div></div><!-- /abstract content --><span class="copyright-statement-info hidden">© 1997 Massachusetts Institute of Technology</span><div class="response"><div class="sub-article-title"></div></div>
+                        
+                    
+                </article>
+            </div>
+            <div class="authors-content" id="authors-content">
+         <div class="authorName"><strong> Sepp Hochreiter </strong></div> <div class="authorAffiliation">Fakultät für Informatik, Technische Universität München, 80290 München, Germany</div>  <div class="authorName"><strong> Jürgen Schmidhuber </strong></div> <div class="authorAffiliation">IDSIA, Corso Elvezia 36, 6900 Lugano, Switzerland</div> <div class="authorNotes"></div>
+</div>
+            
+            
+
+        </div>
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+    
+</div>
+    </div>
+<input id="viewLargeImageCaption" type="hidden" value="View Large Image" />
+        </div>
+    
+
+
+	</div>
+
+        </div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="02255ea5-d657-44d4-be3e-bdb066e135da">
+        
+        	<div class="journalHomeRightUpper">
+		<div class="journalHomeRightContainer">
+			<a class="journalFavorites" href="/personalize/addFavoritePublication?doi=10.1162/neco.1997.9.8.1735">Favorite
+				<img src="/pb-assets/images/favorite-1488499760477.svg">
+			</a>
+		</div>
+		<div class="journalHomeRightContainer">
+			<a class="signAlerts" href="/action/addCitationAlert?doi=10.1162/neco.1997.9.8.1735&referrer=10.1162/neco.1997.9.8.1735">
+				<div class="signAlertsText"> 
+					Track Citations
+					<img src="/pb-assets/images/notify-me-alert-1488499750013.svg">
+				</div>
+			</a>
+		</div>
+	</div>
+
+
+	<div class="journalHomeRightLower">
+		<div class="journalHomeRightContainer">
+			<a class="articleDownloadCitation" href="/action/showCitFormats?doi=10.1162/neco.1997.9.8.1735">Download Citation
+				<img src="/pb-assets/images/download2-1490507427013.svg">
+			</a>
+		</div>
+		<div class="journalHomeRightContainer">
+			<a class="journalRSS" href="/action/showFeed?jc=neco&type=etoc&feed=rss">RSS TOC
+				<img src="/pb-assets/images/rss-1488924357683.svg">
+			</a>
+		</div>
+	</div>
+	<div class="journalHomeRightLower">
+		<div class="journalHomeRightContainer articlePermissionsContainer">
+			
+
+
+
+
+
+        <div data-widget-def="literatumArticleToolsWidget" data-widget-id="5a4e4117-b5fa-4813-bdeb-a2a2dbaedf43"
+        
+        class="articleRequestPermission">
+        
+        
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+<div class="articleTools">
+    
+            
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<ul class="linkList blockLinks separators centered">
+    
+    
+    
+    
+    
+    
+    
+    
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+</ul>
+        
+</div>
+</div>
+    
+
+
+		</div>
+		<div class="journalHomeRightContainer">
+			<a class="journalRSSCitation" href="/action/showFeed?jc=neco&doi=10.1162/neco.1997.9.8.1735&type=citrack&feed=rss">RSS Citation
+				<img src="/pb-assets/images/rss-1488924357683.svg">
+			</a>
+		</div>
+	</div>
+	
+<script type="text/javascript">
+$(document).ready(function () {
+if ($(".articleTools .rightsLink").length) {
+	$("#pb-page-content .journalHomeRightContainer.articlePermissionsContainer").css("display", "inherit");
+}
+});
+</script>
+        </div>
+    
+
+</div>
+
+
+        </div>
+    
+
+
+                        
+                            
+
+
+
+
+
+        <div data-widget-def="general-bookmark-share" data-widget-id="e446b2db-d4ff-45a6-9feb-f6842caebcd4"
+        
+        class="shareThisIcons">
+        
+        <!-- AddThis Button BEGIN -->
+<div class="addthis_toolbox addthis_default_style addthis_20x20_style">
+        <a class="addthis_button_facebook"></a>
+        <a class="addthis_button_twitter"></a>
+        <a class="addthis_button_linkedin"></a>
+        <a class="addthis_button_email"></a>
+        
+    <a class="addthis_button_compact"></a>
+</div>
+<script type="text/javascript">
+    var script = document.createElement('script');
+    script.type='text/javascript';
+    script.src='//s7.addthis.com/js/250/addthis_widget.js#pubid=ra-531f5e907ce0d5b8';
+    script.async = true;
+    $('head').append(script)
+</script>
+<!-- AddThis Button END --></div>
+    
+
+
+                        
+                    
+                </div>
+            </div>
+        
+    </div>
+</div></div>
+    
+
+</div>
+
+</div>
+    
+
+</div>
+
+</div>
+    
+
+    </div>
+</div><!--end pagefulltext--></div>
+    
+
+
+
+
+
+
+
+        <div data-widget-def="pageFooter" data-widget-id="f783a35f-ae9a-4bb0-b25c-f07aa2be31a4">
+        
+        <footer class="page-footer">
+    <div data-pb-dropzone="main">
+    
+
+
+
+
+
+        <div data-widget-def="general-html-asset" data-widget-id="95aa5741-0eda-4200-8c36-b03fcabb9c48">
+        
+        <div class='footer-layout fix-width'>
+	<div class='logo'>
+		
+
+
+
+
+
+        <div data-widget-def="general-image" data-widget-id="438f7d9a-203a-4824-8a31-e0d9ac946d77">
+        
+        <a href="/"
+>
+<img src="/pb-assets/images/logos/mitpress-logo-main-1483476130433.svg"
+/>
+</a>
+        </div>
+    
+
+
+	</div>
+	<div class='footer-links'>
+		<div class='row-one'>
+			
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="57ec9634-fdbb-496e-961b-3298c136aa4b">
+        
+        <ul>
+    <li>
+        <a href="http://www.mitpressjournals.org/action/showPublications">Journals</a>
+        <a href="http://mitpress.mit.edu">Books</a>
+    </li>
+    <li>
+        <a href="/terms">Terms &amp; Conditions</a>
+    </li>
+    <li>
+        <a href="/privacy">Privacy Statement</a>
+    </li>
+    <li>
+        <a href="/contact_info">Contact Us</a>
+    </li>
+</ul>
+
+
+        </div>
+    
+
+
+		</div>
+		<div class='row-two'>
+			
+
+
+
+
+
+        <div data-widget-def="general-html" data-widget-id="662bd21e-933a-4039-bcff-e442f23f8681">
+        
+        <ul>
+    <li>
+        <p class="footer-header">US</p>
+        <ul>
+            <li>
+                One Rogers Street
+                Cambridge MA 02142-1209
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p class="footer-header">UK</p>
+        <ul>
+            <li>
+                Suite 2, 1 Duchess Street
+                London, W1W 6AN, UK
+            </li>
+        </ul>
+    </li>
+    <li>
+        <p class="footer-header">Connect</p>
+    	<ul class='social'>
+    	    <li  style="display: inline;">
+                <a href="https://www.facebook.com/mitpress"><img src="/pb-assets/images/social-icons/facebook-1487700850557.svg" width="18" height="18" title="Facebook" alt="Facebook"></a>
+    	    </li>
+    	    <li  style="display: inline;">
+                <a href="http://www.twitter.com/mitpress"><img src="/pb-assets/images/social-icons/twitter-1487700851690.svg" width="18" height="18" title="Twitter" alt="Twitter"></a>
+            </li>
+            <li  style="display: inline;">
+                <a href="https://www.pinterest.com/mitpress/"><img src="/pb-assets/images/social-icons/pinterest-1487700851413.svg" width="18" height="18" title="Pinterest" alt="Pinterest"></a>
+            </li>
+            <li  style="display: inline;">
+                <a href="https://www.instagram.com/mitpress/"><img src="/pb-assets/images/social-icons/instagram-1487700850833.svg" width="18" height="18" title="Instagram" alt="Instagram"></a>
+            </li>
+            <li  style="display: inline;">
+                <a href="https://www.youtube.com/channel/UCeH0hmlPjGW2DN0Ntmd0FCQ"><img src="/pb-assets/images/social-icons/you-tube-1487700851720.svg" width="18" height="18" title="YouTube" alt="YouTube"></a>
+            </li>
+    	</ul>
+    </li>
+ <li class="last-col-footer">
+  <ul>
+        <li>
+            © 2020 The MIT Press
+        </li>
+        <li>
+            Technology Partner:<a href="https://www.atypon.com/"> Atypon Systems, Inc.</a>
+        </li>        <li>
+           <a href="https://www.crossref.org/">CrossRef Member</a>
+        </li>
+        <li>
+            <a href="https://www.projectcounter.org/">COUNTER Member</a>
+        </li>
+        <li>
+            The MIT Press colophon is registered in the U.S. Patent and Trademark Office.
+        </li>
+        <li>
+            <a href="/help/main">Site Help</a>
+        </li>
+  </ul>
+</li>
+</ul>
+
+
+        </div>
+    
+
+
+		</div>
+	</div>
+</div>
+        </div>
+    
+
+    </div>
+</footer>
+        </div>
+    
+
+        </div>
+    </div>
+<script src="//hermes-src.redlink.com/agent/hermes.js?userRHKey=77E7Rb4j58" type="text/javascript" async></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

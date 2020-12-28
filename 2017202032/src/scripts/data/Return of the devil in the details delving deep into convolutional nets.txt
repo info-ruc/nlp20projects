@@ -1,0 +1,2122 @@
+1
+
+Return of the Devil in the Details:
+
+Delving Deep into Convolutional Nets
+Ken Chatﬁeld, Karen Simonyan, Andrea Vedaldi, and Andrew Zisserman
+
+Visual Geometry Group, Department of Engineering Science, University of Oxford
+
+{ken,karen,vedaldi,az}@robots.ox.ac.uk
+
+4
+1
+0
+2
+
+ 
+
+v
+o
+N
+5
+
+ 
+
+ 
+ 
+]
+
+V
+C
+.
+s
+c
+[
+ 
+ 
+
+4
+v
+1
+3
+5
+3
+
+.
+
+5
+0
+4
+1
+:
+v
+i
+X
+r
+a
+
+Abstract—The latest generation of Convolutional Neural Networks (CNN) have achieved impressive results in chal-
+lenging benchmarks on image recognition and object detection, signiﬁcantly raising the interest of the community in
+these methods. Nevertheless, it is still unclear how different CNN methods compare with each other and with previous
+state-of-the-art shallow representations such as the Bag-of-Visual-Words and the Improved Fisher Vector. This paper
+conducts a rigorous evaluation of these new techniques, exploring different deep architectures and comparing them on
+a common ground, identifying and disclosing important implementation details. We identify several useful properties
+of CNN-based representations, including the fact that the dimensionality of the CNN output layer can be reduced
+signiﬁcantly without having an adverse effect on performance. We also identify aspects of deep and shallow methods
+that can be successfully shared. In particular, we show that the data augmentation techniques commonly applied to
+CNN-based methods can also be applied to shallow methods, and result in an analogous performance boost. Source
+code and models to reproduce the experiments in the paper is made publicly available.
+
+!
+
+1 INTRODUCTION
+
+to the (Improved) Fisher Vector (IFV)
+
+P ERHAPS the single most
+
+important design
+choice in current state-of-the-art image classiﬁ-
+cation and object recognition systems is the choice
+of visual features, or image representation. In fact,
+most of the quantitative improvements to image
+understanding obtained in the past dozen years can
+be ascribed to the introduction of improved repre-
+sentations, from the Bag-of-Visual-Words (BoVW) [1],
+[2]
+[3]. A
+common characteristic of these methods is that
+they are largely handcrafted. They are also relatively
+simple, comprising dense sampling of local image
+patches, describing them by means of visual de-
+scriptors such as SIFT, encoding them into a high-
+dimensional representation, and then pooling over
+the image. Recently, these handcrafted approaches
+have been substantially outperformed by the in-
+troduction of the latest generation of Convolutional
+Neural Networks (CNNs) [4] to the computer vision
+ﬁeld. These networks have a substantially more
+sophisticated structure than standard representa-
+tions, comprising several layers of non-linear fea-
+ture extractors, and are therefore said to be deep
+(in contrast, classical representation will be referred
+to as shallow). Furthermore, while their structure
+
+is handcrafted, they contain a very large number
+of parameters learnt from data. When applied to
+standard image classiﬁcation and object detection
+benchmark datasets such as ImageNet ILSVRC [5]
+and PASCAL VOC [6] such networks have demon-
+strated excellent performance [7], [8], [9], [10], [11],
+signiﬁcantly better than standard image encod-
+ings [12].
+
+Despite these impressive results, it remains un-
+clear how different deep architectures compare to
+each other and to shallow computer vision meth-
+ods such as IFV. Most papers did not test these
+representations extensively on a common ground,
+so a systematic evaluation of the effect of differ-
+ent design and implementation choices remains
+largely missing. As noted in our previous work [12],
+which compared the performance of various shal-
+low visual encodings, the performance of computer
+vision systems depends signiﬁcantly on implementation
+details. For example, state-of-the-art methods such
+as [13] not only involve the use of a CNN, but
+also include other improvements such as the use
+of very large scale datasets, GPU computation, and
+data augmentation (also known as data jittering or
+virtual sampling). These improvements could also
+transfer to shallow representations such as the IFV,
+potentially explaining a part of the performance
+
+2
+
+gap [14].
+
+In this study we analyse and empirically clarify
+these issues, conducting a large set of rigorous
+experiments (Sect. 4), in many ways picking up
+the story where it last ended in [12] with the
+comparison of shallow encoders. We focus on meth-
+ods to construct image representations,
+i.e. encod-
+ing functions φ mapping an image I to a vector
+φ(I) ∈ Rd suitable for analysis with a linear classi-
+ﬁer, such as an SVM. We consider three scenarios
+(Sect. 2, Sect. 3): shallow image representations,
+deep representations pre-trained on outside data,
+and deep representation pre-trained and then ﬁne-
+tuned on the target dataset. As part of our tests,
+we explore generally-applicable best practices that
+are nevertheless more often found in combina-
+tion with CNNs [13] or, alternatively, with shallow
+encoders [12], porting them with mutual beneﬁt.
+These are (Sect. 2): the use of colour information,
+feature normalisation, and, most importantly, the
+use of substantial data augmentation. We also de-
+termine scenario-speciﬁc best-practices, improving
+the ones in [12], [15] and others, including dimen-
+sionality reduction for deep features. Finally, we
+achieve performance competitive with the state
+of the art [16], [17] on PASCAL VOC classiﬁcation
+using less additional training data and signiﬁcantly
+simpler techniques. As in [12], the source code and
+models to reproduce all experiments in this paper
+is available on the project website1.
+
+2 SCENARIOS
+This section introduces the three types of image
+representation φ(I) considered in this paper, de-
+scribing them within the context of three different
+scenarios. Having outlined details speciﬁc to each,
+general methodologies which apply to all three
+scenarios are reviewed, such as data augmentation
+and feature normalisation, together with the linear
+classiﬁer (trained with a standard hinge loss). We
+also specify here the benchmark datasets used in
+the evaluation.
+
+2.1 Scenario 1: Shallow representation (IFV)
+Our reference shallow image representation is the
+IFV [3]. Our choice is motivated by the fact that
+IFV usually outperforms related encoding methods
+such as BoVW, LLC [12], and VLAD [18]. Given an
+image I, the IFV φFV(I) is obtained by extracting
+
+1. http://www.robots.ox.ac.uk/∼vgg/research/deep eval/
+
+a dense collection of patches and corresponding
+local descriptors xi ∈ RD (e.g. SIFT) from the image
+at multiple scales. Each descriptor xi is then soft-
+quantized using a Gaussian Mixture Model with
+K components. First and second order differences
+between each descriptor xi and its Gaussian cluster
+mean µk are accumulated in corresponding blocks
+uk, vk in the vector φFV(I) ∈ R2KD, appropriately
+weighed by the Gaussian soft-assignments and
+covariance, leading to a 2KD-dimensional image
+representation φFV(I) = [u(cid:62)
+K](cid:62). The
+improved version of the Fisher vector involves post-
+processing φFV by computing the signed square-
+root of its scalar components and normalising the
+result to a unit (cid:96)2 norm. The details of this con-
+struction can be found in [3]; here we follow the
+notation of [12].
+
+1 , . . . u(cid:62)
+
+1 , v(cid:62)
+
+K, v(cid:62)
+
+2.2 Scenario 2: Deep representation (CNN) with
+pre-training
+
+Our deep representations are inspired by the suc-
+cess of the CNN of Krizhevsky et al. [13]. As shown
+in [7], [19], the vector of activities φCNN(I) of the
+penultimate layer of a deep CNN, learnt on a large
+dataset such as ImageNet [5], can be used as a pow-
+erful image descriptor applicable to other datasets.
+Numerous CNN architectures that
+improve the
+previous state of the art obtained using shallow
+representations have been proposed, but choosing
+the best one remains an open question. Many are in-
+spired by [13]: DeCAF [7], [11], Caffe [20], Oquab et
+al. [8]. Others use larger networks with a smaller
+stride of the ﬁrst convolutional layer: Zeiler and
+Fergus [19] and OverFeat [10], [9]. Other differences
+include the CNN pre-training protocols. Here we
+adopt a single learning framework and experiment
+with architectures of different complexity exploring
+their performance-speed trade-off.
+
+2.3 Scenario 3: Deep representation (CNN) with
+pre-training and ﬁne-tuning
+
+In Scenario 2 features are trained on one (large)
+dataset and applied to another (usually smaller).
+However, it was demonstrated [11] that ﬁne-tuning
+a pre-trained CNN on the target data can sig-
+niﬁcantly improve the performance. We consider
+this scenario separately from that of Scenario 2, as
+the image features become dataset-speciﬁc after the
+ﬁne-tuning.
+
+2.4 Commonalities
+We now turn to what is in common across the
+scenarios.
+
+2.4.1 Data augmentation
+Data augmentation is a method applicable to shal-
+low and deep representations, but that has been
+so far mostly applied to the latter [13], [19]. By
+augmentation we mean perturbing an image I by
+transformations that leave the underlying class un-
+changed (e.g. cropping and ﬂipping) in order to
+generate additional examples of the class. Augmen-
+tation can be applied at training time, at test time,
+or both. The augmented samples can either be taken
+as-is or combined to form a single feature, e.g. using
+sum/max-pooling or stacking.
+
+2.4.2 Linear predictors
+All the representations φ(I) in the three scenarios
+are used to construct linear predictors (cid:104)w, φ(I)(cid:105) for
+each class to be recognized. These predictors are
+learnt using Support Vector Machines (SVM) by
+ﬁtting w to the available training data by mini-
+mizing an objective function balancing a quadratic
+regularizer and the hinge-loss. The parameter C
+in the SVM, trading-off regularizer and loss,
+is
+determined using an held-off validation subset of
+the data. Here we use the same learning framework
+with all representations. It is common experience
+that linear classiﬁers are particularly sensitive to
+the normalisation of the data and that, in particular,
+SVMs tend to beneﬁt from (cid:96)2 normalisation [3] (an
+interpretation is that after normalisation the inner
+product corresponds to the cosine similarly).
+
+2.5 Benchmark data
+As reference benchmark we use the PASCAL
+VOC [6] data as already done in [12]. The VOC-
+2007 edition contains about 10,000 images split into
+train, validation, and test sets, and labelled with
+twenty object classes. A one-vs-rest SVM classiﬁer
+for each class is learnt and evaluated independently
+and the performance is measured as mean Average
+Precision (mAP) across all classes. The VOC-2012
+edition contains roughly twice as many images
+and does not include test labels; instead, evaluation
+uses the ofﬁcial PASCAL Evaluation Server. To train
+deep representations we use the ILSVRC-2012 chal-
+lenge dataset. This contains 1,000 object categories
+from ImageNet [5] with roughly 1.2M training im-
+ages, 50,000 validation images, and 100,000 test
+
+3
+
+images. Performance is evaluated using the top-5
+classiﬁcation error. Finally, we also evaluate over
+the Caltech-101 and Caltech-256 image classiﬁca-
+tion benchmarks [21], [22]. For Caltech-101, we
+followed the protocol of [12], and considered three
+random splits into training and testing data, each
+of which comprises 30 training and up to 30 testing
+images per class. For Caltech-256, two random
+splits were generated, each of which contains 60
+training images per class, and the rest are used for
+testing. On both Caltech datasets, performance is
+measured using mean class accuracy.
+
+3 DETAILS
+This section gives the implementation details of the
+methods introduced in Sect. 2.
+
+3.1 Improved Fisher Vector details
+Our IFV representation uses a slightly improved
+setting compared to the best result of [12].
+
+Computation starts by upscaling the image I by a
+√
+factor of 2 [23], followed by SIFT features extraction
+with a stride of 3 pixels at 7 different scales with
+2
+scale increments. These features are square-rooted
+as suggested by [24], and decorrelated and reduced
+in dimension from 128D to 80D using PCA. A
+GMM with K = 256 components is learnt from fea-
+tures sampled from the training images. Hence the
+Fisher Vector φFV(I) has dimension 2KD = 40, 960.
+Before use in classiﬁcation, the vector is signed-
+square-rooted and l2-normalised (square rooting
+correspond to the Hellinger’s kernel map [25]). As
+in [12], square-rooting is applied twice, once to the
+raw encodings, and once again after sum pooling
+and normalisation. In order to capture weak geo-
+metrical information, the IFV representation is used
+in a spatial pyramid [26]. As in [12], the image is
+divided into 1×1, 3×1, and 2×2 spatial subdivisions
+and corresponding IFVs are computed and stacked
+with an overall dimension of 8 × 2KD = 327, 680
+elements.
+
+In addition to this standard formulation, we ex-
+periment with a few modiﬁcations. The ﬁrst one
+is the use of intra-normalisation of the descriptor
+blocks, an idea recently proposed for the VLAD
+descriptor [27]. In this case, the (cid:96)2 normalisation
+is applied to the individual sub-blocks (uk, vk) of
+the vector φFV(I), which helps to alleviate the
+local feature burstiness [28]. In the case of the
+improved intra-normalised features, it was found
+
+4
+
+that applying the square-rooting only once to the
+ﬁnal encoding produced the best results.
+
+The second modiﬁcation is the use of spatially-
+extended local descriptors [23] instead of a spatial
+pyramid. Here descriptors xi are appended with
+their image location (xi, yi) before quantization
+with the GMM. Formally, xi is extended, after PCA
+projection, with its normalised spatial coordinates:
+i , xi/W − 0.5, yi/H − 0.5](cid:62), where W × H are the
+[x(cid:62)
+dimensions of the image. Since the GMM quantizes
+both appearance and location, this allows for spatial
+information to be captured directly by the soft-
+quantization process. This method is signiﬁcantly
+more memory-efﬁcient than using a spatial pyra-
+mid. Speciﬁcally, the PCA-reduced SIFT features
+are spatially augmented by appending (x, y) yield-
+ing D = 82 dimensional descriptors pooled in a
+2KD = 41, 984 dimensional IFV.
+
+The third modiﬁcation is the use of colour fea-
+tures in addition to SIFT descriptors. While colour
+information is used in CNNs [13] and by the orig-
+inal FV paper [3], it was not explored in our pre-
+vious comparison [12]. We do so here by adopting
+the same Local Colour Statistics (LCS) features as
+used by [3]. LCS is computed by dividing an input
+patch into a 4 × 4 spatial grid (akin to SIFT), and
+computing the mean and variance of each of the
+Lab colour channels for each cell of the grid. The
+LCS dimensionality is thus 4 × 4 × 2 × 3 = 96. This
+is then encoded in a similar manner to SIFT.
+
+3.2 Convolutional neural networks details
+The CNN-based features are based on three CNN
+architectures representative of the state of the art
+(shown in Table 1) each exploring a different accu-
+racy/speed trade-off. To ensure a fair comparison
+between them, these networks are trained using the
+same training protocol and the same implemen-
+tation, which we developed based on the open-
+source Caffe framework [20]. (cid:96)2-normalising the
+CNN features φCNN(I) before use in the SVM was
+found to be important for performance.
+
+Our Fast (CNN-F) architecture is similar to the
+one used by Krizhevsky et al. [13]. It comprises
+8 learnable layers, 5 of which are convolutional,
+and the last 3 are fully-connected. The input image
+size is 224 × 224. Fast processing is ensured by the
+4 pixel stride in the ﬁrst convolutional layer. The
+main differences between our architecture and that
+of [13] are the reduced number of convolutional
+layers and the dense connectivity between convolu-
+
+tional layers ([13] used sparse connections to enable
+training on two GPUs).
+
+Our Medium (CNN-M) architecture is similar
+to the one used by Zeiler and Fergus [19]. It is
+characterised by the decreased stride and smaller
+receptive ﬁeld of the ﬁrst convolutional layer, which
+was shown to be beneﬁcial on the ILSVRC dataset.
+At the same time, conv2 uses larger stride (2 instead
+of 1) to keep the computation time reasonable. The
+main difference between our net and that of [19] is
+we use less ﬁlters in the conv4 layer (512 vs. 1024).
+Our Slow (CNN-S) architecture is related to the
+‘accurate’ network from the OverFeat package [10].
+It also uses 7 × 7 ﬁlters with stride 2 in conv1.
+Unlike CNN-M and [19], the stride in conv2 is
+smaller (1 pixel), but the max-pooling window in
+conv1 and conv5 is larger (3× 3) to compensate for
+the increased spatial resolution. Compared to [10],
+we use 5 convolutional layers as in the previous
+architectures ([10] used 6), and less ﬁlters in conv5
+(512 instead of 1024); we also incorporate an LRN
+layer after conv1 ([10] did not use contrast normal-
+isation).
+
+3.2.1 CNN training
+In general, our CNN training procedure fol-
+lows that of [13],
+learning on ILSVRC-2012 us-
+ing gradient descent with momentum. The hyper-
+parameters are the same as used by [13]: momen-
+tum 0.9; weight decay 5 · 10−4; initial learning rate
+10−2, which is decreased by a factor of 10, when
+the validation error stop decreasing. The layers are
+initialised from a Gaussian distribution with a zero
+mean and variance equal to 10−2. We also employ
+similar data augmentation in the form of random
+crops, horizontal ﬂips, and RGB colour jittering.
+Test time crop sampling is discussed in Sect. 3.3;
+at training time, 224 × 224 crops are sampled ran-
+domly, rather than deterministically. Thus, the only
+notable difference to [13] is that the crops are taken
+from the whole training image P × 256, P ≥ 256,
+rather than its 256 × 256 centre. Training was per-
+formed on a single NVIDIA GTX Titan GPU and
+the training time varied from 5 days for CNN-F to
+3 weeks for CNN-S.
+
+3.2.2 CNN ﬁne-tuning on the target dataset
+In our experiments, we ﬁne-tuned CNN-S using
+VOC-2007, VOC-2012, or Caltech-101 as the target
+data. Fine-tuning was carried out using the same
+framework (and the same data augmentation), as
+we used for CNN training on ILSVRC. The last
+
+Arch.
+
+conv1
+
+CNN-F
+
+CNN-M
+
+CNN-S
+
+64x11x11
+st. 4, pad 0
+LRN, x2 pool
+
+96x7x7
+
+st. 2, pad 0
+LRN, x2 pool
+
+96x7x7
+
+st. 2, pad 0
+LRN, x3 pool
+
+conv2
+256x5x5
+
+st. 1, pad 2
+LRN, x2 pool
+
+256x5x5
+
+st. 2, pad 1
+LRN, x2 pool
+
+256x5x5
+
+st. 1, pad 1
+
+x2 pool
+
+-
+
+-
+
+-
+
+-
+
+-
+
+-
+
+conv3
+256x3x3
+
+conv4
+256x3x3
+
+st. 1, pad 1
+
+st. 1, pad 1
+
+st. 1, pad 1
+
+512x3x3
+
+512x3x3
+
+st. 1, pad 1
+
+st. 1, pad 1
+
+st. 1, pad 1
+
+512x3x3
+
+512x3x3
+
+st. 1, pad 1
+
+st. 1, pad 1
+
+st. 1, pad 1
+
+5
+
+full6
+4096
+drop-
+out
+4096
+drop-
+out
+4096
+drop-
+out
+
+full7
+4096
+drop-
+out
+4096
+drop-
+out
+4096
+drop-
+out
+
+full8
+1000
+soft-
+max
+1000
+soft-
+max
+1000
+soft-
+max
+
+conv5
+256x3x3
+
+x2 pool
+512x3x3
+
+x2 pool
+512x3x3
+
+x3 pool
+
+TABLE 1
+
+CNN architectures. Each architecture contains 5 convolutional layers (conv 1–5) and three
+
+fully-connected layers (full 1–3). The details of each of the convolutional layers are given in three sub-rows:
+the ﬁrst speciﬁes the number of convolution ﬁlters and their receptive ﬁeld size as “num x size x size”; the
+
+second indicates the convolution stride (“st.”) and spatial padding (“pad”); the third indicates if Local
+
+Response Normalisation (LRN) [13] is applied, and the max-pooling downsampling factor. For full 1–3, we
+specify their dimensionality, which is the same for all three architectures. Full6 and full7 are regularised
+
+using dropout [13], while the last layer acts as a multi-way soft-max classiﬁer. The activation function for all
+
+weight layers (except for full8) is the REctiﬁcation Linear Unit (RELU) [13].
+
+fully-connected layer (conv8) has output dimen-
+sionality equal to the number of classes, which
+differs between datasets, so we initialised it from
+a Gaussian distribution (as used for CNN training
+above). Now we turn to dataset-speciﬁc ﬁne-tuning
+details.
+
+VOC-2007 and VOC-2012. Considering that PAS-
+CAL VOC is a multi-label dataset (i.e. a single
+image might have multiple labels), we replaced the
+softmax regression loss with a more appropriate
+loss function, for which we considered two options:
+one-vs-rest classiﬁcation hinge loss (the same loss
+as used in the SVM experiments) and ranking hinge
+loss. Both losses deﬁne constraints on the scores of
+positive (Ipos) and negative (Ineg) images for each
+class: wcφ(Ipos) > 1 − ξ, wcφ(Ineg) < −1 + ξ for the
+classiﬁcation loss, wcφ(Ipos) > wcφ(Ineg) + 1 − ξ
+for the ranking loss (wc is the c-th row of the
+last fully-connected layer, which can be seen as a
+linear classiﬁer on deep features φ(I); ξ is a slack
+variable). Our ﬁne-tuned networks are denoted as
+“CNN S TUNE-CLS” (for the classiﬁcation loss)
+and “CNN S TUNE-RNK” (for the ranking loss).
+In the case of both VOC datasets, the training
+and validation subsets were combined to form a
+single training set. Given the smaller size of the
+training data when compared to ILSVRC-2012, we
+controlled for over-ﬁtting by using lower initial
+learning rates for the ﬁne-tuned hidden layers.
+
+The learning rate schedule for the last layer /
+hidden layers was: 10−2/10−4 → 10−3/10−4 →
+10−4/10−4 → 10−5/10−5.
+Caltech-101 dataset contains a single class label
+per image, so ﬁne-tuning was performed using the
+softmax regression loss. Other settings (including
+the learning rate schedule) were the same as used
+for the VOC ﬁne-tuning experiments.
+
+3.2.3 Low-dimensional CNN feature training
+Our baseline networks (Table 1) have the same
+dimensionality of the last hidden layer (full7): 4096.
+This design choice is in accordance with the state-
+of-the-art architectures [13], [19], [10], and leads to
+a 4096-D dimensional image representation, which
+is already rather compact compared to IFV. We
+further trained three modiﬁcations of the CNN-M
+network, with lower dimensional full7 layers of:
+2048, 1024, and 128 dimensions respectively. The
+networks were learnt on ILSVRC-2012. To speed-
+up training, all layers aside from full7/full8 were
+set to those of the CNN-M net and a lower initial
+learning rate of 10−3 was used. The initial learning
+rate of full7/full8 was set to 10−2.
+
+3.3 Data augmentation details
+We explore three data augmentation strategies. The
+ﬁrst strategy is to use no augmentation. In con-
+trast to IFV, however, CNNs require images to
+
+6
+
+be transformed to a ﬁxed size (224 × 224) even
+when no augmentation is used. Hence the image is
+downsized so that the smallest dimension is equal
+to 224 pixels and a 224 × 224 crop is extracted
+from the centre.2 The second strategy is to use
+ﬂip augmentation, mirroring images about the y-
+axis producing two samples from each image. The
+third strategy, termed C+F augmentation, combines
+cropping and ﬂipping. For CNN-based representa-
+tions, the image is downsized so that the smallest
+dimension is equal to 256 pixels. Then 224 × 224
+crops are extracted from the four corners and the
+centre of the image. Note that the crops are sampled
+from the whole image, rather than its 256 × 256
+centre, as done by [13]. These crops are then ﬂipped
+about the y-axis, producing 10 perturbed samples
+per input image. In the case of the IFV encoding, the
+same crops are extracted, but at the original image
+resolution.
+
+4 ANALYSIS
+This section describes the experimental results,
+comparing different features and data augmenta-
+tion schemes. The results are given in Table 2 for
+VOC-2007 and analysed next, starting from gener-
+ally applicable methods such as augmentation and
+then discussing the speciﬁcs of each scenario. We
+then move onto other datasets and the state of the
+art in Sect. 4.7.
+
+4.1 Data augmentation
+We experiment with no data augmentation (de-
+noted Image Aug=– in Tab. 2), ﬂip augmenta-
+tion (Image Aug=F), and C+F augmentation (Image
+Aug=C). Augmented images are used as stand-
+alone samples (f ), or by fusing the corresponding
+descriptors using sum (s) or max (m) pooling or
+stacking (t). So for example Image Aug=(C) f s in
+row [f] of Tab. 2 means that C+F augmentation is
+used to generate additional samples in training (f ),
+and is combined with sum-pooling in testing (s).
+Augmentation consistently improves perfor-
+mance by ∼ 3% for both IFV (e.g. [d] vs. [f]) and
+CNN (e.g. [o] vs. [p]). Using additional samples for
+training and sum-pooling for testing works best
+([p]) followed by sum-pooling [r], max pooling [q],
+and stacking [s]. In terms of the choice of transfor-
+mations, ﬂipping improves only marginally ([o] vs.
+2. Extracting a 224 × 224 centre crop from a 256 × 256
+
+image [13] resulted in worse performance.
+
+[u]), but using the more expensive C+F sampling
+improves, as seen, by about 2 ∼ 3% ([o] vs. [p]). We
+experimented with sampling more transformations,
+taking a higher density of crops from the centre of
+the image, but observed no beneﬁt.
+
+4.2 Colour
+Colour information can be added and subtracted in
+CNN and IFV. In IFV replacing SIFT with the colour
+descriptors of [3] (denoted COL in Method) yields
+signiﬁcantly worse performance ([j] vs. [h]). How-
+ever, when SIFT and colour descriptors are com-
+bined by stacking the corresponding IFVs (COL+)
+there is a small but signiﬁcant improvement of
+around ∼ 1% in the non-augmented case (e.g. [h]
+vs. [k]) but little impact in the augmented case
+(e.g. [i] vs. [l]). For CNNs, retraining the network
+after converting all the input images to grayscale
+(denoted GS in Methods) has a more signiﬁcant
+impact, resulting in a performance drop of ∼ 3%
+([w] vs. [p], [v] vs. [o]).
+
+4.3 Scenario 1: Shallow representation (IFV)
+The baseline IFV encoding using a spatial pyramid
+[a] performs slightly better than the results [I] taken
+from Chatﬁeld et al. [12], primarily due to a larger
+number of spatial scales being used during SIFT
+feature extraction, and the resultant SIFT features
+being square-rooted. Intra-normalisation, denoted as
+IN in the Method column of the table, improves the
+performance by ∼ 1% (e.g. [c] vs. [d]). More inter-
+estingly, switching from spatial pooling (denoted
+spm in the SPool column) to feature spatial aug-
+mentation (SPool=(x,y)) has either little effect on the
+performance or results in a marginal increase ([a] vs.
+[c], [b] vs. [d]), whilst resulting in a representation
+which is over 10× smaller. We also experimented
+with augmenting with scale in addition to position
+as in [23] but observed no improvement. Finally,
+we investigate pushing the parameters of the repre-
+sentation setting K = 512 (rows [h]-[l]). Increasing
+the number of GMM centres in the model from
+K = 256 to 512 results in a further performance
+increase (e.g. [h] vs. [d]), but at the expense of
+higher-dimensional codes (125K dimensional).
+
+4.4 Scenario 2: Deep representation (CNN) with
+pre-training
+CNN-based methods consistently outperform the
+shallow encodings, even after the improvements
+
+Method
+(I) FK BL
+(II) DECAF
+(a) FK
+(b) FK IN
+(c) FK
+(d) FK IN
+(e) FK IN
+(f) FK IN
+(g) FK IN
+(h) FK IN 512
+(i) FK IN 512
+(j) FK IN COL 512
+(k) FK IN 512 COL+
+(l) FK IN 512 COL+
+(m) CNN F
+(n) CNN S
+(o) CNN M
+(p) CNN M
+(q) CNN M
+(r) CNN M
+(s) CNN M
+(t) CNN M
+(u) CNN M
+(v) CNN M GS
+(w) CNN M GS
+(x) CNN M 2048
+(y) CNN M 1024
+(z) CNN M 128
+(α) FK+CNN F
+(β) FK+CNN M 2048
+(γ) CNN S TUNE-RNK –
+
+SPool
+spm
+–
+spm
+spm
+(x,y)
+(x,y)
+(x,y)
+(x,y)
+(x,y)
+(x,y)
+(x,y)
+–
+(x,y)
+(x,y)
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+–
+(x,y)
+(x,y)
+
+t
+
+t
+
+f
+f
+s
+
+f
+
+f
+f
+f
+
+s
+s
+s
+
+-
+s
+s
+
+s
+
+Image Aug. Dim mAP
+327K 61.69
+–
+327K 73.41
+(C)
+327K 63.66
+–
+327K 64.18
+–
+63.51
+42K
+–
+64.36
+42K
+–
+64.35
+42K
+(F)
+67.17
+(C)
+42K
+66.68
+42K
+(C)
+65.36
+84K
+–
+68.02
+84K
+(C)
+52.18
+–
+82K
+166K 66.37
+–
+166K 67.93
+(C)
+77.38
+4K
+(C)
+79.74
+(C)
+4K
+76.97
+4K
+–
+79.89
+f
+(C)
+4K
+79.50
+f m 4K
+(C)
+79.44
+(C)
+s
+4K
+78.77
+41K
+t
+(C)
+77.78
+4K
+f
+(C)
+76.99
+4K
+(F)
+f
+73.59
+–
+4K
+77.00
+4K
+(C)
+80.10
+2K
+(C)
+79.91
+1K
+(C)
+78.60
+(C)
+128
+77.95
+88K
+(C)
+80.14
+86K
+(C)
+82.42
+(C)
+4K
+
+s
+s
+s
+s
+s
+s
+s
+
+f
+f
+f
+f
+f
+f
+f
+
+s
+
+s
+t
+-
+-
+
+7
+
+79.0
+87.4
+83.4
+82.1
+83.2
+83.1
+83.1
+85.5
+84.9
+84.1
+85.9
+69.5
+82.9
+85.1
+88.7
+90.7
+89.5
+91.7
+90.9
+91.4
+90.7
+90.5
+90.1
+87.4
+89.4
+91.3
+91.4
+91.3
+89.6
+90.9
+95.3
+
+67.4
+79.3
+68.8
+69.7
+69.4
+70.4
+70.5
+71.6
+70.1
+70.4
+71.8
+52.1
+70.1
+70.5
+83.9
+85.7
+84.3
+85.4
+84.6
+85.2
+85.0
+84.3
+84.2
+80.8
+83.8
+85.8
+86.9
+83.9
+83.1
+85.9
+90.4
+
+51.9
+84.1
+59.6
+59.7
+60.6
+62.4
+62.3
+64.6
+64.7
+65.0
+67.1
+47.5
+67.0
+67.5
+87.0
+88.9
+88.8
+89.5
+89.4
+89.1
+89.2
+88.8
+89.0
+82.4
+85.1
+89.9
+89.3
+89.2
+87.1
+88.8
+92.5
+
+70.9
+78.4
+74.1
+75.2
+73.9
+75.2
+75.4
+77.2
+76.3
+76.7
+77.1
+64.0
+77.0
+77.4
+84.7
+86.6
+83.2
+86.6
+85.8
+86.1
+85.8
+84.5
+83.5
+82.1
+84.4
+86.7
+85.8
+86.9
+84.5
+85.5
+89.6
+
+30.8
+42.3
+35.7
+35.7
+36.3
+37.1
+37.1
+39.0
+39.2
+37.2
+38.8
+24.6
+36.1
+35.7
+46.9
+50.5
+48.4
+51.6
+50.3
+52.1
+51.0
+47.9
+48.1
+44.5
+49.4
+52.4
+53.3
+52.1
+48.0
+52.3
+54.4
+
+72.2
+73.7
+71.2
+71.3
+68.6
+69.1
+69.1
+70.8
+69.8
+71.3
+72.3
+49.8
+70.0
+71.2
+77.5
+80.1
+77.0
+79.3
+78.4
+78.0
+77.8
+78.0
+77.2
+73.5
+77.6
+79.7
+79.8
+81.0
+79.4
+81.4
+81.9
+
+VOC 2007 results (continued overleaf). See Sect. 4 for details.
+
+TABLE 2
+
+discussed above, by a large ∼ 10% mAP margin
+([i] vs. [p]). Our small architecture CNN-F, which is
+similar to DeCAF [7], performs signiﬁcantly better
+than the latter ([II] vs. [s]), validating our imple-
+mentation. Both medium CNN-M [m] and slow
+CNN-S [p] outperform the fast CNN-F [m] by a
+signiﬁcant 2 ∼ 3% margin. Since the accuracy
+of CNN-S and CNN-M is nearly the same, we
+focus on the latter as it is simpler and marginally
+(∼ 25%) faster. Remarkably, these good networks
+work very well even with no augmentation [o].
+Another advantage of CNNs compared to IFV is
+the small dimensionality of the output features,
+
+although IFV can be compressed to an extent. We
+explored retraining the CNNs such that the ﬁnal
+layer was of a lower dimensionality, and reducing
+from 4096 to 2048 actually resulted in a marginal
+performance boost ([x] vs. [p]). What is surprising
+is that we can reduce the output dimensionality
+further to 1024D [y] and even 128D [z] with only
+a drop of ∼ 2% for codes that are 32× smaller
+(∼ 650× smaller than our best performing IFV [i]).
+Note, (cid:96)2-normalising the features accounted for up
+to ∼ 5% of their performance over VOC 2007; it
+should be applied before input to the SVM and
+after pooling the augmented descriptors (where
+
+8
+
+(I)
+(II)
+(a)
+(b)
+(c)
+(d)
+(e)
+(f)
+(g)
+(h)
+(i)
+(j)
+(k)
+(l)
+(m)
+(n)
+(o)
+(p)
+(q)
+(r)
+(s)
+(t)
+(u)
+(v)
+(w)
+(x)
+(y)
+(z)
+(α)
+(β)
+(γ)
+
+79.9
+83.7
+80.7
+80.6
+81.1
+80.5
+80.5
+82.4
+81.9
+81.1
+82.5
+66.1
+80.0
+81.6
+86.3
+87.8
+85.1
+87.7
+87.6
+87.5
+87.3
+85.7
+85.3
+85.0
+87.2
+87.6
+87.8
+86.6
+86.8
+87.7
+91.5
+
+61.4
+83.7
+64.4
+64.8
+64.2
+66.9
+66.8
+71.6
+71.0
+67.9
+73.2
+46.6
+65.9
+70.8
+85.4
+88.3
+87.4
+88.6
+88.6
+88.1
+87.6
+87.9
+87.3
+84.9
+86.5
+88.4
+88.6
+87.5
+85.6
+88.4
+91.9
+
+56.0
+54.3
+53.8
+53.9
+51.1
+50.9
+51.0
+52.8
+52.8
+52.6
+54.7
+42.5
+52.8
+52.9
+58.6
+61.3
+58.1
+60.3
+60.7
+60.4
+60.1
+58.3
+58.1
+57.8
+59.5
+60.2
+59.0
+59.1
+59.9
+61.2
+64.1
+
+49.6
+61.9
+53.8
+54.9
+53.4
+53.9
+54.1
+62.4
+61.6
+55.4
+62.7
+35.8
+56.1
+59.6
+71.0
+74.8
+70.4
+80.1
+78.2
+76.9
+72.3
+74.2
+70.0
+65.9
+72.4
+76.9
+77.2
+70.0
+72.0
+76.9
+76.3
+
+58.4
+70.2
+60.2
+60.7
+61.9
+62.1
+62.2
+63.4
+62.2
+61.4
+64.5
+41.1
+61.0
+63.1
+72.6
+74.7
+73.1
+74.4
+73.6
+74.8
+75.3
+73.9
+73.4
+69.8
+74.1
+75.4
+73.1
+72.9
+73.4
+76.6
+74.9
+
+44.8
+79.5
+47.8
+50.5
+50.0
+51.5
+51.5
+57.1
+56.8
+51.2
+56.6
+45.5
+56.9
+59.9
+82.0
+87.2
+83.5
+85.9
+86.0
+85.8
+85.2
+84.7
+83.5
+79.5
+81.7
+85.5
+85.9
+84.6
+81.4
+84.9
+89.7
+
+78.8
+85.3
+79.9
+80.4
+80.0
+80.5
+80.4
+81.6
+81.8
+80.5
+82.2
+75.4
+81.4
+82.1
+87.9
+89.0
+85.5
+88.2
+87.4
+88.1
+86.9
+86.6
+86.0
+82.9
+86.0
+88.0
+88.3
+86.7
+88.6
+89.1
+92.2
+
+70.8
+77.2
+68.9
+69.5
+67.5
+68.5
+68.2
+70.9
+70.0
+69.1
+71.3
+58.3
+69.6
+70.5
+80.7
+83.7
+80.9
+84.6
+83.8
+84.3
+82.6
+82.0
+80.8
+77.4
+82.3
+83.4
+83.5
+83.6
+80.5
+82.9
+86.9
+
+85.0
+90.9
+86.1
+86.2
+85.3
+85.9
+86.0
+86.9
+86.5
+86.4
+87.5
+83.9
+88.4
+88.9
+91.8
+92.3
+90.8
+92.1
+92.3
+92.2
+91.9
+91.0
+90.9
+89.2
+90.8
+92.1
+91.8
+89.4
+92.1
+92.4
+95.2
+
+31.7
+51.1
+37.3
+38.3
+35.7
+37.2
+37.3
+41.2
+41.5
+41.2
+43.0
+39.8
+49.0
+50.6
+58.5
+58.8
+54.1
+60.3
+59.3
+59.5
+58.5
+55.8
+53.9
+42.8
+48.9
+61.1
+59.9
+57.0
+60.6
+61.9
+60.7
+
+51.0
+73.8
+51.1
+54.4
+51.9
+55.2
+55.1
+61.2
+61.0
+56.0
+62.0
+47.3
+59.2
+63.7
+77.4
+80.5
+78.9
+80.5
+81.0
+79.3
+77.9
+79.2
+78.1
+71.7
+73.7
+83.1
+81.4
+81.5
+77.3
+80.9
+82.9
+
+56.4
+57.0
+55.8
+56.3
+53.8
+54.3
+54.2
+56.9
+56.5
+56.2
+59.3
+35.6
+56.4
+57.5
+66.3
+69.4
+61.1
+66.2
+66.8
+65.8
+66.5
+62.1
+61.2
+60.2
+66.8
+68.5
+68.3
+64.8
+66.4
+68.7
+68.0
+
+80.2
+86.4
+83.7
+82.7
+83.5
+83.3
+83.3
+85.2
+84.3
+83.7
+85.7
+69.2
+84.7
+86.1
+89.1
+90.5
+89.0
+91.3
+91.3
+90.8
+90.5
+89.3
+88.8
+86.3
+89.6
+91.9
+93.0
+90.4
+89.3
+91.5
+95.5
+
+57.5
+68.0
+56.9
+56.7
+58.9
+59.2
+59.2
+61.5
+60.9
+59.9
+62.4
+49.0
+62.8
+64.1
+71.3
+74.0
+70.4
+73.5
+74.0
+73.5
+73.4
+71.0
+70.6
+67.8
+71.0
+74.2
+74.1
+73.4
+73.3
+75.1
+74.4
+
+VOC 2007 results (continued from previous page)
+
+TABLE 2
+
+applicable).
+
+4.5 Scenario 3: Deep representation (CNN) with
+pre-training and ﬁne-tuning
+
+We ﬁne-tuned our CNN-S architecture on VOC-
+2007 using the ranking hinge loss, and achieved
+a signiﬁcant improvement: 2.7% ([γ] vs. [n]). This
+demonstrates that in spite of the small amount
+of VOC training data (5,011 images), ﬁne-tuning
+is able to adjust the learnt deep representation to
+better suit the dataset in question.
+
+4.6 Combinations
+For the CNN-M 2048 representation [x], stacking
+deep and shallow representations to form a higher-
+dimensional descriptor makes little difference ([x]
+vs. [β]). For the weaker CNN-F it results in a small
+boost of ∼ 0.8% ([m] vs. [α]).
+
+4.7 Comparison with the state of the art
+In Table 3 we report our results on ILSVRC-2012,
+VOC-2007, VOC-2012, Caltech-101, and Caltech-256
+datasets, and compare them to the state of the art.
+First, we note that the ILSVRC error rates of our
+CNN-F, CNN-M, and CNN-S networks are better
+
+ILSVRC-2012 VOC-2007 VOC-2012 Caltech-101
+(top-5 error)
+(accuracy)
+
+(mAP)
+
+Caltech-256
+(accuracy)
+
+9
+
+(a) FK IN 512
+(b) CNN F
+(c) CNN M
+(d) CNN M 2048
+(e) CNN S
+(f) CNN S TUNE-CLS
+(g) CNN S TUNE-RNK
+
+(h) Zeiler & Fergus [19]
+(i) Razavian et al. [9], [10]
+(j) Oquab et al. [8]
+(k) Oquab et al. [16]
+(l) Wei et al. [17]
+(m) He et al. [29]
+
+-
+
+16.7
+13.7
+13.5
+13.1
+13.1
+13.1
+
+16.1
+14.7
+18
+-
+-
+
+13.6
+
+(mAP)
+68.0
+77.4
+79.9
+80.1
+79.7
+
+82.4
+
+77.2
+77.7
+
+-
+
+-
+
+-
+
+–
+
+79.9
+82.5
+82.4
+82.9
+83.0
+83.2
+
+79.0
+
+–
+
+78.7 (82.8*)
+
+86.3*
+
+81.5 (85.2*)
+
+81.7 (90.3*)
+
+80.1
+
+-
+
+91.4 ± 0.7
+
+–
+–
+
+–
+
+–
+–
+–
+–
+
+–
+–
+
+–
+
+87.15 ± 0.80
+86.64 ± 0.53
+87.76 ± 0.66
+88.35 ± 0.56
+
+77.03 ± 0.46
+76.88 ± 0.35
+77.61 ± 0.12
+77.33 ± 0.56
+
+86.5 ± 0.5
+
+74.2 ± 0.3
+
+–
+–
+–
+–
+–
+
+Comparison with the state of the art on ILSVRC2012, VOC2007, VOC2012, Caltech-101, and
+
+Caltech-256. Results marked with * were achieved using models pre-trained on the extended ILSVRC
+datasets (1512 classes in [8], [16], 2000 classes in [17]). All other results were achieved using CNNs
+
+pre-trained on ILSVRC-2012 (1000 classes).
+
+TABLE 3
+
+than those reported by [13], [19], and [10] for the
+related conﬁgurations. This validates our imple-
+mentation, and the difference is likely to be due to
+the sampling of image crops from the uncropped
+image plane (instead of the centre). When using
+our CNN features on other datasets, the relative
+performance generally follows the same pattern
+as on ILSVRC, where the nets are trained – the
+CNN-F architecture exhibits the worst performance,
+with CNN-M and CNN-S performing considerably
+better.
+
+Further ﬁne-tuning of CNN-S on the VOC
+datasets turns out to be beneﬁcial; on VOC-2012,
+using the ranking loss is marginally better than
+the classiﬁcation loss ([g] vs. [f]), which can be
+explained by the ranking-based VOC evaluation
+criterion. Fine-tuning on Caltech-101 also yields a
+small improvement, but no gain is observed over
+Caltech-256.
+
+Our CNN-S net is competitive with recent CNN-
+based approaches [19], [9], [8], [16], [17], [29] and
+on a number of datasets (VOC-2007, VOC-2012,
+Caltech-101, Caltech-256) and sets the state of the
+art on VOC-2007 and VOC-2012 across methods
+pre-trained solely on ILSVRC-2012 dataset. While
+the CNN-based methods of [16], [17] achieve better
+performance on VOC (86.3% and 90.3% respec-
+tively), they were trained using extended ILSVRC
+
+datasets, enriched with additional categories se-
+mantically close to the ones in VOC. Addition-
+ally, [17] used a signiﬁcantly more complex clas-
+siﬁcation pipeline, driven by bounding box pro-
+posals [30], pre-trained on ILSVRC-2013 detection
+dataset. Their best reported result on VOC-2012
+(90.3%) was achieved by the late fusion with a
+complex hand-crafted method of [31]; without fu-
+sion, they get 84.2%. On Caltech-101, [29] achieves
+the state of the art using spatial pyramid pooling
+of conv5 layer features, while we used full7 layer
+features consistently across all datasets (for full7
+features, they report 87.08%).
+
+In addition to achieving performance comparable
+to the state of the art with a very simple approach
+(but powerful CNN-based features), with the mod-
+iﬁcations outlined in the paper (primarily the use
+of data augmentation similar to the CNN-based
+methods) we are able to improve the performance
+of shallow IFV to 68.02% (Table 2, [i]).
+
+4.8 Performance Evolution on VOC-2007
+A comparative plot of the evolution in the per-
+formance of the methods evaluated in this paper,
+along with a selection from our earlier review of
+shallow methods [12] is presented in Fig. 1. Clas-
+siﬁcation accuracy over PASCAL VOC was 54.48%
+mAP for the BoVW model in 2008, 61.7% for the
+
+10
+
+Fig. 1. Evolution of Performance on PASCAL VOC-2007 over the recent years. Please refer to Table 2
+for details and references.
+
+IFV in 2010 [12], and 73.41% for DeCAF [7] and
+similar [8], [9] CNN-based methods introduced in
+late 2013. Our best performing CNN-based method
+(CNN-S with ﬁne-tuning) achieves 82.42%, compa-
+rable to the most recent state-of-the-art.
+
+4.9 Timings and dimensionality
+One of our best-performing CNN representations
+CNN-M-2048 [x] is ∼ 42× more compact than the
+best performing IFV [i] (84K vs. 2K) and CNN-M
+features are also ∼ 50× faster to compute (∼ 120s
+vs. ∼ 2.4s per image with augmentation enabled,
+over a single CPU core). Non-augmented CNN-M
+features [o] take around 0.3s per image, compared
+to ∼ 0.4s for CNN-S features and ∼ 0.13s for CNN-
+F features.
+
+5 CONCLUSION
+In this paper we presented a rigorous empiri-
+cal evaluation of CNN-based methods for image
+classiﬁcation, along with a comparison with more
+traditional shallow feature encoding methods. We
+have demonstrated that the performance of shal-
+low representations can be signiﬁcantly improved
+by adopting data augmentation, typically used in
+
+deep learning. In spite of this improvement, deep
+architectures still outperform the shallow methods
+by a large margin. We have shown that the per-
+formance of deep representations on the ILSVRC
+dataset is a good indicator of their performance
+on other datasets, and that ﬁne-tuning can further
+improve on already very strong results achieved
+using the combination of deep representations and
+a linear SVM. Source code and CNN models to
+reproduce the experiments presented in the paper
+are available on the project website [32] in the
+hope that it would provide common ground for
+future comparisons, and good baselines for image
+representation research.
+
+ACKNOWLEDGEMENTS
+This work was supported by the EPSRC and ERC
+grant VisRec no. 228180. We gratefully acknowl-
+edge the support of NVIDIA Corporation with the
+donation of the GPUs used for this research.
+
+REFERENCES
+[1] G. Csurka, C. Bray, C. Dance, and L. Fan, “Visual catego-
+rization with bags of keypoints,” in Workshop on Statistical
+Learning in Computer Vision, ECCV, 2004, pp. 1–22.
+
+11
+
+[22] G. Grifﬁn, A. Holub, and P. Perona, “Caltech-256 object
+category dataset,” California Institute of Technology,
+Tech. Rep. 7694, 2007.
+[Online]. Available: http://
+authors.library.caltech.edu/7694
+
+[23] J. S´anchez, F. Perronnin, and T. Em´ıdio de Campos,
+“Modeling the spatial layout of images beyond spatial
+pyramids,” Pattern Recognition Letters, vol. 33, no. 16, pp.
+2216–2223, 2012.
+
+[24] R. Arandjelovi´c and A. Zisserman, “Three things every-
+one should know to improve object retrieval,” in Proc.
+CVPR, 2012.
+
+[25] A. Vedaldi and A. Zisserman, “Efﬁcient additive kernels
+
+via explicit feature maps,” IEEE PAMI, 2011.
+
+[26] S. Lazebnik, C. Schmid, and J. Ponce, “Beyond Bags
+of Features: Spatial Pyramid Matching for Recognizing
+Natural Scene Categories,” in Proc. CVPR, 2006.
+
+[27] R. Arandjelovi´c and A. Zisserman, “All about VLAD,” in
+
+Proc. CVPR, 2013.
+
+[28] H. J´egou, M. Douze, and C. Schmid, “On the burstiness
+
+of visual elements,” in Proc. CVPR, Jun 2009.
+
+[29] K. He, A. Zhang, S. Ren, and J. Sun, “Spatial pyramid
+pooling in deep convolutional networks for visual recog-
+nition,” in Proc. ECCV, 2014.
+
+[30] M.-M. Cheng, Z. Zhang, W.-Y. Lin, and P. H. S. Torr,
+“BING: Binarized normed gradients for objectness esti-
+mation at 300fps,” in Proc. CVPR, 2014.
+
+[31] S. Yan, J. Dong, Q. Chen, Z. Song, Y. Pan, W. Xia,
+H. Zhongyang, Y. Hua, and S. Shen, “Generalized hi-
+erarchical matching for subcategory aware object classi-
+ﬁcation,” in The PASCAL Visual Object Classes Challenge
+Workshop, 2012.
+
+[32] K. Chatﬁeld, K. Simonyan, A. Vedaldi, and A. Zisserman,
+“Return of the devil in the details: delving deep into
+convolutional nets webpage,” 2014. [Online]. Available:
+http://www.robots.ox.ac.uk/∼vgg/research/deep eval
+
+[2]
+
+J. Sivic and A. Zisserman, “Video Google: A text retrieval
+approach to object matching in videos,” in Proc. ICCV,
+vol. 2, 2003, pp. 1470–1477.
+
+[3] F. Perronnin, J. S´anchez, and T. Mensink, “Improving the
+Fisher kernel for large-scale image classiﬁcation,” in Proc.
+ECCV, 2010.
+
+[4] Y. LeCun, B. Boser, J. S. Denker, D. Henderson, R. E.
+Howard, W. Hubbard, and L. D. Jackel, “Backpropaga-
+tion applied to handwritten zip code recognition,” Neural
+Computation, vol. 1, no. 4, pp. 541–551, 1989.
+J. Deng, W. Dong, R. Socher, L.-J. Li, K. Li, and L. Fei-Fei,
+“Imagenet: A large-scale hierarchical image database,” in
+Proc. CVPR, 2009.
+
+[5]
+
+[6] M. Everingham, L. Van Gool, C. K. I. Williams, J. Winn,
+and A. Zisserman, “The PASCAL Visual Object Classes
+(VOC) challenge,” IJCV, vol. 88, no. 2, pp. 303–338, 2010.
+J. Donahue, Y. Jia, O. Vinyals, J. Hoffman, N. Zhang,
+E. Tzeng, and T. Darrell, “Decaf: A deep convolutional
+activation feature for generic visual recognition,” CoRR,
+vol. abs/1310.1531, 2013.
+
+[7]
+
+[8] M. Oquab, L. Bottou, I. Laptev, and J. Sivic, “Learning
+and Transferring Mid-Level Image Representations using
+Convolutional Neural Networks,” in Proc. CVPR, 2014.
+
+[9] A. Razavian, H. Azizpour, J. Sullivan, and S. Carlsson,
+“CNN Features off-the-shelf: an Astounding Baseline for
+Recognition,” CoRR, vol. abs/1403.6382, 2014.
+
+[10] P. Sermanet, D. Eigen, X. Zhang, M. Mathieu, R. Fergus,
+and Y. LeCun, “OverFeat: Integrated Recognition, Local-
+ization and Detection using Convolutional Networks,” in
+Proc. ICLR, 2014.
+
+[11] R. B. Girshick, J. Donahue, T. Darrell, and J. Malik, “Rich
+feature hierarchies for accurate object detection and se-
+mantic segmentation,” in Proc. CVPR, 2014.
+
+[12] K. Chatﬁeld, V. Lempitsky, A. Vedaldi, and A. Zisserman,
+“The devil is in the details: an evaluation of recent feature
+encoding methods,” in Proc. BMVC., 2011.
+
+[13] A. Krizhevsky, I. Sutskever, and G. E. Hinton, “ImageNet
+classiﬁcation with deep convolutional neural networks,”
+in NIPS, 2012, pp. 1106–1114.
+
+[14] M. Paulin, J. Revaud, Z. Harchaoui, F. Perronnin, and
+C. Schmid, “Transformation Pursuit for Image Classiﬁca-
+tion,” in Proc. CVPR, 2014.
+
+[15] F. Perronnin, Z. Akata, Z. Harchaoui, and C. Schmid,
+“Towards good practice in large-scale learning for image
+classiﬁcation,” in Proc. CVPR, 2012, pp. 3482–3489.
+
+[16] M. Oquab, L. Bottou, I. Laptev, and J. Sivic, “Weakly
+supervised object recognition with convolutional neural
+networks,” INRIA, Tech. Rep. HAL-01015140, 2014.
+
+[17] Y. Wei, W. Xia, J. Huang, B. Ni, J. Dong, Y. Zhao, and
+S. Yan, “CNN: Single-label to multi-label,” CoRR, vol.
+abs/1406.5726, 2014.
+
+[18] H. J´egou, F. Perronnin, M. Douze, J. S´anchez, P. P´erez, and
+C. Schmid, “Aggregating local images descriptors into
+compact codes,” IEEE PAMI, 2012.
+
+[19] M. D. Zeiler and R. Fergus, “Visualizing and understand-
+ing convolutional networks,” CoRR, vol. abs/1311.2901,
+2013.
+
+[20] Y. Jia, “Caffe: An open source convolutional architecture
+for fast feature embedding,” http://caffe.berkeleyvision.
+org/, 2013.
+
+[21] L. Fei-Fei, R. Fergus, and P. Perona, “Learning generative
+visual models from few training examples: An incremen-
+tal bayesian approach tested on 101 object categories,”
+in IEEE CVPR Workshop of Generative Model Based Vision,
+2004.
+

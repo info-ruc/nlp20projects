@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<!--[if IE 7]>
+<html class="ie ie7" lang="vi" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://ogp.me/ns/fb#">
+<![endif]-->
+<!--[if IE 8]>
+<html class="ie ie8" lang="vi" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://ogp.me/ns/fb#">
+<![endif]-->
+<!--[if !(IE 7) | !(IE 8) ]><!-->
+<html lang="vi" xmlns:og="http://ogp.me/ns#" xmlns:fb="http://ogp.me/ns/fb#">
+<!--<![endif]-->
+<head>
+ 
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+	<link rel="profile" href="http://gmpg.org/xfn/11">
+	<link rel="pingback" href="http://www.sanghv.com/xmlrpc.php">
+			<link rel="shortcut icon" href="http://www.sanghv.com/wp-content/uploads/2020/04/logo.png" />
+		
+	<!--[if lt IE 9]>
+	<script src="http://www.sanghv.com/wp-content/themes/scalia/js/html5.js"></script>
+	<![endif]-->
+	<title>Không tìm thấy trang này &#8211; SangHv</title>
+<link rel='dns-prefetch' href='//p.jwpcdn.com' />
+<link rel='dns-prefetch' href='//fonts.googleapis.com' />
+<link rel='dns-prefetch' href='//s.w.org' />
+<link rel="alternate" type="application/rss+xml" title="Dòng thông tin SangHv &raquo;" href="http://www.sanghv.com/feed/" />
+<link rel="alternate" type="application/rss+xml" title="Dòng phản hồi SangHv &raquo;" href="http://www.sanghv.com/comments/feed/" />
+		<script type="text/javascript">
+			window._wpemojiSettings = {"baseUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.0.0\/72x72\/","ext":".png","svgUrl":"https:\/\/s.w.org\/images\/core\/emoji\/13.0.0\/svg\/","svgExt":".svg","source":{"concatemoji":"http:\/\/www.sanghv.com\/wp-includes\/js\/wp-emoji-release.min.js?ver=5.5.3"}};
+			!function(e,a,t){var r,n,o,i,p=a.createElement("canvas"),s=p.getContext&&p.getContext("2d");function c(e,t){var a=String.fromCharCode;s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,e),0,0);var r=p.toDataURL();return s.clearRect(0,0,p.width,p.height),s.fillText(a.apply(this,t),0,0),r===p.toDataURL()}function l(e){if(!s||!s.fillText)return!1;switch(s.textBaseline="top",s.font="600 32px Arial",e){case"flag":return!c([127987,65039,8205,9895,65039],[127987,65039,8203,9895,65039])&&(!c([55356,56826,55356,56819],[55356,56826,8203,55356,56819])&&!c([55356,57332,56128,56423,56128,56418,56128,56421,56128,56430,56128,56423,56128,56447],[55356,57332,8203,56128,56423,8203,56128,56418,8203,56128,56421,8203,56128,56430,8203,56128,56423,8203,56128,56447]));case"emoji":return!c([55357,56424,8205,55356,57212],[55357,56424,8203,55356,57212])}return!1}function d(e){var t=a.createElement("script");t.src=e,t.defer=t.type="text/javascript",a.getElementsByTagName("head")[0].appendChild(t)}for(i=Array("flag","emoji"),t.supports={everything:!0,everythingExceptFlag:!0},o=0;o<i.length;o++)t.supports[i[o]]=l(i[o]),t.supports.everything=t.supports.everything&&t.supports[i[o]],"flag"!==i[o]&&(t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&t.supports[i[o]]);t.supports.everythingExceptFlag=t.supports.everythingExceptFlag&&!t.supports.flag,t.DOMReady=!1,t.readyCallback=function(){t.DOMReady=!0},t.supports.everything||(n=function(){t.readyCallback()},a.addEventListener?(a.addEventListener("DOMContentLoaded",n,!1),e.addEventListener("load",n,!1)):(e.attachEvent("onload",n),a.attachEvent("onreadystatechange",function(){"complete"===a.readyState&&t.readyCallback()})),(r=t.source||{}).concatemoji?d(r.concatemoji):r.wpemoji&&r.twemoji&&(d(r.twemoji),d(r.wpemoji)))}(window,document,window._wpemojiSettings);
+		</script>
+		<style type="text/css">
+img.wp-smiley,
+img.emoji {
+	display: inline !important;
+	border: none !important;
+	box-shadow: none !important;
+	height: 1em !important;
+	width: 1em !important;
+	margin: 0 .07em !important;
+	vertical-align: -0.1em !important;
+	background: none !important;
+	padding: 0 !important;
+}
+</style>
+	<link rel='stylesheet' id='layerslider-css'  href='http://www.sanghv.com/wp-content/plugins/LayerSlider/assets/static/layerslider/css/layerslider.css?ver=6.11.2' type='text/css' media='all' />
+<link rel='stylesheet' id='wp-block-library-css'  href='http://www.sanghv.com/wp-includes/css/dist/block-library/style.min.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='contact-form-7-css'  href='http://www.sanghv.com/wp-content/plugins/contact-form-7/includes/css/styles.css?ver=5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-icons-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/icons.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-reset-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/reset.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-grid-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/grid.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-style-css'  href='http://www.sanghv.com/wp-content/themes/scalia/style.css?ver=5.5.3' type='text/css' media='all' />
+<!--[if lt IE 9]>
+<link rel='stylesheet' id='scalia-ie-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/ie.css?ver=5.5.3' type='text/css' media='all' />
+<![endif]-->
+<link rel='stylesheet' id='scalia-header-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/header.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-widgets-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/widgets.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-portfolio-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/portfolio.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-custom-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/custom.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='js_composer_front-css'  href='http://www.sanghv.com/wp-content/plugins/js_composer/assets/css/js_composer.min.css?ver=6.3.0' type='text/css' media='all' />
+<link rel='stylesheet' id='fancybox-style-css'  href='http://www.sanghv.com/wp-content/themes/scalia/js/fancyBox/jquery.fancybox.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='scalia-vc_elements-css'  href='http://www.sanghv.com/wp-content/themes/scalia/css/vc_elements.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='load-google-fonts-css'  href='//fonts.googleapis.com/css?family=Roboto%3A300%2C100%7CSource+Sans+Pro%3A300%2C300italic%7CRoboto+Condensed%3A300%2Cregular&#038;subset=greek-ext%2Clatin%2Cvietnamese%2Clatin-ext%2Ccyrillic-ext%2Ccyrillic%2Cgreek&#038;ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='learn-press-bundle-css'  href='http://www.sanghv.com/wp-content/plugins/learnpress/assets/css/bundle.min.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='learn-press-css'  href='http://www.sanghv.com/wp-content/plugins/learnpress/assets/src/css/frontend/learnpress.css?ver=5.5.3' type='text/css' media='all' />
+<link rel='stylesheet' id='lp-overlay-css'  href='http://www.sanghv.com/wp-content/plugins/learnpress/assets/src/css/frontend/lp-overlay.css?ver=5.5.3' type='text/css' media='all' />
+    <script>window.LP_DEBUG = true;</script>
+	<script type='text/javascript' src='http://www.sanghv.com/wp-includes/js/jquery/jquery.js?ver=1.12.4-wp' id='jquery-core-js'></script>
+<script type='text/javascript' id='layerslider-utils-js-extra'>
+/* <![CDATA[ */
+var LS_Meta = {"v":"6.11.2","fixGSAP":"1"};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/LayerSlider/assets/static/layerslider/js/layerslider.utils.js?ver=6.11.2' id='layerslider-utils-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/LayerSlider/assets/static/layerslider/js/layerslider.kreaturamedia.jquery.js?ver=6.11.2' id='layerslider-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/LayerSlider/assets/static/layerslider/js/layerslider.transitions.js?ver=6.11.2' id='layerslider-transitions-js'></script>
+<script type='text/javascript' src='http://p.jwpcdn.com/6/12/jwplayer.js?ver=5.5.3' id='jwplayer-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/wp-google-analytics/wp-google-analytics.js?ver=0.0.3' id='wp-google-analytics-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-includes/js/underscore.min.js?ver=1.8.3' id='underscore-js'></script>
+<script type='text/javascript' id='utils-js-extra'>
+/* <![CDATA[ */
+var userSettings = {"url":"\/","uid":"0","time":"1609125725","secure":""};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-includes/js/utils.min.js?ver=5.5.3' id='utils-js'></script>
+<script type='text/javascript' id='lp-global-js-extra'>
+/* <![CDATA[ */
+var lpGlobalSettings = {"url":"http:\/\/www.sanghv.com\/download\/soft\/machine learning, artificial intelligence, mathematics ebooks\/ML\/learning deep architectures for AI (2009\/","siteurl":"http:\/\/www.sanghv.com","ajax":"http:\/\/www.sanghv.com\/wp-admin\/admin-ajax.php","theme":"scalia","localize":{"button_ok":"OK","button_cancel":"Cancel","button_yes":"Yes","button_no":"No"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/learnpress/assets/src/js/global.js?ver=5fe94f5d45744' id='lp-global-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/learnpress/assets/js/dist/utils.js?ver=5fe94f5d45744' id='lp-utils-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/learnpress/assets/src/js/vendor/watch.js?ver=5fe94f5d45744' id='watch-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/learnpress/assets/js/vendor/plugins.all.min.js?ver=5fe94f5d45744' id='lp-plugins-all-js'></script>
+<meta name="generator" content="Powered by LayerSlider 6.11.2 - Multi-Purpose, Responsive, Parallax, Mobile-Friendly Slider Plugin for WordPress." />
+<!-- LayerSlider updates and docs at: https://layerslider.kreaturamedia.com -->
+<link rel="https://api.w.org/" href="http://www.sanghv.com/wp-json/" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="http://www.sanghv.com/xmlrpc.php?rsd" />
+<link rel="wlwmanifest" type="application/wlwmanifest+xml" href="http://www.sanghv.com/wp-includes/wlwmanifest.xml" /> 
+<meta name="generator" content="WordPress 5.5.3" />
+<script type="text/javascript">jwplayer.defaults = { "ph": 2 };</script>
+            <script type="text/javascript">
+            if (typeof(jwp6AddLoadEvent) == 'undefined') {
+                function jwp6AddLoadEvent(func) {
+                    var oldonload = window.onload;
+                    if (typeof window.onload != 'function') {
+                        window.onload = func;
+                    } else {
+                        window.onload = function() {
+                            if (oldonload) {
+                                oldonload();
+                            }
+                            func();
+                        }
+                    }
+                }
+            }
+            </script>
+
+                <style id="learn-press-custom-css">
+        body.course-item-popup a{color:#1927e8;}
+#course-item-content-header{background-color:;border-bottom: 1px solid #000000;}
+#course-item-content-header a{color:#8224e3;}
+#course-item-content-header .course-item-search input{color:#8224e3;}
+#course-item-content-header .course-item-search input:focus{color:#8224e3;}
+#course-item-content-header .course-item-search input::placeholder{color:#8224e3;}
+#course-item-content-header .course-item-search button{color:#8224e3;}
+body.course-item-popup .course-curriculum ul.curriculum-sections .section-content .course-item{background-color:#d1d1d1;}
+body.course-item-popup #learn-press-course-curriculum{background-color:#d1d1d1;border-right: 1px solid #000000;}
+body.course-item-popup .course-curriculum ul.curriculum-sections .section-content .course-item a{color:#1e73be;}
+body.course-item-popup .course-curriculum ul.curriculum-sections .section-content .course-item.current{background-color:;}
+body.course-item-popup .course-curriculum ul.curriculum-sections .section-content .course-item.current a{color:#33ea23;}
+body.course-item-popup #learn-press-content-item{background-color:#eaeaea;color:#0803a0;}
+body.course-item-popup #learn-press-course-curriculum .section-header{background:#81d742;color:#dd3333;}
+.course-curriculum ul.curriculum-sections .section-header{border-bottom: 1px solid #00adff;}
+.course-curriculum ul.curriculum-sections .section-content .course-item{border-bottom: 1px solid #000000;}
+#course-item-content-header .toggle-content-item{border-left: 1px solid #000000;}
+#learn-press-profile-header{background-color:#f0defb;}
+.scrollbar-light > .scroll-element.scroll-y .scroll-bar{background-color:#00adff;}
+.scrollbar-light > .scroll-element .scroll-element_size{background:#00adff;}
+.learn-press-progress .progress-bg{background-color:#909322;}
+.learn-press-progress .progress-bg .progress-active{background-color:#00adff;}
+    </style>
+	<meta name="generator" content="Powered by WPBakery Page Builder - drag and drop page builder for WordPress."/>
+<link rel="icon" href="http://www.sanghv.com/wp-content/uploads/2018/07/cropped-E-commerce-web-development-32x32.png" sizes="32x32" />
+<link rel="icon" href="http://www.sanghv.com/wp-content/uploads/2018/07/cropped-E-commerce-web-development-192x192.png" sizes="192x192" />
+<link rel="apple-touch-icon" href="http://www.sanghv.com/wp-content/uploads/2018/07/cropped-E-commerce-web-development-180x180.png" />
+<meta name="msapplication-TileImage" content="http://www.sanghv.com/wp-content/uploads/2018/07/cropped-E-commerce-web-development-270x270.png" />
+<noscript><style> .wpb_animate_when_almost_visible { opacity: 1; }</style></noscript>
+	<script data-ad-client="ca-pub-7274242829960890" async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js"></script>
+	<!-- Global site tag (gtag.js) - Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=UA-40094089-1"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'UA-40094089-1');
+</script>
+
+</head>
+
+
+<body class="error404 wpb-js-composer js-comp-ver-6.3.0 vc_responsive">
+<div id="page" class="layout-fullwidth">
+
+			<a href="#page" class="scroll-top-button"></a>
+	
+			<div id="top-area" class="top-area top-area-style-1">
+			<div class="container">
+				<div class="top-area-items clearfix">
+											<div class="top-area-socials">	<div class="socials">
+									<div class="socials-item twitter"><a href="#shyboyhs" target="_blank" title="twitter">twitter</a></div>
+												<div class="socials-item facebook"><a href="#sanghva" target="_blank" title="facebook">facebook</a></div>
+												<div class="socials-item linkedin"><a href="#" target="_blank" title="linkedin">linkedin</a></div>
+												<div class="socials-item googleplus"><a href="#" target="_blank" title="googleplus">googleplus</a></div>
+												<div class="socials-item stumbleupon"><a href="#" target="_blank" title="stumbleupon">stumbleupon</a></div>
+												<div class="socials-item rss"><a href="#" target="_blank" title="rss">rss</a></div>
+								</div>
+</div>
+																							<div class="top-area-search"><form role="search" method="get" id="top-area-searchform" class="searchform" action="http://www.sanghv.com/">
+	<div>
+		<input type="text" value="" name="s" id="top-area-s" />
+		<button type="submit" id="top-area-searchsubmit" value="Search"></button>
+	</div>
+</form>
+</div>
+																			<div class="top-area-contacts"><div class="sc-contacts"><div class="sc-contacts-item sc-contacts-address">Hanoi, VietNam</div><div class="sc-contacts-item sc-contacts-phone"> 84-941964899</div><div class="sc-contacts-item sc-contacts-fax"> 84-941964899</div><div class="sc-contacts-item sc-contacts-email"> <a href="mailto:sanghv@gmail.com">sanghv@gmail.com</a></div></div></div>
+															</div>
+			</div>
+		</div>
+	
+	<header id="site-header" class="site-header animated-header" role="banner">
+
+		<div class="container">
+			<div class="header-main logo-position-left">
+								<div class="site-title">
+					<h1>
+						<a href="http://www.sanghv.com/" rel="home">
+															<span class="logo logo-1x"><img src="http://www.sanghv.com/wp-content/uploads/2020/04/logo-e1587351619575.png" class="default" alt=""></span>
+																													</a>
+					</h1>
+				</div>
+								<nav id="primary-navigation" class="site-navigation primary-navigation" role="navigation">
+					<button class="menu-toggle dl-trigger">Primary Menu</button>
+					<ul id="primary-menu" class="nav-menu dl-menu styled no-responsive"><li id="menu-item-309" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-home menu-item-309 megamenu-first-element"><a href="http://www.sanghv.com/">Home</a></li>
+<li id="menu-item-316" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-316 megamenu-first-element"><a href="http://www.sanghv.com/resume/">Resume</a></li>
+<li id="menu-item-317" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-317 megamenu-first-element"><a href="http://www.sanghv.com/teaching/">Teaching</a></li>
+<li id="menu-item-674" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-674 megamenu-first-element"><a href="http://www.sanghv.com/lp-courses/">Courses</a></li>
+<li id="menu-item-319" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-319 megamenu-first-element"><a href="http://www.sanghv.com/research/">Research</a></li>
+<li id="menu-item-639" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-639 megamenu-first-element"><a href="http://www.sanghv.com/publications/">Publications</a></li>
+<li id="menu-item-321" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-321 megamenu-first-element"><a href="http://www.sanghv.com/gallery/">Gallery</a></li>
+<li id="menu-item-323" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-323 megamenu-first-element"><a href="http://www.sanghv.com/answers/">Q&#038;A</a></li>
+<li id="menu-item-1499" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-1499 megamenu-first-element"><a href="http://www.sanghv.com/shop/">Shop</a></li>
+<li id="menu-item-322" class="menu-item menu-item-type-post_type menu-item-object-page menu-item-322 megamenu-first-element"><a href="http://www.sanghv.com/about/">About</a></li>
+</ul>				</nav>
+											</div>
+		</div>
+	</header><!-- #site-header -->
+	
+</div>
+</center>
+	<div id="main" class="site-main">
+
+<div id="main-content" class="main-content">
+
+<div id="page-title" class="page-title-block page-title-style-1 " style=""><div class="container"><div class="page-title-title"><h1 style="">  Page not found</h1></div></div></div>
+<div class="block-content">
+	<div class="container">
+		<div class="entry-content">
+			<p>It looks like nothing was found at this location. Maybe try a search?</p>
+			<div class="search-form-block"><form role="search" method="get" id="searchform" class="searchform" action="http://www.sanghv.com/">
+				<div>
+					<input type="text" value="" name="s" id="s" />
+					 <button class="sc-button" type="submit" id="searchsubmit" value="Tìm kiếm">Tìm kiếm</button>
+				</div>
+			</form></div>
+		</div><!-- .entry-content -->
+	</div>
+</div>
+
+</div><!-- #main-content -->
+
+<script type='text/javascript'>
+	var _gaq = _gaq || [];
+	_gaq.push(['_setAccount', 'UA-40094089-1']);
+_gaq.push( [ '_trackEvent', '404', document.location.href, document.referrer ] );
+_gaq.push(['_trackPageview']);
+
+	(function() {
+		var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+		ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+		var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+	})();
+</script>
+
+		</div><!-- #main -->
+
+
+		
+		<footer id="footer-nav" class="site-footer">
+			<div class="container"><div class="row">
+
+				<div class="col-md-8 col-xs-12">
+									</div>
+
+				<div class="col-md-4 col-xs-12">
+											<div id="footer-socials" class="socials">
+																											<div class="footer-socials-item twitter"><a href="#shyboyhs" target="_blank" title="twitter">twitter</a></div>
+																																				<div class="footer-socials-item facebook"><a href="#sanghva" target="_blank" title="facebook">facebook</a></div>
+																																				<div class="footer-socials-item linkedin"><a href="#" target="_blank" title="linkedin">linkedin</a></div>
+																																				<div class="footer-socials-item googleplus"><a href="#" target="_blank" title="googleplus">googleplus</a></div>
+																																				<div class="footer-socials-item stumbleupon"><a href="#" target="_blank" title="stumbleupon">stumbleupon</a></div>
+																																				<div class="footer-socials-item rss"><a href="#" target="_blank" title="rss">rss</a></div>
+																															</div><!-- #footer-socials -->
+									</div>
+			</div></div>
+
+		</footer><!-- #footer-nav -->
+
+				<footer id="colophon" class="site-footer" role="contentinfo">
+			<div class="container">
+								<div class="row"><div class="col-md-4 col-xs-12"><div class="footer-site-info">2015 &copy; Copyrights CodexThemes</div></div></div>
+			</div>
+		</footer><!-- #colophon -->
+				
+	</div><!-- #page -->
+
+	<script type='text/javascript' id='contact-form-7-js-extra'>
+/* <![CDATA[ */
+var wpcf7 = {"apiSettings":{"root":"http:\/\/www.sanghv.com\/wp-json\/contact-form-7\/v1","namespace":"contact-form-7\/v1"}};
+/* ]]> */
+</script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/contact-form-7/includes/js/scripts.js?ver=5.3' id='contact-form-7-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/js_composer/assets/js/frontend_editor/vendors/plugins/jwplayer.js?ver=1.0' id='vc_vendor_jwplayer-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/respond.min.js?ver=1' id='scalia-respond-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/combobox.js?ver=5.5.3' id='scalia-combobox-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/checkbox.js?ver=5.5.3' id='scalia-checkbox-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/jquery.easing.js?ver=5.5.3' id='scalia-jquery-easing-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/modernizr.custom.js?ver=5.5.3' id='scalia-modernizr-script-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/jquery.dlmenu.js?ver=5.5.3' id='scalia-dl-menu-script-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/header.js?ver=5.5.3' id='scalia-header-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/jquery.lazyLoading.js?ver=5.5.3' id='scalia-lazy-loading-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/jquery.transform.js?ver=5.5.3' id='scalia-transform-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-includes/js/jquery/ui/effect.min.js?ver=1.11.4' id='jquery-effects-core-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-includes/js/jquery/ui/effect-drop.min.js?ver=1.11.4' id='jquery-effects-drop-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/jquery.restable.js?ver=5.5.3' id='scalia-restable-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/easyResponsiveTabs.js?ver=5.5.3' id='scalia-responsive-tabs-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/odometer.js?ver=5.5.3' id='scalia-odometr-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/jquery.sticky.js?ver=5.5.3' id='scalia-sticky-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/functions.js?ver=5.5.3' id='scalia-scripts-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/fancyBox/jquery.mousewheel.pack.js?ver=5.5.3' id='mousewheel-script-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/fancyBox/jquery.fancybox.pack.js?ver=5.5.3' id='fancybox-script-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/fancyBox/jquery.fancybox-init.js?ver=5.5.3' id='fancybox-init-script-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/themes/scalia/js/vc_elements_init.js?ver=5.5.3' id='scalia-vc_elements-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-content/plugins/learnpress/assets/src/js/frontend/course.js?ver=5fe94f5d45744' id='course-js'></script>
+<script type='text/javascript' src='http://www.sanghv.com/wp-includes/js/wp-embed.min.js?ver=5.5.3' id='wp-embed-js'></script>
+</body>
+
+</html>
