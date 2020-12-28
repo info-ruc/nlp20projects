@@ -1,0 +1,27 @@
+#路径，参数设置
+model_path: /data/lhl/model    #模型输出路径
+crop_size: 224
+resize: 512
+vocab_path: vocabulary.pkl
+cap_path: /ssd500g/kirlin/repos/self-critical.pytorch/data/dataset_coco.json
+train_img_path: /ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/train2014
+val_img_path: /ssd500g/kirlin/repos/self-critical.pytorch/data/ImageRoot/val2014/COCO_val2014_000000290750.jpg
+data_path: data.pkl    #已经将caption和image名字组合成一个tuple了
+log_step:  50
+save_step: 1000
+encoder_path: /data/lhl/model/encoder-10-4000.ckpt
+decoder_path: /data/lhl/model/decoder-10-4000.ckpt
+
+#模型参数
+embed_size: 256
+hidden_size: 512
+num_layers: 1
+pooling_kernel: 10
+
+#训练参数
+num_epochs: 10
+batch_size: 96
+num_workers: 2
+learning_rate: 0.001
+
+
