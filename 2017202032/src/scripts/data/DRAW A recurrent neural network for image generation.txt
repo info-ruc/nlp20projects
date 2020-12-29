@@ -1,0 +1,1156 @@
+DRAW: A Recurrent Neural Network For Image Generation
+
+5
+1
+0
+2
+
+ 
+
+y
+a
+M
+0
+2
+
+ 
+
+ 
+ 
+]
+
+V
+C
+.
+s
+c
+[
+ 
+ 
+
+2
+v
+3
+2
+6
+4
+0
+
+.
+
+2
+0
+5
+1
+:
+v
+i
+X
+r
+a
+
+Karol Gregor
+Ivo Danihelka
+Alex Graves
+Danilo Jimenez Rezende
+Daan Wierstra
+Google DeepMind
+
+Abstract
+
+This paper introduces the Deep Recurrent Atten-
+tive Writer (DRAW) neural network architecture
+for image generation. DRAW networks combine
+a novel spatial attention mechanism that mimics
+the foveation of the human eye, with a sequential
+variational auto-encoding framework that allows
+for the iterative construction of complex images.
+The system substantially improves on the state
+of the art for generative models on MNIST, and,
+when trained on the Street View House Numbers
+dataset, it generates images that cannot be distin-
+guished from real data with the naked eye.
+
+1. Introduction
+A person asked to draw, paint or otherwise recreate a visual
+scene will naturally do so in a sequential, iterative fashion,
+reassessing their handiwork after each modiﬁcation. Rough
+outlines are gradually replaced by precise forms, lines are
+sharpened, darkened or erased, shapes are altered, and the
+ﬁnal picture emerges. Most approaches to automatic im-
+age generation, however, aim to generate entire scenes at
+once. In the context of generative neural networks, this typ-
+ically means that all the pixels are conditioned on a single
+latent distribution (Dayan et al., 1995; Hinton & Salakhut-
+dinov, 2006; Larochelle & Murray, 2011). As well as pre-
+cluding the possibility of iterative self-correction, the “one
+shot” approach is fundamentally difﬁcult to scale to large
+images. The Deep Recurrent Attentive Writer (DRAW) ar-
+chitecture represents a shift towards a more natural form of
+image construction, in which parts of a scene are created
+independently from others, and approximate sketches are
+successively reﬁned.
+
+Proceedings of the 32 nd International Conference on Machine
+Learning, Lille, France, 2015. JMLR: W&CP volume 37. Copy-
+right 2015 by the author(s).
+
+KAROLG@GOOGLE.COM
+DANIHELKA@GOOGLE.COM
+GRAVESA@GOOGLE.COM
+DANILOR@GOOGLE.COM
+WIERSTRA@GOOGLE.COM
+
+Figure 1. A trained DRAW network generating MNIST dig-
+its. Each row shows successive stages in the generation of a sin-
+gle digit. Note how the lines composing the digits appear to be
+“drawn” by the network. The red rectangle delimits the area at-
+tended to by the network at each time-step, with the focal preci-
+sion indicated by the width of the rectangle border.
+
+The core of the DRAW architecture is a pair of recurrent
+neural networks: an encoder network that compresses the
+real images presented during training, and a decoder that
+reconstitutes images after receiving codes. The combined
+system is trained end-to-end with stochastic gradient de-
+scent, where the loss function is a variational upper bound
+on the log-likelihood of the data. It therefore belongs to the
+family of variational auto-encoders, a recently emerged
+hybrid of deep learning and variational inference that has
+led to signiﬁcant advances in generative modelling (Gre-
+gor et al., 2014; Kingma & Welling, 2014; Rezende et al.,
+2014; Mnih & Gregor, 2014; Salimans et al., 2014). Where
+DRAW differs from its siblings is that, rather than generat-
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+ing images in a single pass, it iteratively constructs scenes
+through an accumulation of modiﬁcations emitted by the
+decoder, each of which is observed by the encoder.
+An obvious correlate of generating images step by step is
+the ability to selectively attend to parts of the scene while
+ignoring others. A wealth of results in the past few years
+suggest that visual structure can be better captured by a se-
+quence of partial glimpses, or foveations, than by a sin-
+gle sweep through the entire image (Larochelle & Hinton,
+2010; Denil et al., 2012; Tang et al., 2013; Ranzato, 2014;
+Zheng et al., 2014; Mnih et al., 2014; Ba et al., 2014; Ser-
+manet et al., 2014). The main challenge faced by sequential
+attention models is learning where to look, which can be
+addressed with reinforcement learning techniques such as
+policy gradients (Mnih et al., 2014). The attention model in
+DRAW, however, is fully differentiable, making it possible
+to train with standard backpropagation. In this sense it re-
+sembles the selective read and write operations developed
+for the Neural Turing Machine (Graves et al., 2014).
+The following section deﬁnes the DRAW architecture,
+along with the loss function used for training and the pro-
+cedure for image generation. Section 3 presents the selec-
+tive attention model and shows how it is applied to read-
+ing and modifying images. Section 4 provides experi-
+mental results on the MNIST, Street View House Num-
+bers and CIFAR-10 datasets, with examples of generated
+images; and concluding remarks are given in Section 5.
+Lastly, we would like to direct the reader to the video
+accompanying this paper (https://www.youtube.
+com/watch?v=Zt-7MI9eKEo) which contains exam-
+ples of DRAW networks reading and generating images.
+
+2. The DRAW Network
+The basic structure of a DRAW network is similar to that of
+other variational auto-encoders: an encoder network deter-
+mines a distribution over latent codes that capture salient
+information about the input data; a decoder network re-
+ceives samples from the code distribuion and uses them to
+condition its own distribution over images. However there
+are three key differences. Firstly, both the encoder and de-
+coder are recurrent networks in DRAW, so that a sequence
+of code samples is exchanged between them; moreover the
+encoder is privy to the decoder’s previous outputs, allow-
+ing it to tailor the codes it sends according to the decoder’s
+behaviour so far. Secondly, the decoder’s outputs are suc-
+cessively added to the distribution that will ultimately gen-
+erate the data, as opposed to emitting this distribution in
+a single step. And thirdly, a dynamically updated atten-
+tion mechanism is used to restrict both the input region
+observed by the encoder, and the output region modiﬁed
+by the decoder.
+In simple terms, the network decides at
+each time-step “where to read” and “where to write” as well
+
+Figure 2. Left: Conventional Variational Auto-Encoder. Dur-
+ing generation, a sample z is drawn from a prior P (z) and passed
+through the feedforward decoder network to compute the proba-
+bility of the input P (x|z) given the sample. During inference the
+input x is passed to the encoder network, producing an approx-
+imate posterior Q(z|x) over latent variables. During training, z
+is sampled from Q(z|x) and then used to compute the total de-
+
+scription length KL(cid:0)Q(Z|x)||P (Z)(cid:1) − log(P (x|z)), which is
+
+minimised with stochastic gradient descent. Right: DRAW Net-
+work. At each time-step a sample zt from the prior P (zt) is
+passed to the recurrent decoder network, which then modiﬁes part
+of the canvas matrix. The ﬁnal canvas matrix cT is used to com-
+pute P (x|z1:T ). During inference the input is read at every time-
+step and the result is passed to the encoder RNN. The RNNs at
+the previous time-step specify where to read. The output of the
+encoder RNN is used to compute the approximate posterior over
+the latent variables at that time-step.
+
+as “what to write”. The architecture is sketched in Fig. 2,
+alongside a feedforward variational auto-encoder.
+
+2.1. Network Architecture
+
+t
+
+t
+
+Let RNN enc be the function enacted by the encoder net-
+work at a single time-step. The output of RNN enc at time
+. Similarly the output of
+t is the encoder hidden vector henc
+the decoder RNN dec at t is the hidden vector hdec
+. In gen-
+eral the encoder and decoder may be implemented by any
+recurrent neural network. In our experiments we use the
+Long Short-Term Memory architecture (LSTM; Hochreiter
+& Schmidhuber (1997)) for both, in the extended form with
+forget gates (Gers et al., 2000). We favour LSTM due
+to its proven track record for handling long-range depen-
+dencies in real sequential data (Graves, 2013; Sutskever
+et al., 2014). Throughout the paper, we use the notation
+b = W (a) to denote a linear weight matrix with bias from
+the vector a to the vector b.
+At each time-step t, the encoder receives input from both
+the image x and from the previous decoder hidden vector
+t−1. The precise form of the encoder input depends on a
+hdec
+read operation, which will be deﬁned in the next section.
+of the encoder is used to parameterise a
+The output henc
+) over the latent vector zt. In our
+distribution Q(Zt|henc
+
+t
+
+t
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+experiments the latent distribution is a diagonal Gaussian
+N (Zt|µt, σt):
+
+µt = W (henc
+σt = exp (W (henc
+
+)
+
+t
+
+t
+
+))
+
+(1)
+(2)
+
+Bernoulli distributions are more common than Gaussians
+for latent variables in auto-encoders (Dayan et al., 1995;
+Gregor et al., 2014); however a great advantage of Gaus-
+sian latents is that the gradient of a function of the sam-
+ples with respect to the distribution parameters can be eas-
+ily obtained using the so-called reparameterization trick
+(Kingma & Welling, 2014; Rezende et al., 2014). This
+makes it straightforward to back-propagate unbiased, low
+variance stochastic gradients of the loss function through
+the latent distribution.
+) drawn from
+At each time-step a sample zt ∼ Q(Zt|henc
+the latent distribution is passed as input to the decoder. The
+of the decoder is added (via a write opera-
+output hdec
+tion, deﬁned in the sequel) to a cumulative canvas matrix
+ct, which is ultimately used to reconstruct the image. The
+total number of time-steps T consumed by the network be-
+fore performing the reconstruction is a free parameter that
+must be speciﬁed in advance.
+For each image x presented to the network, c0, henc
+, hdec
+are initialised to learned biases, and the DRAW net-
+work iteratively computes the following equations for t =
+1 . . . , T :
+
+0
+
+0
+
+t
+
+t
+
+ˆxt = x − σ(ct−1)
+rt = read (xt, ˆxt, hdec
+t−1)
+t = RNN enc(henc
+henc
+t−1, [rt, hdec
+t−1])
+zt ∼ Q(Zt|henc
+)
+t = RNN dec(hdec
+hdec
+t−1, zt)
+ct = ct−1 + write(hdec
+)
+
+t
+
+t
+
+(3)
+(4)
+(5)
+(6)
+(7)
+(8)
+
+t
+
+, and hence Q(Zt|henc
+
+where ˆxt is the error image, [v, w] is the concatenation
+of vectors v and w into a single vector, and σ denotes
+1+exp(−x). Note
+the logistic sigmoid function: σ(x) =
+), depends on both x
+that henc
+and the history z1:t−1 of previous latent samples. We
+will sometimes make this dependency explicit by writing
+Q(Zt|x, z1:t−1), as shown in Fig. 2. henc can also be
+passed as input to the read operation; however we did not
+ﬁnd that this helped performance and therefore omitted it.
+
+1
+
+t
+
+(cid:32) T(cid:88)
+
+t=1
+
+negative log probability of x under D:
+Lx = − log D(x|cT )
+
+(9)
+The latent loss Lz for a sequence of latent distributions
+) is deﬁned as the summed Kullback-Leibler di-
+Q(Zt|henc
+vergence of some latent prior P (Zt) from Q(Zt|henc
+
+):
+
+t
+
+t
+
+T(cid:88)
+
+t=1
+
+KL(cid:0)Q(Zt|henc
+
+t
+
+)||P (Zt)(cid:1)
+
+Lz =
+
+(10)
+
+t
+
+Note that this loss depends upon the latent samples zt
+drawn from Q(Zt|henc
+), which depend in turn on the input
+x. If the latent distribution is a diagonal Gaussian with µt,
+σt as deﬁned in Eqs 1 and 2, a simple choice for P (Zt) is
+a standard Gaussian with mean zero and standard deviation
+one, in which case Eq. 10 becomes
+
+(cid:33)
+
+Lz =
+
+1
+2
+
+µ2
+t + σ2
+
+t − log σ2
+
+t
+
+− T /2
+
+(11)
+
+The total loss L for the network is the expectation of the
+sum of the reconstruction and latent losses:
+
+L = (cid:104)Lx + Lz(cid:105)z∼Q
+
+(12)
+
+which we optimise using a single sample of z for each
+stochastic gradient descent step.
+Lz can be interpreted as the number of nats required to
+transmit the latent sample sequence z1:T to the decoder
+from the prior, and (if x is discrete) Lx is the number of
+nats required for the decoder to reconstruct x given z1:T .
+The total loss is therefore equivalent to the expected com-
+pression of the data by the decoder and prior.
+
+2.3. Stochastic Data Generation
+
+An image ˜x can be generated by a DRAW network by it-
+eratively picking latent samples ˜zt from the prior P , then
+running the decoder to update the canvas matrix ˜ct. After T
+repetitions of this process the generated image is a sample
+from D(X|˜cT ):
+
+˜zt ∼ P (Zt)
+˜hdec
+t = RNN dec(˜hdec
+t−1, ˜zt)
+˜ct = ˜ct−1 + write(˜hdec
+)
+˜x ∼ D(X| ˜cT )
+
+t
+
+(13)
+(14)
+(15)
+(16)
+
+Note that the encoder is not involved in image generation.
+
+2.2. Loss Function
+
+The ﬁnal canvas matrix cT is used to parameterise a model
+D(X|cT ) of the input data. If the input is binary, the natural
+choice for D is a Bernoulli distribution with means given
+by σ(cT ). The reconstruction loss Lx is deﬁned as the
+
+3. Read and Write Operations
+The DRAW network described in the previous section is
+not complete until the read and write operations in Eqs. 4
+and 8 have been deﬁned. This section describes two ways
+to do so, one with selective attention and one without.
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+3.1. Reading and Writing Without Attention
+
+In the simplest instantiation of DRAW the entire input im-
+age is passed to the encoder at every time-step, and the de-
+coder modiﬁes the entire canvas matrix at every time-step.
+In this case the read and write operations reduce to
+
+read (x, ˆxt, hdec
+write(hdec
+
+t−1) = [x, ˆxt]
+) = W (hdec
+
+(17)
+(18)
+
+)
+
+t
+
+t
+
+However this approach does not allow the encoder to fo-
+cus on only part of the input when creating the latent dis-
+tribution; nor does it allow the decoder to modify only a
+part of the canvas vector. In other words it does not pro-
+vide the network with an explicit selective attention mech-
+anism, which we believe to be crucial to large scale image
+generation. We refer to the above conﬁguration as “DRAW
+without attention”.
+
+3.2. Selective Attention Model
+
+To endow the network with selective attention without sac-
+riﬁcing the beneﬁts of gradient descent training, we take in-
+spiration from the differentiable attention mechanisms re-
+cently used in handwriting synthesis (Graves, 2013) and
+Neural Turing Machines (Graves et al., 2014). Unlike
+the aforementioned works, we consider an explicitly two-
+dimensional form of attention, where an array of 2D Gaus-
+sian ﬁlters is applied to the image, yielding an image
+‘patch’ of smoothly varying location and zoom. This con-
+ﬁguration, which we refer to simply as “DRAW”, some-
+what resembles the afﬁne transformations used in computer
+graphics-based autoencoders (Tieleman, 2014).
+As illustrated in Fig. 3, the N×N grid of Gaussian ﬁlters is
+positioned on the image by specifying the co-ordinates of
+the grid centre and the stride distance between adjacent ﬁl-
+ters. The stride controls the ‘zoom’ of the patch; that is, the
+larger the stride, the larger an area of the original image will
+be visible in the attention patch, but the lower the effective
+resolution of the patch will be. The grid centre (gX , gY )
+and stride δ (both of which are real-valued) determine the
+mean location µi
+Y of the ﬁlter at row i, column j in the
+patch as follows:
+
+X , µj
+
+µi
+X = gX + (i − N/2 − 0.5) δ
+µj
+Y = gY + (j − N/2 − 0.5) δ
+
+(19)
+(20)
+
+Two more parameters are required to fully specify the at-
+tention model: the isotropic variance σ2 of the Gaussian
+ﬁlters, and a scalar intensity γ that multiplies the ﬁlter re-
+sponse. Given an A × B input image x, all ﬁve attention
+parameters are dynamically determined at each time step
+
+Figure 3. Left: A 3 × 3 grid of ﬁlters superimposed on an image.
+The stride (δ) and centre location (gX , gY ) are indicated. Right:
+Three N × N patches extracted from the image (N = 12). The
+green rectangles on the left indicate the boundary and precision
+(σ) of the patches, while the patches themselves are shown to the
+right. The top patch has a small δ and high σ, giving a zoomed-in
+but blurry view of the centre of the digit; the middle patch has
+large δ and low σ, effectively downsampling the whole image;
+and the bottom patch has high δ and σ.
+
+via a linear transformation of the decoder output hdec:
+
+(˜gX , ˜gY , log σ2, log ˜δ, log γ) = W (hdec)
+
+gX =
+
+A + 1
+
+2
+
+(˜gX + 1)
+
+gY =
+
+δ =
+
+B + 1
+
+2
+
+(˜gY + 1)
+max(A, B) − 1
+
+˜δ
+
+N − 1
+
+(21)
+
+(22)
+
+(23)
+
+(24)
+
+where the variance, stride and intensity are emitted in the
+log-scale to ensure positivity. The scaling of gX, gY and δ
+is chosen to ensure that the initial patch (with a randomly
+initialised network) roughly covers the whole input image.
+Given the attention parameters emitted by the decoder, the
+horizontal and vertical ﬁlterbank matrices FX and FY (di-
+mensions N × A and N × B respectively) are deﬁned as
+follows:
+
+(cid:18)
+(cid:32)
+
+(cid:19)
+(cid:33)
+
+(25)
+
+(26)
+
+FX [i, a] =
+
+FY [j, b] =
+
+1
+ZX
+
+1
+ZY
+
+exp
+
+−
+
+exp
+
+−
+
+X )2
+
+Y )2
+
+(a − µi
+2σ2
+(b − µj
+2σ2
+
+where (i, j) is a point in the attention patch, (a, b) is a point
+in the input image, and Zx, Zy are normalisation constants
+
+that ensure that(cid:80)
+
+a FX [i, a] = 1 and(cid:80)
+
+b FY [j, b] = 1.
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+generated by the network are always novel (not simply
+copies of training examples), and are virtually indistin-
+guishable from real data for MNIST and SVHN; the gener-
+ated CIFAR images are somewhat blurry, but still contain
+recognisable structure from natural scenes. The binarized
+MNIST results substantially improve on the state of the art.
+As a preliminary exercise, we also evaluate the 2D atten-
+tion module of the DRAW network on cluttered MNIST
+classiﬁcation.
+For all experiments, the model D(X|cT ) of the input data
+was a Bernoulli distribution with means given by σ(cT ).
+For the MNIST experiments, the reconstruction loss from
+Eq 9 was the usual binary cross-entropy term. For the
+SVHN and CIFAR-10 experiments, the red, green and blue
+pixel intensities were represented as numbers between 0
+and 1, which were then interpreted as independent colour
+emission probabilities. The reconstruction loss was there-
+fore the cross-entropy between the pixel intensities and the
+model probabilities. Although this approach worked well
+in practice, it means that the training loss did not corre-
+spond to the true compression cost of RGB images.
+the experiments are
+Network hyper-parameters for all
+presented in Table 3.
+The Adam optimisation algo-
+rithm (Kingma & Ba, 2014) was used throughout. Ex-
+amples of generation sequences for MNIST and SVHN
+are provided in the accompanying video (https://www.
+youtube.com/watch?v=Zt-7MI9eKEo).
+
+4.1. Cluttered MNIST Classiﬁcation
+
+To test the classiﬁcation efﬁcacy of the DRAW attention
+mechanism (as opposed to its ability to aid in image gener-
+ation), we evaluate its performance on the 100 × 100 clut-
+tered translated MNIST task (Mnih et al., 2014). Each im-
+age in cluttered MNIST contains many digit-like fragments
+of visual clutter that the network must distinguish from the
+true digit to be classiﬁed. As illustrated in Fig. 5, having
+an iterative attention model allows the network to progres-
+sively zoom in on the relevant region of the image, and
+ignore the clutter outside it.
+Our model consists of an LSTM recurrent network that re-
+ceives a 12 × 12 ‘glimpse’ from the input image at each
+time-step, using the selective read operation deﬁned in Sec-
+tion 3.2. After a ﬁxed number of glimpses the network uses
+a softmax layer to classify the MNIST digit. The network
+is similar to the recently introduced Recurrent Attention
+Model (RAM) (Mnih et al., 2014), except that our attention
+method is differentiable; we therefore refer to it as “Differ-
+entiable RAM”.
+The results in Table 1 demonstrate a signiﬁcant improve-
+ment in test error over the original RAM network. More-
+over our model had only a single attention patch at each
+
+Figure 4. Zooming. Top Left: The original 100× 75 image. Top
+Middle: A 12 × 12 patch extracted with 144 2D Gaussian ﬁlters.
+Top Right: The reconstructed image when applying transposed
+ﬁlters on the patch. Bottom: Only two 2D Gaussian ﬁlters are
+displayed. The ﬁrst one is used to produce the top-left patch fea-
+ture. The last ﬁlter is used to produce the bottom-right patch fea-
+ture. By using different ﬁlter weights, the attention can be moved
+to a different location.
+
+3.3. Reading and Writing With Attention
+
+Given FX, FY and intensity γ determined by hdec
+t−1, along
+with an input image x and error image ˆxt, the read opera-
+tion returns the concatenation of two N × N patches from
+the image and error image:
+
+read (x, ˆxt, hdec
+
+t−1) = γ[FY xF T
+
+X , FY ˆxF T
+X ]
+
+(27)
+
+Note that the same ﬁlterbanks are used for both the image
+and error image. For the write operation, a distinct set of
+attention parameters ˆγ, ˆFX and ˆFY are extracted from hdec
+,
+the order of transposition is reversed, and the intensity is
+inverted:
+
+t
+
+wt = W (hdec
+
+t
+
+)
+
+write(hdec
+
+t
+
+) =
+
+1
+ˆγ
+
+ˆF T
+Y wt ˆFX
+
+(28)
+
+(29)
+
+where wt is the N × N writing patch emitted by hdec
+. For
+colour images each point in the input and error image (and
+hence in the reading and writing patches) is an RGB triple.
+In this case the same reading and writing ﬁlters are used for
+all three channels.
+
+t
+
+4. Experimental Results
+We assess the ability of DRAW to generate realistic-
+looking images by training on three datasets of progres-
+sively increasing visual complexity: MNIST (LeCun et al.,
+1998), Street View House Numbers (SVHN) (Netzer et al.,
+2011) and CIFAR-10 (Krizhevsky, 2009). The images
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+Table 2. Negative log-likelihood (in nats) per test-set example on
+the binarised MNIST data set. The right hand column, where
+present, gives an upper bound (Eq. 12) on the negative log-
+likelihood. The previous results are from [1] (Salakhutdinov &
+Hinton, 2009), [2] (Murray & Salakhutdinov, 2009), [3] (Uria
+et al., 2014), [4] (Raiko et al., 2014), [5] (Rezende et al., 2014),
+[6] (Salimans et al., 2014), [7] (Gregor et al., 2014).
+− log p
+≈ 84.62
+≈ 84.55
+88.33
+85.10
+84.68
+≈ 86.60
+≈ 85.51
+≈ 84.13
+
+Model
+DBM 2hl [1]
+DBN 2hl [2]
+NADE [3]
+EoNADE 2hl (128 orderings) [3]
+EoNADE-5 2hl (128 orderings) [4]
+DLGM [5]
+DLGM 8 leapfrog steps [6]
+DARN 1hl [7]
+DARN 12hl [7]
+DRAW without attention
+DRAW
+
+≤
+
+88.30
+88.30
+87.72
+87.40
+80.97
+
+-
+-
+-
+
+Figure 5. Cluttered MNIST classiﬁcation with attention. Each
+sequence shows a succession of four glimpses taken by the net-
+work while classifying cluttered translated MNIST. The green
+rectangle indicates the size and location of the attention patch,
+while the line width represents the variance of the ﬁlters.
+
+Table 1. Classiﬁcation test error on 100 × 100 Cluttered Trans-
+lated MNIST.
+
+Model
+Convolutional, 2 layers
+RAM, 4 glimpses, 12 × 12, 4 scales
+RAM, 8 glimpses, 12 × 12, 4 scales
+Differentiable RAM, 4 glimpses, 12 × 12
+Differentiable RAM, 8 glimpses, 12 × 12
+
+Error
+14.35%
+9.41%
+8.11%
+4.18%
+3.36%
+
+time-step, whereas RAM used four, at different zooms.
+
+4.2. MNIST Generation
+
+We trained the full DRAW network as a generative model
+on the binarized MNIST dataset (Salakhutdinov & Mur-
+ray, 2008). This dataset has been widely studied in the
+literature, allowing us to compare the numerical perfor-
+mance (measured in average nats per image on the test
+set) of DRAW with existing methods. Table 2 shows that
+DRAW without selective attention performs comparably to
+other recent generative models such as DARN, NADE and
+DBMs, and that DRAW with attention considerably im-
+proves on the state of the art.
+
+Figure 6. Generated MNIST images. All digits were generated
+by DRAW except those in the rightmost column, which shows the
+training set images closest to those in the column second to the
+right (pixelwise L2 is the distance measure). Note that the net-
+work was trained on binary samples, while the generated images
+are mean probabilities.
+
+Once the DRAW network was trained, we generated
+MNIST digits following the method in Section 2.3, exam-
+ples of which are presented in Fig. 6. Fig. 7 illustrates
+the image generation sequence for a DRAW network with-
+out selective attention (see Section 3.1). It is interesting to
+compare this with the generation sequence for DRAW with
+attention, as depicted in Fig. 1. Whereas without attention
+it progressively sharpens a blurred image in a global way,
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+Figure 7. MNIST generation sequences for DRAW without at-
+tention. Notice how the network ﬁrst generates a very blurry im-
+age that is subsequently reﬁned.
+
+with attention it constructs the digit by tracing the lines—
+much like a person with a pen.
+
+4.3. MNIST Generation with Two Digits
+
+The main motivation for using an attention-based genera-
+tive model is that large images can be built up iteratively,
+by adding to a small part of the image at a time. To test
+this capability in a controlled fashion, we trained DRAW
+to generate images with two 28 × 28 MNIST images cho-
+sen at random and placed at random locations in a 60 × 60
+black background. In cases where the two digits overlap,
+the pixel intensities were added together at each point and
+clipped to be no greater than one. Examples of generated
+data are shown in Fig. 8. The network typically generates
+one digit and then the other, suggesting an ability to recre-
+ate composite scenes from simple pieces.
+
+4.4. Street View House Number Generation
+
+MNIST digits are very simplistic in terms of visual struc-
+ture, and we were keen to see how well DRAW performed
+on natural images. Our ﬁrst natural image generation ex-
+periment used the multi-digit Street View House Numbers
+dataset (Netzer et al., 2011). We used the same preprocess-
+ing as (Goodfellow et al., 2013), yielding a 64 × 64 house
+number image for each training example. The network was
+then trained using 54 × 54 patches extracted at random lo-
+cations from the preprocessed images. The SVHN training
+set contains 231,053 images, and the validation set contains
+4,701 images.
+The house number images generated by the network are
+
+Figure 8. Generated MNIST images with two digits.
+
+Figure 9. Generated SVHN images. The rightmost column
+shows the training images closest (in L2 distance) to the gener-
+ated images beside them. Note that the two columns are visually
+similar, but the numbers are generally different.
+
+highly realistic, as shown in Figs. 9 and 10. Fig. 11 reveals
+that, despite the long training time, the DRAW network un-
+derﬁt the SVHN training data.
+
+4.5. Generating CIFAR Images
+
+The most challenging dataset we applied DRAW to was
+the CIFAR-10 collection of natural images (Krizhevsky,
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+Table 3. Experimental Hyper-Parameters.
+
+Task
+100 × 100 MNIST Classiﬁcation
+MNIST Model
+SVHN Model
+CIFAR Model
+
+#glimpses LSTM #h
+256
+256
+800
+400
+
+8
+64
+32
+64
+
+#z Read Size Write Size
+
+-
+100
+100
+200
+
+12 × 12
+2 × 2
+12 × 12
+5 × 5
+
+-
+
+5 × 5
+12 × 12
+5 × 5
+
+s
+
+Figure 10. SVHN Generation Sequences. The red rectangle in-
+dicates the attention patch. Notice how the network draws the dig-
+its one at a time, and how it moves and scales the writing patch to
+produce numbers with different slopes and sizes.
+
+Figure 11. Training and validation cost on SVHN. The valida-
+tion cost is consistently lower because the validation set patches
+were extracted from the image centre (rather than from random
+locations, as in the training set). The network was never able to
+overﬁt on the training data.
+
+2009). CIFAR-10 is very diverse, and with only 50,000
+training examples it is very difﬁcult to generate realistic-
+
+Figure 12. Generated CIFAR images. The rightmost column
+shows the nearest training examples to the column beside it.
+
+looking objects without overﬁtting (in other words, without
+copying from the training set). Nonetheless the images in
+Fig. 12 demonstrate that DRAW is able to capture much of
+the shape, colour and composition of real photographs.
+
+5. Conclusion
+This paper introduced the Deep Recurrent Attentive Writer
+(DRAW) neural network architecture, and demonstrated its
+ability to generate highly realistic natural images such as
+photographs of house numbers, as well as improving on the
+best known results for binarized MNIST generation. We
+also established that the two-dimensional differentiable at-
+tention mechanism embedded in DRAW is beneﬁcial not
+only to image generation, but also to image classiﬁcation.
+
+Acknowledgments
+Of the many who assisted in creating this paper, we are es-
+pecially thankful to Koray Kavukcuoglu, Volodymyr Mnih,
+Jimmy Ba, Yaroslav Bulatov, Greg Wayne, Andrei Rusu
+and Shakir Mohamed.
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+References
+Ba, Jimmy, Mnih, Volodymyr, and Kavukcuoglu, Koray.
+Multiple object recognition with visual attention. arXiv
+preprint arXiv:1412.7755, 2014.
+
+Dayan, Peter, Hinton, Geoffrey E, Neal, Radford M, and
+Zemel, Richard S. The helmholtz machine. Neural com-
+putation, 7(5):889–904, 1995.
+
+Denil, Misha, Bazzani, Loris, Larochelle, Hugo, and
+de Freitas, Nando. Learning where to attend with deep
+architectures for image tracking. Neural computation,
+24(8):2151–2184, 2012.
+
+Gers, Felix A, Schmidhuber, J¨urgen, and Cummins, Fred.
+Learning to forget: Continual prediction with lstm. Neu-
+ral computation, 12(10):2451–2471, 2000.
+
+Goodfellow,
+
+Ibarz,
+
+Ian J, Bulatov, Yaroslav,
+and Shet, Vinay.
+
+Julian,
+Arnoud, Sacha,
+Multi-digit
+number recognition from street view imagery using
+arXiv preprint
+deep convolutional neural networks.
+arXiv:1312.6082, 2013.
+
+Graves, Alex. Generating sequences with recurrent neural
+
+networks. arXiv preprint arXiv:1308.0850, 2013.
+
+Graves, Alex, Wayne, Greg, and Danihelka, Ivo. Neural
+turing machines. arXiv preprint arXiv:1410.5401, 2014.
+
+Gregor, Karol, Danihelka, Ivo, Mnih, Andriy, Blundell,
+Charles, and Wierstra, Daan. Deep autoregressive net-
+works. In Proceedings of the 31st International Confer-
+ence on Machine Learning, 2014.
+
+Hinton, Geoffrey E and Salakhutdinov, Ruslan R. Reduc-
+ing the dimensionality of data with neural networks. Sci-
+ence, 313(5786):504–507, 2006.
+
+Hochreiter, Sepp and Schmidhuber, J¨urgen. Long short-
+term memory. Neural computation, 9(8):1735–1780,
+1997.
+
+Kingma, Diederik and Ba,
+
+Jimmy.
+method for stochastic optimization.
+arXiv:1412.6980, 2014.
+
+Adam:
+
+A
+arXiv preprint
+
+Kingma, Diederik P and Welling, Max. Auto-encoding
+In Proceedings of the International
+variational bayes.
+Conference on Learning Representations (ICLR), 2014.
+
+Krizhevsky, Alex. Learning multiple layers of features
+
+from tiny images. 2009.
+
+Larochelle, Hugo and Hinton, Geoffrey E. Learning to
+combine foveal glimpses with a third-order boltzmann
+machine. In Advances in Neural Information Processing
+Systems, pp. 1243–1251. 2010.
+
+Larochelle, Hugo and Murray, Iain. The neural autoregres-
+sive distribution estimator. Journal of Machine Learning
+Research, 15:29–37, 2011.
+
+LeCun, Yann, Bottou, L´eon, Bengio, Yoshua, and Haffner,
+Patrick. Gradient-based learning applied to document
+recognition. Proceedings of the IEEE, 86(11):2278–
+2324, 1998.
+
+Mnih, Andriy and Gregor, Karol. Neural variational infer-
+ence and learning in belief networks. In Proceedings of
+the 31st International Conference on Machine Learning,
+2014.
+
+Mnih, Volodymyr, Heess, Nicolas, Graves, Alex, et al. Re-
+current models of visual attention. In Advances in Neural
+Information Processing Systems, pp. 2204–2212, 2014.
+
+Murray, Iain and Salakhutdinov, Ruslan. Evaluating prob-
+abilities under high-dimensional latent variable models.
+In Advances in neural information processing systems,
+pp. 1137–1144, 2009.
+
+Netzer, Yuval, Wang, Tao, Coates, Adam, Bissacco,
+Alessandro, Wu, Bo, and Ng, Andrew Y. Reading dig-
+its in natural images with unsupervised feature learning.
+2011.
+
+Raiko, Tapani, Li, Yao, Cho, Kyunghyun, and Bengio,
+Yoshua. Iterative neural autoregressive distribution es-
+timator nade-k. In Advances in Neural Information Pro-
+cessing Systems, pp. 325–333. 2014.
+
+Ranzato, Marc’Aurelio. On learning where to look. arXiv
+
+preprint arXiv:1405.5488, 2014.
+
+Rezende, Danilo J, Mohamed, Shakir, and Wierstra, Daan.
+Stochastic backpropagation and approximate inference
+in deep generative models. In Proceedings of the 31st In-
+ternational Conference on Machine Learning, pp. 1278–
+1286, 2014.
+
+Salakhutdinov, Ruslan and Hinton, Geoffrey E. Deep boltz-
+mann machines. In International Conference on Artiﬁ-
+cial Intelligence and Statistics, pp. 448–455, 2009.
+
+Salakhutdinov, Ruslan and Murray, Iain. On the quantita-
+tive analysis of Deep Belief Networks. In Proceedings
+of the 25th Annual International Conference on Machine
+Learning, pp. 872–879. Omnipress, 2008.
+
+Salimans, Tim, Kingma, Diederik P, and Welling, Max.
+Markov chain monte carlo and variational inference:
+Bridging the gap. arXiv preprint arXiv:1410.6460, 2014.
+
+Sermanet, Pierre, Frome, Andrea, and Real, Esteban. At-
+tention for ﬁne-grained categorization. arXiv preprint
+arXiv:1412.7054, 2014.
+
+DRAW: A Recurrent Neural Network For Image Generation
+
+Sutskever, Ilya, Vinyals, Oriol, and Le, Quoc VV. Se-
+quence to sequence learning with neural networks.
+In
+Advances in Neural Information Processing Systems, pp.
+3104–3112, 2014.
+
+Tang, Yichuan, Srivastava, Nitish, and Salakhutdinov, Rus-
+lan. Learning generative models with visual attention.
+arXiv preprint arXiv:1312.6110, 2013.
+
+Tieleman, Tijmen. Optimizing Neural Networks that Gen-
+erate Images. PhD thesis, University of Toronto, 2014.
+
+Uria, Benigno, Murray, Iain, and Larochelle, Hugo. A deep
+In Proceedings of the
+and tractable density estimator.
+31st International Conference on Machine Learning, pp.
+467–475, 2014.
+
+Zheng, Yin, Zemel, Richard S, Zhang, Yu-Jin, and
+Larochelle, Hugo. A neural autoregressive approach
+to attention-based recognition. International Journal of
+Computer Vision, pp. 1–13, 2014.
+

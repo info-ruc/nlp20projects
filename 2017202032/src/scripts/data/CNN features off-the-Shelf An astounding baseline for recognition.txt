@@ -1,0 +1,1639 @@
+CNN Features off-the-shelf: an Astounding Baseline for Recognition
+
+Ali Sharif Razavian Hossein Azizpour
+
+Josephine Sullivan Stefan Carlsson
+
+CVAP, KTH (Royal Institute of Technology)
+
+{razavian,azizpour,sullivan,stefanc}@csc.kth.se
+
+Stockholm, Sweden
+
+Abstract
+
+&11
+
+5HSUHVHQWDWLRQ
+
+Recent results indicate that the generic descriptors ex-
+tracted from the convolutional neural networks are very
+powerful. This paper adds to the mounting evidence that
+this is indeed the case. We report on a series of exper-
+iments conducted for different recognition tasks using the
+publicly available code and model of the OverFeat net-
+work which was trained to perform object classiﬁcation on
+ILSVRC13. We use features extracted from the OverFeat
+network as a generic image representation to tackle the di-
+verse range of recognition tasks of object image classiﬁca-
+tion, scene recognition, ﬁne grained recognition, attribute
+detection and image retrieval applied to a diverse set of
+datasets. We selected these tasks and datasets as they grad-
+ually move further away from the original task and data the
+OverFeat network was trained to solve. Astonishingly,
+we report consistent superior results compared to the highly
+tuned state-of-the-art systems in all the visual classiﬁcation
+tasks on various datasets. For instance retrieval it consis-
+tently outperforms low memory footprint methods except for
+sculptures dataset. The results are achieved using a linear
+SVM classiﬁer (or L2 distance in case of retrieval) applied
+to a feature representation of size 4096 extracted from a
+layer in the net. The representations are further modiﬁed
+using simple augmentation techniques e.g.
+jittering. The
+results strongly suggest that features obtained from deep
+learning with convolutional nets should be the primary can-
+didate in most visual recognition tasks.
+
+1. Introduction
+“Deep learning. How well do you think it would work
+for your computer vision problem?” Most likely this ques-
+tion has been posed in your group’s coffee room. And
+in response someone has quoted recent success stories
+[29, 15, 10] and someone else professed skepticism. You
+may have left the coffee room slightly dejected thinking
+“Pity I have neither the time, GPU programming skills nor
+large amount of labelled data to train my own network to
+
+,PDJH
+
+3DUW
+
+$QQRWDWLRQV
+
+6WURQJ
+'30
+
+/HDUQ
+
+1RUPDOL]HG
+
+3RVH
+
+([WUDFW)HDWXUHV
+5*%JUDGLHQW
+
+/%3
+
+690
+
+Best state of the art
+
+CNN oﬀ-the-shelf
+
+CNN oﬀ-the-shelf + augmentation
+
+Specialized CNN
+
+2
+.
+7
+7
+
+7
+.
+7
+7
+
+9
+.
+3
+7
+
+1
+.
+1
+7
+
+9
+.
+8
+6
+
+9
+6
+
+4
+6
+
+4
+.
+8
+5
+
+5
+6
+
+8
+.
+1
+6
+
+8
+.
+6
+5
+
+3
+.
+3
+5
+
+4
+.
+1
+9
+
+5
+.
+9
+8
+
+9
+8
+
+8
+.
+6
+8
+
+7
+.
+0
+8
+
+7
+.
+4
+7
+
+9
+7
+
+8
+.
+0
+7
+
+9
+.
+9
+6
+
+3
+7
+
+5
+.
+9
+7
+
+9
+.
+4
+7
+
+9
+.
+5
+6
+
+1
+.
+1
+9
+
+3
+.
+9
+8
+
+3
+.
+6
+7
+
+9
+.
+1
+8
+
+3
+.
+4
+8
+
+2
+.
+0
+8
+
+6
+.
+4
+6
+
+4
+.
+7
+6
+
+8
+6
+
+5
+.
+8
+4
+
+4
+.
+5
+4
+
+3
+.
+2
+4
+
+100
+
+80
+
+60
+
+40
+
+O
+
+bject
+
+P
+
+O
+
+m
+
+H
+
+u
+
+w
+
+S
+
+Flo
+
+Bird
+
+Scene
+Classiﬁcatio
+
+Classiﬁcatio
+
+u
+
+R
+
+ers
+
+an
+ecog
+
+bcategorizatio
+
+n
+
+n
+
+bject
+Attrib
+nitio
+
+aris
+Attrib
+ute
+
+D
+
+n
+
+n
+
+B
+
+O
+
+O
+
+B
+
+xford
+uildin
+ute
+etectio
+
+Sculptures
+Scene
+uildin
+etrieval
+
+etectio
+
+gs
+
+gs
+
+R
+
+D
+
+R
+
+m
+
+I
+
+bject
+age
+etrieval
+etrieval
+
+n
+
+R
+
+n
+
+R
+
+Instance
+etrieval
+
+R
+
+etrieval
+
+Figure 1: top) CNN representation replaces pipelines of s.o.a methods
+and achieve better results. e.g. DPD [50].
+bottom) Augmented CNN representation with linear SVM consistently
+outperforms s.o.a. on multiple tasks. Specialized CNN refers to other
+works which speciﬁcally designed the CNN for their task
+
+quickly ﬁnd out the answer”. But when the convolutional
+neural network OverFeat [38] was recently made pub-
+licly available1 it allowed for some experimentation.
+In
+particular we wondered now, not whether one could train
+a deep network speciﬁcally for a given task, but if the fea-
+tures extracted by a deep network - one carefully trained
+on the diverse ImageNet database to perform the speciﬁc
+task of image classiﬁcation - could be exploited for a wide
+variety of vision tasks. We now relate our discussions and
+general ﬁndings because as a computer vision researcher
+you’ve probably had the same questions:
+Prof: First off has anybody else investigated this issue?
+Student: Well it turns out Donahue et al. [10], Zeiler
+and Fergus [48] and Oquab et al. [29] have suggested that
+generic features can be extracted from large CNNs and pro-
+vided some initial evidence to support this claim. But they
+have only considered a small number of visual recognition
+tasks. It would be fun to more thoroughly investigate how
+
+1There are other publicly available deep learning implementations such
+as Alex Krizhevsky’s ConvNet and Berkeley’s Caffe. Benchmarking
+these implementations is beyond the scope of this paper.
+
+powerful these CNN features are. How should we start?
+Prof: The simplest thing we could try is to extract an image
+feature vector from the OverFeat network and combine
+this with a simple linear classiﬁer. The feature vector could
+just be the responses, with the image as input, from one of
+the network’s ﬁnal layers. For which vision tasks do you
+think this approach would be effective?
+Student: Deﬁnitely image classiﬁcation. Several vision
+groups have already produced a big jump in performance
+from the previous sate-of-the-art methods on Pascal VOC.
+But maybe ﬁne-tuning the network was necessary for the
+jump? I’m going to try it on Pascal VOC and just to make
+it a little bit trickier the MIT scene dataset.
+Answer: OverFeat does a very good job even without
+ﬁne-tuning (section 3.2 for details).
+Prof: Okay so that result conﬁrmed previous ﬁndings and
+is perhaps not so surprising. We asked the OverFeat fea-
+tures to solve a problem that they were trained to solve.
+And ImageNet is more-or-less a superset of Pascal VOC.
+Though I’m quite impressed by the indoor scene dataset re-
+sult. What about a less amenable problem?
+Student:
+I know ﬁne-grained classiﬁcation. Here we
+want to distinguish between sub-categories of a category
+such as the different species of ﬂowers. Do you think the
+more generic OverFeat features have sufﬁcient represen-
+tational power to pick up the potentially subtle differences
+between very similar classes?
+Answer:
+It worked great on a standard bird and ﬂower
+database. In its most simplistic form it didn’t beat the latest
+best performing methods but it is a much cleaner solution
+with ample scope for improvement. Actually, adopting a
+set of simple data augmentation techniques (still with lin-
+ear SVM) beats the best performing methods. Impressive!
+(Section 3.4 for details.)
+Prof: Next challenge attribute detection? Let’s see if the
+OverFeat features have encoded something about the se-
+mantic properties of people and objects.
+Student: Do you think the global CNN features extracted
+from the person’s bounding box can cope with the articu-
+lations and occlusions present in the H3D dataset. All the
+best methods do some sort of part alignment before classi-
+ﬁcation and during training.
+Answer: Surprisingly the CNN features on average beat
+poselets and a deformable part model for the person at-
+tributes labelled in the H3D dataset. Wow, how did they
+do that?! They also work extremely well on the object at-
+tribute dataset. Maybe these OverFeat features do indeed
+encode attribute information? (Details in section 3.5.)
+Prof: Can we push things even further? Is there a task
+OverFeat features should struggle with compared to
+more established computer vision systems? Maybe instance
+retrieval. This task drove the development of the SIFT and
+VLAD descriptors and the bag-of-visual-words approach
+
+followed swiftly afterwards. Surely these highly optimized
+engineered vectors and mid-level features should win hands
+down over the generic features?
+Student: I don’t think CNN features have a chance if we
+start comparing to methods that also incorporate 3D geo-
+metric constraints. Let’s focus on descriptor performance.
+Do new school descriptors beat old school descriptors in the
+old school descriptors’ backyard?
+Answer: Very convincing. Ignoring systems that impose
+3D geometry constraints the CNN features are very com-
+petitive on building and holiday datasets (section 4). Fur-
+thermore, doing standard instance retrieval feature process-
+ing (i.e. PCA, whitening, renormalization) it shows superior
+performance compared to low memory footprint methods
+on all retrieval benchmarks except for the sculptures dataset.
+Student: The take home message from all these results?
+Prof: It’s all about the features! SIFT and HOG descriptors
+produced big performance gains a decade ago and now deep
+convolutional features are providing a similar breakthrough
+for recognition. Thus, applying the well-established com-
+puter vision procedures on CNN representations should po-
+tentially push the reported results even further. In any case,
+if you develop any new algorithm for a recognition task then
+it must be compared against the strong baseline of generic
+deep features + simple classiﬁer.
+
+2. Background and Outline
+In this work we use the publicly available trained CNN
+called OverFeat [38]. The structure of this network fol-
+lows that of Krizhevsky et al. [22]. The convolutional lay-
+ers each contain 96 to 1024 kernels of size 3×3 to 7×7.
+Half-wave rectiﬁcation is used as the nonlinear activation
+function. Max pooling kernels of size 3×3 and 5×5 are
+used at different layers to build robustness to intra-class de-
+formations. We used the “large” version of the OverFeat
+network. It takes as input color images of size 221×221.
+Please consult [38] and [22] for further details.
+OverFeat was trained for the image classiﬁcation task of
+ImageNet ILSVRC 2013 [1] and obtained very competitive
+results for the classiﬁcation task of the 2013 challenge and
+won the localization task. ILSVRC13 contains 1.2 million
+images which are hand labelled with the presence/absence
+of 1000 categories. The images are mostly centered and
+the dataset is considered less challenging in terms of clutter
+and occlusion than other object recognition datasets such as
+PASCAL VOC [12].
+We report results on a series of experiments we conducted
+on different recognition tasks. The tasks and datasets were
+selected such that they gradually move further away from
+the task the OverFeat network was trained to perform.
+We have two sections for visual classiﬁcation (Sec. 3) and
+visual instance retrieval (Sec. 4) where we review different
+tasks and datasets and report the ﬁnal results. The crucial
+
+thing to remember is that the CNN features used are trained
+only using ImageNet data though the simple classiﬁers are
+trained using images speciﬁc to the task’s dataset.
+Finally, we have to point out that, given enough computa-
+tional resources, optimizing the CNN features for speciﬁc
+tasks/datasets would probably boost the performance of the
+simplistic system even further [29, 15, 51, 43, 41].
+
+3. Visual Classiﬁcation
+Here we go through different tasks related to visual classi-
+ﬁcation in the following subsections.
+3.1. Method
+For all the experiments, unless stated otherwise, we use the
+ﬁrst fully connected layer (layer 22) of the network as our
+feature vector. Note the max-pooling and rectiﬁcation oper-
+ations are each considered as a separate layer in OverFeat
+which differs from Alex Krizhevsky’s ConvNet number-
+ing. For all the experiments we resize the whole image (or
+cropped sub-window) to 221×221. This gives a vector of
+4096 dimensions. We have two settings:
+
+• The feature vector is further L2 normalized to unit
+length for all the experiments. We use the 4096 di-
+mensional feature vector in combination with a Sup-
+port Vector Machine (SVM) to solve different classiﬁ-
+cation tasks (CNN-SVM).
+
+• We further augment
+
+the training set by adding
+cropped and rotated samples and doing component-
+wise power transform and report separate results (CN-
+Naug+SVM).
+
+For the classiﬁcation scenarios where the labels are not mu-
+tually exclusive (e.g. VOC Object Classiﬁcation or UIUC
+Object attributes) we use a one-against-all strategy, in the
+rest of experiments we use one-against-one linear SVMs
+with voting. For all the experiments we use a linear SVM
+found from eq.1, where we have training data {(xi, yi)}.
+
+minimize
+
+w
+
+(cid:2)w(cid:2)2 + C
+
+1
+2
+
+max(1 − yiwT xi, 0)
+
+(1)
+
+(cid:2)
+
+i
+
+Further information can be found in the implementation de-
+tails at section 3.6.
+3.2. Image Classiﬁcation
+To begin, we adopt the CNN representation to tackle the
+problem of image classiﬁcation of objects and scenes. The
+system should assign (potentially multiple) semantic labels
+to an image. Remember in contrast to object detection, ob-
+ject image classiﬁcation requires no localization of the ob-
+jects. The CNN representation has been optimized for the
+object image classiﬁcation task of ILSVRC. Therefore, in
+this experiment the representation is more aligned with the
+
+ﬁnal task than the rest of experiments. However, we have
+chosen two different image classiﬁcation datasets, objects
+and indoor scenes, whose image distributions differ from
+that of ILSVRC dataset.
+
+3.2.1 Datasets
+
+We use two challenging recognition datasets, Namely, Pas-
+cal VOC 2007 for object image classiﬁcation [12] and the
+MIT-67 indoor scenes [36] for scene recognition.
+Pascal VOC. Pascal VOC 2007 [12] contains ∼10000 im-
+ages of 20 classes including animals, handmade and nat-
+ural objects. The objects are not centered and in general
+the appearance of objects in VOC is perceived to be more
+challenging than ILSVRC. Pascal VOC images come with
+bounding box annotation which are not used in our experi-
+ments.
+MIT-67 indoor scenes. The MIT scenes dataset has 15620
+images of 67 indoor scene classes. The dataset consists
+of different types of stores (e.g. bakery, grocery) residen-
+tial rooms (e.g. nursery room, bedroom), public spaces (e.g.
+inside bus, library, prison cell), leisure places (e.g. buffet,
+fastfood, bar, movietheater) and working places (e.g. of-
+ﬁce, operating room, tv studio). The similarity of the ob-
+jects present in different indoor scenes makes MIT indoor
+an especially difﬁcult dataset compared to outdoor scene
+datasets.
+
+3.2.2 Results of PASCAL VOC Object Classiﬁcation
+
+Table 1 shows the results of the OverFeat CNN rep-
+resentation for object image classiﬁcation. The perfor-
+mance is measured using average precision (AP) criterion
+of VOC 2007 [12]. Since the original representation has
+been trained for the same task (on ILSVRC) we expect the
+results to be relatively high. We compare the results only
+with those methods which have used training data outside
+the standard Pascal VOC 2007 dataset. We can see that the
+method outperforms all the previous efforts by a signiﬁcant
+margin in mean average precision (mAP). Furthermore, it
+has superior average precision on 10 out of 20 classes. It is
+worth mentioning the baselines in Table 1 use sophisticated
+matching systems. The same observation has been recently
+made in another work [29].
+
+Different layers.
+Intuitively one could reason that the
+learnt weights for the deeper layers could become more spe-
+ciﬁc to the images of the training dataset and the task it is
+trained for. Thus, one could imagine the optimal represen-
+tation for each problem lies at an intermediate level of the
+network. To further study this, we trained a linear SVM for
+all classes using the output of each network layer. The re-
+sult is shown in Figure 2a. Except for the fully connected
+
+aero bike bird boat bottle
+
+bus
+
+car
+
+cat
+
+chair cow table dog horse mbike person plant
+
+sheep sofa train
+
+tv mAP
+
+GHM[8]
+AGS[11]
+NUS[39]
+
+76.7 74.7 53.8 72.1
+82.2 83.0 58.4 76.1
+82.5 79.6 64.8 73.4
+
+CNN-SVM
+88.5 81.0 83.5 82.0
+CNNaug-SVM 90.1 84.4 86.5 84.1
+
+40.4
+56.4
+54.2
+
+42.0
+48.4
+
+71.7 83.6 66.5 52.5 57.5 62.8 51.1
+77.5 88.8 69.1 62.2 61.8 64.2 51.3
+75.0 77.5 79.2 46.2 62.7 41.4 74.6
+
+72.5 85.3 81.6 59.9 58.5 66.5 77.8
+73.4 86.7 85.4 61.3 67.6 69.6 84.0
+
+81.4
+85.4
+85.0
+
+81.8
+85.4
+
+71.5
+80.2
+76.8
+
+78.8
+80.0
+
+86.5
+91.1
+91.1
+
+90.2
+92.0
+
+36.4
+48.1
+53.9
+
+54.8
+56.9
+
+55.3
+61.7
+61.0
+
+71.1
+76.7
+
+60.6 80.6 57.8 64.7
+67.7 86.3 70.9 71.1
+67.5 83.6 70.6 70.5
+
+62.6 87.2 71.8 73.9
+67.3 89.1 74.9 77.2
+
+Table 1: Pascal VOC 2007 Image Classiﬁcation Results compared to other methods which also use training data outside VOC. The CNN representation
+is not tuned for the Pascal VOC dataset. However, GHM [8] learns from VOC a joint representation of bag-of-visual-words and contextual information.
+AGS [11] learns a second layer of representation by clustering the VOC data into subcategories. NUS [39] trains a codebook for the SIFT, HOG and LBP
+descriptors from the VOC dataset. Oquab et al. [29] ﬁxes all the layers trained on ImageNet then it adds and optimizes two fully connected layers on the
+VOC dataset and achieves better results (77.7) indicating the potential to boost the performance by further adaptation of the representation to the target
+task/dataset.
+
+mean AP
+
+Method
+
+ROI + Gist[36]
+DPM[30]
+Object Bank[24]
+RBow[31]
+BoP[21]
+miSVM[25]
+D-Parts[40]
+IFV[21]
+MLrep[9]
+
+ 3
+
+ 7
+
+11
+
+15
+level
+
+19
+
+23
+
+(a)
+
+(b)
+
+CNN-SVM
+CNNaug-SVM
+CNN(AlexConvNet)+multiscale pooling [16]
+
+1
+
+0.8
+
+0.6
+
+0.4
+
+0.2
+
+mean Accuracy
+
+26.1
+30.4
+37.6
+37.9
+46.1
+46.4
+51.4
+60.8
+64.0
+
+58.4
+69.0
+68.9
+
+Figure 2: a) Evolution of the mean image classiﬁcation AP over PAS-
+CAL VOC 2007 classes as we use a deeper representation from the
+OverFeat CNN trained on the ILSVRC dataset. OverFeat considers
+convolution, max pooling, nonlinear activations, etc. as separate layers.
+The re-occurring decreases in the plot is of the activation function layer
+which loses information by half rectifying the signal. b) Confusion matrix
+for the MIT-67 indoor dataset. Some of the off-diagonal confused classes
+have been annotated, these particular cases could be hard even for a human
+to distinguish.
+
+last 2 layers the performance increases. We observed the
+same trend in the individual class plots. The subtle drops in
+the mid layers (e.g. 4, 8, etc.) is due to the “ReLU” layer
+which half-rectiﬁes the signals. Although this will help the
+non-linearity of the trained model in the CNN, it does not
+help if immediately used for classiﬁcation.
+
+3.2.3 Results of MIT 67 Scene Classiﬁcation
+
+Table 2 shows the results of different methods on the MIT
+indoor dataset. The performance is measured by the aver-
+age classiﬁcation accuracy of different classes (mean of the
+confusion matrix diagonal). Using a CNN off-the-shelf rep-
+resentation with linear SVMs training signiﬁcantly outper-
+forms a majority of the baselines. The non-CNN baselines
+beneﬁt from a broad range of sophisticated designs. con-
+fusion matrix of the CNN-SVM classiﬁer on the 67 MIT
+classes. It has a strong diagonal. The few relatively bright
+off-diagonal points are annotated with their ground truth
+and estimated labels. One can see that in these examples the
+two labels could be challenging even for a human to distin-
+
+Table 2: MIT-67 indoor scenes dataset. The MLrep [9] has a ﬁne
+tuned pipeline which takes weeks to select and train various part detectors.
+Furthermore, Improved Fisher Vector (IFV) representation has dimension-
+ality larger than 200K. [16] has very recently tuned a multi-scale orderless
+pooling of CNN features (off-the-shelf) suitable for certain tasks. With this
+simple modiﬁcation they achieved signiﬁcant average classiﬁcation accu-
+racy of 68.88.
+
+guish between, especially for close-up views of the scenes.
+
+3.3. Object Detection
+Unfortunately, we have not conducted any experiments for
+using CNN off-the-shelf features for the task of object de-
+tection. But it is worth mentioning that Girshick et al. [15]
+have reported remarkable numbers on PASCAL VOC 2007
+using off-the-shelf features from Caffe code. We repeat
+their relevant results here. Using off-the-shelf features they
+achieve a mAP of 46.2 which already outperforms state
+of the art by about 10%. This adds to our evidences of
+how powerful the CNN features off-the-shelf are for visual
+recognition tasks.
+Finally, by further ﬁne-tuning the representation for PAS-
+CAL VOC 2007 dataset (not off-the-shelf anymore) they
+achieve impressive results of 53.1.
+3.4. Fine grained Recognition
+Fine grained recognition has recently become popular due
+to its huge potential for both commercial and cataloging
+applications. Fine grained recognition is specially inter-
+
+esting because it involves recognizing subclasses of the
+same object class such as different bird species, dog breeds,
+ﬂower types, etc. The advent of many new datasets with
+ﬁne-grained annotations such as Oxford ﬂowers [27], Cal-
+tech bird species [45], dog breeds [1], cooking activi-
+ties [37], cats and dogs [32] has helped the ﬁeld develop
+quickly. The subtlety of differences across different subor-
+dinate classes (as opposed to different categories) requires a
+ﬁne-detailed representation. This characteristic makes ﬁne-
+grained recognition a good test of whether a generic repre-
+sentation can capture these subtle details.
+
+3.4.1 Datasets
+
+We evaluate CNN features on two ﬁne-grained recognition
+datasets CUB 200-2011 and 102 Flowers.
+Caltech-UCSD Birds (CUB) 200-2011 dataset [45] is cho-
+sen since many recent methods have reported performance
+on it. It contains 11,788 images of 200 bird subordinates.
+5994 images are used for training and 5794 for evaluation.
+Many of the species in the dataset exhibit extremely subtle
+differences which are sometimes even hard for humans to
+distinguish. Multiple levels of annotation are available for
+this dataset - bird bounding boxes, 15 part landmarks, 312
+binary attributes and boundary segmentation. The majority
+of the methods applied use the bounding box and part land-
+marks for training. In this work we only use the bounding
+box annotation during training and testing.
+Oxford 102 ﬂowers dataset [27] contains 102 categories.
+Each category contains 40 to 258 of images. The ﬂowers
+appear at different scales, pose and lighting conditions. Fur-
+thermore, the dataset provides segmentation for all the im-
+ages.
+
+3.4.2 Results
+
+Table 3 reports the results of the CNN-SVM compared to
+the top performing baselines on the CUB 200-2011 dataset.
+The ﬁrst two entries of the table represent the methods
+which only use bounding box annotations. The rest of base-
+lines use part annotations for training and sometimes for
+evaluation as well.
+Table 4 shows the performance of CNN-SVM and other
+baselines on the ﬂowers dataset. All methods, bar the CNN-
+SVM, use the segmentation of the ﬂower from the back-
+ground. It can be seen that CNN-SVM outperforms all basic
+representations and their multiple kernel combination even
+without using segmentation.
+
+3.5. Attribute Detection
+
+An attribute within the context of computer vision is de-
+ﬁned as some semantic or abstract quality which different
+instances/categories share.
+
+Method
+
+Sift+Color+SVM[45]
+Pose pooling kernel[49]
+RF[47]
+DPD[50]
+Poof[5]
+
+CNN-SVM
+CNNaug-SVM
+DPD+CNN(DeCaf)+LogReg[10]
+
+Part info
+
+mean Accuracy
+
+
+(cid:2)
+(cid:2)
+(cid:2)
+(cid:2)
+
+
+
+(cid:2)
+
+17.3
+28.2
+19.2
+51.0
+56.8
+
+53.3
+61.8
+65.0
+
+Table 3: Results on CUB 200-2011 Bird dataset. The table dis-
+tinguishes between methods which use part annotations for training and
+sometimes for evaluation as well and those that do not.
+[10] generates
+a pose-normalized CNN representation using DPD [50] detectors which
+signiﬁcantly boosts the results to 64.96.
+
+Method
+
+mean Accuracy
+
+HSV [27]
+SIFT internal [27]
+SIFT boundary [27]
+HOG [27]
+HSV+SIFTi+SIFTb+HOG(MKL) [27]
+BOW(4000) [14]
+SPM(4000) [14]
+FLH(100) [14]
+BiCos seg [7]
+Dense HOG+Coding+Pooling[2] w/o seg
+Seg+Dense HOG+Coding+Pooling[2]
+
+CNN-SVM w/o seg
+CNNaug-SVM w/o seg
+
+43.0
+55.1
+32.0
+49.6
+72.8
+65.5
+67.4
+72.7
+79.4
+76.7
+80.7
+
+74.7
+86.8
+
+Table 4: Results on the Oxford 102 Flowers dataset. All the methods
+use segmentation to subtract the ﬂowers from background unless stated
+otherwise.
+
+3.5.1 Datasets
+
+We use two datasets for attribute detection. The ﬁrst dataset
+is the UIUC 64 object attributes dataset [13]. There are 3
+categories of attributes in this dataset: shape (e.g. is 2D
+boxy), part (e.g. has head) or material (e.g. is furry). The
+second dataset is the H3D dataset [6] which deﬁnes 9 at-
+tributes for a subset of the person images from Pascal VOC
+2007. The attributes range from “has glasses” to “is male”.
+
+3.5.2 Results
+
+Table 5 compares CNN features performance to state-of-
+the-art. Results are reported for both across and within cat-
+egories attribute detection (refer to [13] for details).
+Table 6 reports the results of the detection of 9 human at-
+tributes on the H3D dataset including poselets and DPD
+[50]. Both poselets and DPD use part-level annotations dur-
+ing training while for the CNN we only extract one feature
+from the bounding box around the person. The CNN repre-
+sentation performs as well as DPD and signiﬁcantly outper-
+forms poselets.
+
+Method
+
+within categ.
+
+across categ. mAUC
+
+Farhadi et al. [13]
+Latent Model[46]
+Sparse Representation[44]
+att. based classiﬁcation[23]
+
+CNN-SVM
+CNNaug-SVM
+
+83.4
+62.2
+89.6
+
+-
+
+91.7
+93.7
+
+79.9
+90.2
+
+-
+
+-
+
+73.0
+
+-
+-
+
+73.7
+
+82.2
+84.9
+
+89.0
+91.5
+
+Table 5: UIUC 64 object attribute dataset results. Compared to other
+existing methods the CNN features perform very favorably.
+
+Method
+
+male lg hair glasses hat
+
+tshirt lg slvs shorts jeans lg pants mAP
+
+Freq[6]
+SPM[6]
+Poselets[6]
+DPD[50]
+
+59.3 30.0
+68.1 40.0
+82.4 72.5
+83.7 70.0
+
+CNN-SVM
+83.0 67.6
+CNNaug-SVM 84.8 71.0
+
+22.0
+25.9
+55.6
+38.1
+
+39.7
+42.5
+
+16.6 23.5 49.0
+35.3 30.6 58.0
+60.1 51.2 74.2
+73.4 49.8 78.1
+
+17.9 33.8
+31.4 39.5
+45.5 54.7
+64.1 78.1
+
+66.8 52.6 82.2
+66.9 57.7 84.0
+
+78.2 71.7
+79.1 75.7
+
+74.7
+84.3
+90.3
+93.5
+
+95.2
+95.3
+
+36.3
+45.9
+65.2
+69.9
+
+70.8
+73.0
+
+Table 6: H3D Human Attributes dataset results. A CNN represen-
+tation is extracted from the bounding box surrounding the person. All the
+other methods require the part annotations during training. The ﬁrst row
+shows the performance of a random classiﬁer. The work of Zhang et al.
+[51] has adapted the CNN architecture speciﬁcally for the task of attribute
+detection and achieved the impressive performance of 78.98 in mAP. This
+further highlights the importance of adapting the CNN architecture for dif-
+ferent tasks given enough computational resources.
+3.6. Implementation Details
+We have used precomputed linear kernels with libsvm for
+the CNN-SVM experiments and liblinear for the CNNaug-
+SVM with the primal solver (#samples (cid:3) #dim). Data aug-
+mentation is done by making 16 representations for each
+sample (original image, 5 crops, 2 rotation and their mir-
+rors). The cropping is done such that the subwindow con-
+tains 4/9 of the original image area from the 4 corners and
+the center. We noted the following phenomenon for all
+datasets. At the test time, when we have multiple repre-
+sentations for a test image, taking the sum over all the re-
+sponses works outperforms taking the max response.
+In
+CNNaug-SVM we use signed component-wise power trans-
+form by raising each dimension to the power of 2. For the
+datasets which with bounding box (i.e. birds, H3D) we en-
+larged the bounding box by 150% to include some context.
+In the early stages of our experiments we noticed that us-
+ing one-vs-one approach works better than structured SVM
+for multi-class learning. Finally, we noticed that using the
+imagemagick library for image resizing has slight adverse
+effects compared to matlab imresize function. The cross-
+validated SVM parameter (C) used for different datasets are
+as follows. VOC2007:0.2, MIT67:2 , Birds:2, Flowers:2,
+H3D:0.2 UIUCatt:0.2.2
+
+2The
+
+details
+
+of
+
+features,
+scripts and updated tables can be found at our project webpage:
+http://www.csc.kth.se/cvap/cvg/DL/ots/
+
+system including
+
+extracted
+
+our
+
+4. Visual Instance Retrieval
+In this section we compare the CNN representation to
+the current state-of-the-art retrieval pipelines including
+VLAD[4, 52], BoW, IFV[33], Hamming Embedding[17]
+and BoB[3]. Unlike the CNN representation, all the above
+methods use dictionaries trained on similar or same dataset
+as they are tested on. For a fair comparison between the
+methods, we only report results on representations with
+relevant order of dimensions and exclude post-processing
+methods like spatial re-ranking and query expansion.
+
+4.1. Datasets
+We report retrieval results on ﬁve common datasets in the
+area as follows:
+Oxford5k buildings[34] This is a collection of 5063 refer-
+ence photos gathered from ﬂickr, and 55 queries of different
+buildings. From an architectural standpoint the buildings
+in Oxford5k are very similar. Therefore it is a challenging
+benchmark for generic features such as CNN.
+Paris6k buildings[35] Similar to the Oxford5k, this col-
+lection has 55 queries images of buildings and monuments
+from Paris and 6412 reference photos. The landmarks in
+Paris6k have more diversity than those in Oxford5k.
+Sculptures6k[3] This dataset brings the challenge of
+smooth and texture-less item retrieval. It has 70 query im-
+ages and contains 6340 reference images which is halved to
+train/test subsets. The results on this dataset highlights the
+extent to which CNN features are able to encode shape.
+Holidays dataset[19] This dataset contains 1491 images
+of which 500 are queries.
+It contains images of differ-
+ent scenes, items and monuments. Unlike the ﬁrst three
+datasets, it exhibits a diverse set of images. For the above
+datasets we reported mAP as the measurement metric.
+UKbench[28] A dataset of images of 2250 items each from
+four different viewpoints. The UKbench provides a good
+benchmark for viewpoint changes. We reported recall at
+top four as the performance over UKBench.
+
+4.2. Method
+Similar to the previous tasks we use the L2 normalized out-
+put of the ﬁrst fully connected layer as representation.
+Spatial search. The items of interest can appear at different
+locations and scales in the test and reference images mak-
+ing some form of spatial search necessary. Our crude search
+has the following form. For each image we extract multi-
+ple sub-patches of different sizes at different locations. Let
+h (the number of levels) represent the number of different
+sized patches we extract. At level i, 1 ≤ i ≤ h, we extract
+i2 overlapping sub-patches of the same size whose union
+covers the whole image. For each extracted sub-patch we
+compute its CNN representation. The distance between a
+query sub-patch and a reference image is deﬁned as the min-
+
+Dim
+
+Oxford5k Paris6k
+
+Sculp6k Holidays UKBench
+45.4[3] N/A
+
+N/A
+BoB[3]
+200k
+BoW
+2k
+IFV[33]
+32k
+VLAD[4]
+64k
+CVLAD[52]
+64k
+HE+burst[17]
+64k
+AHE+burst[17]
+Fine vocab[26]
+64k
+ASMK*+MA[42] 64k
+ASMK+MA[42]
+64k
+
+N/A
+36.4[20]
+41.8[20]
+55.5 [4]
+47.8[52]
+64.5[42]
+66.6[42]
+74.2[26]
+80.4[42]
+81.7[42]
+
+N/A
+46.0[35] 8.1[3]
+-
+-
+-
+-
+-
+74.9[26]
+77.0[42]
+78.2[42]
+
+-
+-
+-
+-
+-
+-
+-
+-
+
+54.0[4]
+62.6[20]
+64.6[4]
+81.9[52]
+78.0[42]
+79.4[42]
+74.9[26]
+81.0[42]
+82.2[42]
+
+N/A
+70.3[20]
+83.8[20]
+-
+89.3[52]
+-
+-
+-
+-
+-
+
+CNN
+CNN-ss
+CNNaug-ss
+CNN+BOW[16]
+
+4k
+32.2
+32-120k 55.6
+68.0
+4-15k
+2k
+-
+
+49.5
+69.7
+79.5
+-
+
+24.1
+31.1
+42.3
+-
+
+64.2
+76.9
+84.3
+80.2
+
+76.0
+86.9
+91.1
+-
+
+Table 7: The result of object retrieval on 5 datasets. All the meth-
+ods except the CNN have their representation trained on datasets simi-
+lar to those they report the results on. The spatial search result on Ox-
+ford5k,Paris6k and Sculpture6k, are reported for hr = 4 and hq = 3. It
+can be seen that CNN features, when compared with low-memory footprint
+methods, produce consistent high results. ASMK+MA [42] and ﬁne-vocab
+[26] use in order of million codebooks but with various tricks including bi-
+narization they reduce the memory foot print to 64k.
+
+imum L2 distance between the query sub-patch and respec-
+tive reference sub-patches. Then, the distance between the
+reference and the query image is set to the average distance
+of each query sub-patch to the reference image. In contrast
+to visual classiﬁcation pipelines, we extract features from
+the smallest square containing the region of interest (as op-
+posed to resizing). In the reset of the text, hr denotes to the
+number of levels for the reference image and similarly hq
+for the query image.
+Feature Augmentation.
+instance retrieval
+methods have many feature processing steps. Adopting the
+proposed pipeline of [18] and followed by others [16, 42]
+we process the extracted 4096 dim features in the following
+way: L2 normalize → PCA dimensionality reduction →
+whitening → L2 renormalization. Finally, we further use
+a signed component wise power transform and raise each
+dimension of the feature vector to the power of 2. For all
+datasets in the PCA step we reduce the dimensionality of
+the feature vector to 500. All the L2 normalizations are ap-
+plied to achieve unit length.
+
+Successful
+
+4.3. Results
+
+The result of different retrieval methods applied to 5
+datasets are in table 7. Spatial search is only used for the
+ﬁrst three datasets which have samples in different scales
+and locations. For the other two datasets we used the same
+jittering as explained in Sec. 3.1
+
+It should be emphasized that we only reported the results on
+low memory footprint methods.
+
+5. Conclusion
+In this work, we used an off-the-shelf CNN representa-
+tion, OverFeat, with simple classiﬁers to address different
+recognition tasks. The learned CNN model was originally
+optimized for the task of object classiﬁcation in ILSVRC
+2013 dataset. Nevertheless, it showed itself to be a strong
+competitor to the more sophisticated and highly tuned state-
+of-the-art methods. The same trend was observed for var-
+ious recognition tasks and different datasets which high-
+lights the effectiveness and generality of the learned repre-
+sentations. The experiments conﬁrm and extend the results
+reported in [10]. We have also pointed to the results from
+works which speciﬁcally optimize the CNN representations
+for different tasks/datasets achieving even superior results.
+Thus, it can be concluded that from now on, deep learning
+with CNN has to be considered as the primary candidate in
+essentially any visual recognition task.
+
+Acknowledgment. We gratefully acknowledge the sup-
+port of NVIDIA Corporation with the donation of the Tesla
+K40 GPUs to this research. We further would like to thank
+Dr. Atsuto Maki, Dr. Pierre Sermanet, Dr. Ross Girshick,
+and Dr. Relja Arandjelovi´c for their helpful comments.
+
+References
+[1] Imagenet
+
+large
+
+scale
+
+visual
+
+2013
+
+lenge
+net.org/challenges/LSVRC/2013/.
+
+(ilsvrc2013).
+
+recognition
+chal-
+http://www.image-
+
+[2] A. Angelova and S. Zhu. Efﬁcient object detection and seg-
+
+mentation for ﬁne-grained recognition. In CVPR, 2013.
+
+[3] R. Arandjelovi´c and A. Zisserman. Smooth object retrieval
+
+using a bag of boundaries. In ICCV, 2011.
+
+[4] R. Arandjelovi´c and A. Zisserman. All about VLAD.
+
+In
+
+CVPR, 2013.
+
+[5] T. Berg and P. N. Belhumeur. Poof: Part-based one-vs.-one
+features for ﬁne-grained categorization, face veriﬁcation, and
+attribute estimation. In CVPR, 2013.
+
+[6] L. D. Bourdev, S. Maji, and J. Malik. Describing people: A
+poselet-based approach to attribute classiﬁcation. In ICCV,
+2011.
+
+[7] Y. Chai, V. S. Lempitsky, and A. Zisserman. Bicos: A bi-
+In
+
+level co-segmentation method for image classiﬁcation.
+ICCV, 2011.
+
+[8] Q. Chen, Z. Song, Y. Hua, Z. Huang, and S. Yan. Hierarchi-
+cal matching with side information for image classiﬁcation.
+In CVPR, 2012.
+
+[9] C. Doersch, A. Gupta, and A. A. Efros. Mid-level visual
+element discovery as discriminative mode seeking. In NIPS,
+2013.
+
+[10] J. Donahue, Y. Jia, O. Vinyals, J. Hoffman, N. Zhang,
+E. Tzeng, and T. Darrell. Decaf: A deep convolutional acti-
+vation feature for generic visual recognition. In ICML, 2014.
+[11] J. Dong, W. Xia, Q. Chen, J. Feng, Z. Huang, and S. Yan.
+
+Subcategory-aware object classiﬁcation. In CVPR, 2013.
+
+[12] M. Everingham, L. Van Gool, C. K. I. Williams, J. Winn,
+and A. Zisserman. The PASCAL Visual Object Classes
+Challenge 2012 (VOC2012) Results.
+http://www.pascal-
+network.org/challenges/VOC/voc2012/workshop/index.html.
+[13] A. Farhadi, I. Endres, D. Hoiem, and D. A. Forsyth. Describ-
+
+ing objects by their attributes. In CVPR, 2009.
+
+[14] B. Fernando, E. Fromont, and T. Tuytelaars. Mining mid-
+level features for image classiﬁcation. International Journal
+of Computer Vision, 2014.
+
+[15] R. B. Girshick, J. Donahue, T. Darrell, and J. Malik. Rich
+feature hierarchies for accurate object detection and semantic
+segmentation. arxiv:1311.2524 [cs.CV], 2013.
+
+[16] Y. Gong, L. Wang, R. Guo, and S. Lazebnik. Multi-scale
+orderless pooling of deep convolutional activation features.
+CoRR, 2014.
+
+[17] M. Jain, H. J´egou, and P. Gros. Asymmetric hamming em-
+taking the best of our bits for large scale image
+
+bedding:
+search. In ACM Multimedia, pages 1441–1444, 2011.
+
+[18] H. J´egou and O. Chum. Negative evidences and co-
+occurences in image retrieval: The beneﬁt of pca and whiten-
+ing. In ECCV, pages 774–787, 2012.
+
+[19] H. J´egou, M. Douze, and C. Schmid. Hamming embedding
+and weak geometric consistency for large scale image search.
+In ECCV, 2008.
+
+[20] H. J´egou, F. Perronnin, M. Douze, J. S´anchez, P. P´erez, and
+C. Schmid. Aggregating local image descriptors into com-
+pact codes. IEEE Transactions on Pattern Analysis and Ma-
+chine Intelligence, 34(9):1704–1716, 2012.
+
+[21] M. Juneja, A. Vedaldi, C. V. Jawahar, and A. Zisserman.
+Blocks that shout: Distinctive parts for scene classiﬁcation.
+In CVPR, 2013.
+
+[22] A. Krizhevsky, I. Sutskever, and G. E. Hinton.
+
+Imagenet
+In
+
+classiﬁcation with deep convolutional neural networks.
+NIPS, 2012.
+
+[23] C. H. Lampert, H. Nickisch, and S. Harmeling. Attribute-
+based classiﬁcation for zero-shot visual object categoriza-
+tion. IEEE Transactions on Pattern Analysis and Machine
+Intelligence, 36(3), 2014.
+
+[24] L.-J. Li, H. Su, E. P. Xing, and F.-F. Li. Object bank: A high-
+level image representation for scene classiﬁcation & seman-
+tic feature sparsiﬁcation. In NIPS, 2010.
+
+[25] Q. Li, J. Wu, and Z. Tu. Harvesting mid-level visual concepts
+
+from large-scale internet images. In CVPR, 2013.
+
+[26] A. Mikul´ık, M. Perdoch, O. Chum, and J. Matas. Learning a
+
+ﬁne vocabulary. In ECCV, pages 1–14, 2010.
+
+[27] M.-E. Nilsback and A. Zisserman. Automated ﬂower classi-
+ﬁcation over a large number of classes. In Proceedings of the
+Indian Conference on Computer Vision, Graphics and Image
+Processing, Dec 2008.
+
+[28] D. Nist´er and H. Stew´enius. Scalable recognition with a vo-
+
+cabulary tree. In CVPR, 2006.
+
+[29] M. Oquab, L. Bottou, I. Laptev, and J. Sivic. Learning and
+transferring mid-level image representations using convolu-
+tional neural networks. Technical Report HAL-00911179,
+INRIA, 2013.
+
+[30] M. Pandey and S. Lazebnik. Scene recognition and weakly
+supervised object localization with deformable part-based
+models. In ICCV, 2011.
+
+[31] S. N. Parizi, J. G. Oberlin, and P. F. Felzenszwalb. Reconﬁg-
+
+urable models for scene recognition. In CVPR, 2012.
+
+[32] O. M. Parkhi, A. Vedaldi, A. Zisserman, and C. V. Jawahar.
+
+Cats and dogs. In CVPR, 2012.
+
+[33] F. Perronnin, Y. Liu, J. S´anchez, and H. Poirier. Large-scale
+In CVPR,
+
+image retrieval with compressed ﬁsher vectors.
+2010.
+
+[34] J. Philbin, O. Chum, M. Isard, J. Sivic, and A. Zisser-
+man. Object retrieval with large vocabularies and fast spatial
+matching. In CVPR, 2007.
+
+[35] J. Philbin, O. Chum, M. Isard, J. Sivic, and A. Zisserman.
+Lost in quantization: Improving particular object retrieval in
+large scale image databases. In CVPR, 2008.
+
+[36] A. Quattoni and A. Torralba. Recognizing indoor scenes. In
+
+CVPR, 2009.
+
+[37] M. Rohrbach, S. Amin, M. Andriluka, and B. Schiele. A
+database for ﬁne grained activity detection of cooking activ-
+ities. In CVPR, 2012.
+
+[38] P. Sermanet, D. Eigen, X. Zhang, M. Mathieu, R. Fergus,
+and Y. LeCun. Overfeat: Integrated recognition, localization
+and detection using convolutional networks. In ICLR, 2014.
+[39] Z. Song, Q. Chen, Z. Huang, Y. Hua, and S. Yan. Contextu-
+
+alizing object detection and classiﬁcation. In CVPR, 2011.
+
+[40] J. Sun and J. Ponce. Learning discriminative part detectors
+for image classiﬁcation and cosegmentation. In ICCV, 2013.
+[41] Y. Taigman, M. Yang, M. Ranzato, and L. Wolf. Deepface:
+Closing the gap to human-level performance in face veriﬁca-
+tion. In CVPR, 2014.
+
+[42] G. Tolias, Y. S. Avrithis, and H. J´egou. To aggregate or not
+to aggregate: Selective match kernels for image search. In
+ICCV, pages 1401–1408, 2013.
+
+[43] A. Toshev and C. Szegedy. Deeppose: Human pose estima-
+
+tion via deep neural networks. In CVPR, 2014.
+
+[44] G. Tsagkatakis and A. E. Savakis. Sparse representations and
+distance learning for attribute based category recognition. In
+ECCV Workshops (1), pages 29–42, 2010.
+
+[45] C. Wah, S. Branson, P. Welinder, P. Perona, and S. Belongie.
+The Caltech-UCSD Birds-200-2011 Dataset. Technical Re-
+port CNS-TR-2011-001, California Institute of Technology,
+2011.
+
+[46] Y. Wang and G. Mori. A discriminative latent model of ob-
+
+ject classes and attributes. In ECCV, 2010.
+
+[47] B. Yao, A. Khosla, and F.-F. Li. Combining randomization
+and discrimination for ﬁne-grained image categorization. In
+CVPR, 2011.
+
+[48] M. D. Zeiler and R. Fergus. Visualizing and understanding
+
+convolutional networks. CoRR, abs/1311.2901, 2013.
+
+[49] N. Zhang, R. Farrell, and T. Darrell. Pose pooling kernels for
+
+sub-category recognition. In CVPR, 2012.
+
+[50] N. Zhang, R. Farrell, F. Iandola, and T. Darrell. Deformable
+part descriptors for ﬁne-grained recognition and attribute
+prediction. In ICCV, 2013.
+
+[51] N. Zhang, M. Paluri, M. Ranzato, T. Darrell, and L. Bourdev.
+Panda: Pose aligned networks for deep attribute modeling. In
+CVPR, 2014.
+
+[52] W.-L. Zhao, H. J´egou, G. Gravier, et al. Oriented pooling for
+dense and non-dense rotation-invariant features. In BMVC,
+2013.
+
