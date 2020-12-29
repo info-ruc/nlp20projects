@@ -1,0 +1,2277 @@
+Deep Reinforcement Learning with Double Q-learning
+
+Hado van Hasselt and Arthur Guez and David Silver
+
+Google DeepMind
+
+5
+1
+0
+2
+
+ 
+c
+e
+D
+8
+
+ 
+
+ 
+ 
+]
+
+G
+L
+.
+s
+c
+[
+ 
+ 
+
+3
+v
+1
+6
+4
+6
+0
+
+.
+
+9
+0
+5
+1
+:
+v
+i
+X
+r
+a
+
+Abstract
+
+The popular Q-learning algorithm is known to overestimate
+action values under certain conditions. It was not previously
+known whether, in practice, such overestimations are com-
+mon, whether they harm performance, and whether they can
+generally be prevented. In this paper, we answer all these
+questions afﬁrmatively. In particular, we ﬁrst show that the
+recent DQN algorithm, which combines Q-learning with a
+deep neural network, suffers from substantial overestimations
+in some games in the Atari 2600 domain. We then show that
+the idea behind the Double Q-learning algorithm, which was
+introduced in a tabular setting, can be generalized to work
+with large-scale function approximation. We propose a spe-
+ciﬁc adaptation to the DQN algorithm and show that the re-
+sulting algorithm not only reduces the observed overestima-
+tions, as hypothesized, but that this also leads to much better
+performance on several games.
+
+The goal of reinforcement learning (Sutton and Barto, 1998)
+is to learn good policies for sequential decision problems,
+by optimizing a cumulative future reward signal. Q-learning
+(Watkins, 1989) is one of the most popular reinforcement
+learning algorithms, but it is known to sometimes learn un-
+realistically high action values because it includes a maxi-
+mization step over estimated action values, which tends to
+prefer overestimated to underestimated values.
+
+In previous work, overestimations have been attributed
+to insufﬁciently ﬂexible function approximation (Thrun and
+Schwartz, 1993) and noise (van Hasselt, 2010, 2011). In
+this paper, we unify these views and show overestimations
+can occur when the action values are inaccurate, irrespective
+of the source of approximation error. Of course, imprecise
+value estimates are the norm during learning, which indi-
+cates that overestimations may be much more common than
+previously appreciated.
+
+It is an open question whether, if the overestimations
+do occur, this negatively affects performance in practice.
+Overoptimistic value estimates are not necessarily a prob-
+lem in and of themselves. If all values would be uniformly
+higher then the relative action preferences are preserved and
+we would not expect the resulting policy to be any worse.
+Furthermore, it is known that sometimes it is good to be op-
+timistic: optimism in the face of uncertainty is a well-known
+Copyright c(cid:13) 2016, Association for the Advancement of Artiﬁcial
+Intelligence (www.aaai.org). All rights reserved.
+
+exploration technique (Kaelbling et al., 1996). If, however,
+the overestimations are not uniform and not concentrated at
+states about which we wish to learn more, then they might
+negatively affect the quality of the resulting policy. Thrun
+and Schwartz (1993) give speciﬁc examples in which this
+leads to suboptimal policies, even asymptotically.
+
+To test whether overestimations occur in practice and at
+scale, we investigate the performance of the recent DQN al-
+gorithm (Mnih et al., 2015). DQN combines Q-learning with
+a ﬂexible deep neural network and was tested on a varied
+and large set of deterministic Atari 2600 games, reaching
+human-level performance on many games. In some ways,
+this setting is a best-case scenario for Q-learning, because
+the deep neural network provides ﬂexible function approx-
+imation with the potential for a low asymptotic approxima-
+tion error, and the determinism of the environments prevents
+the harmful effects of noise. Perhaps surprisingly, we show
+that even in this comparatively favorable setting DQN some-
+times substantially overestimates the values of the actions.
+
+We show that the idea behind the Double Q-learning algo-
+rithm (van Hasselt, 2010), which was ﬁrst proposed in a tab-
+ular setting, can be generalized to work with arbitrary func-
+tion approximation, including deep neural networks. We use
+this to construct a new algorithm we call Double DQN. We
+then show that this algorithm not only yields more accurate
+value estimates, but leads to much higher scores on several
+games. This demonstrates that the overestimations of DQN
+were indeed leading to poorer policies and that it is beneﬁ-
+cial to reduce them. In addition, by improving upon DQN
+we obtain state-of-the-art results on the Atari domain.
+
+Background
+
+To solve sequential decision problems we can learn esti-
+mates for the optimal value of each action, deﬁned as the
+expected sum of future rewards when taking that action and
+following the optimal policy thereafter. Under a given policy
+π, the true value of an action a in a state s is
+Qπ(s, a) ≡ E [R1 + γR2 + . . . | S0 = s, A0 = a, π] ,
+where γ ∈ [0, 1] is a discount factor that trades off the impor-
+tance of immediate and later rewards. The optimal value is
+then Q∗(s, a) = maxπ Qπ(s, a). An optimal policy is eas-
+ily derived from the optimal values by selecting the highest-
+valued action in each state.
+
+Estimates for the optimal action values can be learned
+using Q-learning (Watkins, 1989), a form of temporal dif-
+ference learning (Sutton, 1988). Most interesting problems
+are too large to learn all action values in all states sepa-
+rately. Instead, we can learn a parameterized value function
+Q(s, a; θt). The standard Q-learning update for the param-
+eters after taking action At in state St and observing the
+immediate reward Rt+1 and resulting state St+1 is then
+θt+1 = θt +α(Y Q
+where α is a scalar step size and the target Y Q
+
+t −Q(St, At; θt))∇θtQ(St, At; θt) . (1)
+is deﬁned as
+
+t
+
+Y Q
+t ≡ Rt+1 + γ max
+
+a
+
+Q(St+1, a; θt) .
+
+(2)
+
+This update resembles stochastic gradient descent, updating
+the current value Q(St, At; θt) towards a target value Y Q
+t .
+
+Deep Q Networks
+A deep Q network (DQN) is a multi-layered neural network
+that for a given state s outputs a vector of action values
+Q(s,· ; θ), where θ are the parameters of the network. For
+an n-dimensional state space and an action space contain-
+ing m actions, the neural network is a function from Rn to
+Rm. Two important ingredients of the DQN algorithm as
+proposed by Mnih et al. (2015) are the use of a target net-
+work, and the use of experience replay. The target network,
+with parameters θ−, is the same as the online network ex-
+cept that its parameters are copied every τ steps from the
+online network, so that then θ−t = θt, and kept ﬁxed on all
+other steps. The target used by DQN is then
+
+Y DQN
+
+t
+
+≡ Rt+1 + γ max
+
+a
+
+Q(St+1, a; θ−t ) .
+
+(3)
+
+For the experience replay (Lin, 1992), observed transitions
+are stored for some time and sampled uniformly from this
+memory bank to update the network. Both the target network
+and the experience replay dramatically improve the perfor-
+mance of the algorithm (Mnih et al., 2015).
+
+Double Q-learning
+The max operator in standard Q-learning and DQN, in (2)
+and (3), uses the same values both to select and to evalu-
+ate an action. This makes it more likely to select overesti-
+mated values, resulting in overoptimistic value estimates. To
+prevent this, we can decouple the selection from the evalua-
+tion. This is the idea behind Double Q-learning (van Hasselt,
+2010).
+
+In the original Double Q-learning algorithm, two value
+functions are learned by assigning each experience ran-
+domly to update one of the two value functions, such that
+there are two sets of weights, θ and θ(cid:48). For each update, one
+set of weights is used to determine the greedy policy and the
+other to determine its value. For a clear comparison, we can
+ﬁrst untangle the selection and evaluation in Q-learning and
+rewrite its target (2) as
+
+Y Q
+t = Rt+1 + γQ(St+1, argmax
+
+a
+
+Q(St+1, a; θt); θt) .
+
+t
+
+a
+
+The Double Q-learning error can then be written as
+Y DoubleQ
+
+≡ Rt+1 + γQ(St+1, argmax
+
+Q(St+1, a; θt); θ(cid:48)t) .
+(4)
+Notice that the selection of the action, in the argmax, is
+still due to the online weights θt. This means that, as in Q-
+learning, we are still estimating the value of the greedy pol-
+icy according to the current values, as deﬁned by θt. How-
+ever, we use the second set of weights θ(cid:48)t to fairly evaluate
+the value of this policy. This second set of weights can be
+updated symmetrically by switching the roles of θ and θ(cid:48).
+
+Overoptimism due to estimation errors
+
+Q-learning’s overestimations were ﬁrst
+investigated by
+Thrun and Schwartz (1993), who showed that if the action
+values contain random errors uniformly distributed in an in-
+terval [−, ] then each target is overestimated up to γ m−1
+m+1 ,
+where m is the number of actions. In addition, Thrun and
+Schwartz give a concrete example in which these overes-
+timations even asymptotically lead to sub-optimal policies,
+and show the overestimations manifest themselves in a small
+toy problem when using function approximation. Later van
+Hasselt (2010) argued that noise in the environment can lead
+to overestimations even when using tabular representation,
+and proposed Double Q-learning as a solution.
+
+In this section we demonstrate more generally that esti-
+mation errors of any kind can induce an upward bias, re-
+gardless of whether these errors are due to environmental
+noise, function approximation, non-stationarity, or any other
+source. This is important, because in practice any method
+will incur some inaccuracies during learning, simply due to
+the fact that the true values are initially unknown.
+
+biased in the sense that(cid:80)
+
+The result by Thrun and Schwartz (1993) cited above
+gives an upper bound to the overestimation for a speciﬁc
+setup, but it is also possible, and potentially more interest-
+ing, to derive a lower bound.
+Theorem 1. Consider a state s in which all the true optimal
+action values are equal at Q∗(s, a) = V∗(s) for some V∗(s).
+Let Qt be arbitrary value estimates that are on the whole un-
+a(Qt(s, a)− V∗(s)) = 0, but that
+are not all correct, such that 1
+a(Qt(s, a)−V∗(s))2 = C
+m
+for some C > 0, where m ≥ 2 is the number of actions in s.
+m−1 .
+Under these conditions, maxa Qt(s, a) ≥ V∗(s) +
+This lower bound is tight. Under the same conditions, the
+lower bound on the absolute error of the Double Q-learning
+estimate is zero. (Proof in appendix.)
+
+(cid:113) C
+
+(cid:80)
+
+Note that we did not need to assume that estimation errors
+for different actions are independent. This theorem shows
+that even if the value estimates are on average correct, esti-
+mation errors of any source can drive the estimates up and
+away from the true optimal values.
+
+The lower bound in Theorem 1 decreases with the num-
+ber of actions. This is an artifact of considering the lower
+bound, which requires very speciﬁc values to be attained.
+More typically, the overoptimism increases with the num-
+ber of actions as shown in Figure 1. Q-learning’s overesti-
+mations there indeed increase with the number of actions,
+
+Figure 1: The orange bars show the bias in a single Q-
+learning update when the action values are Q(s, a) =
+V∗(s) + a and the errors {a}m
+a=1 are independent standard
+normal random variables. The second set of action values
+Q(cid:48), used for the blue bars, was generated identically and in-
+dependently. All bars are the average of 100 repetitions.
+
+m+1 . (Proof in appendix.)
+
+while Double Q-learning is unbiased. As another example,
+if for all actions Q∗(s, a) = V∗(s) and the estimation errors
+Qt(s, a) − V∗(s) are uniformly random in [−1, 1], then the
+overoptimism is m−1
+We now turn to function approximation and consider a
+real-valued continuous state space with 10 discrete actions
+in each state. For simplicity, the true optimal action values
+in this example depend only on state so that in each state
+all actions have the same true value. These true values are
+shown in the left column of plots in Figure 2 (purple lines)
+and are deﬁned as either Q∗(s, a) = sin(s) (top row) or
+Q∗(s, a) = 2 exp(−s2) (middle and bottom rows). The left
+plots also show an approximation for a single action (green
+lines) as a function of state as well as the samples the es-
+timate is based on (green dots). The estimate is a d-degree
+polynomial that is ﬁt to the true values at sampled states,
+where d = 6 (top and middle rows) or d = 9 (bottom
+row). The samples match the true function exactly: there is
+no noise and we assume we have ground truth for the action
+value on these sampled states. The approximation is inex-
+act even on the sampled states for the top two rows because
+the function approximation is insufﬁciently ﬂexible. In the
+bottom row, the function is ﬂexible enough to ﬁt the green
+dots, but this reduces the accuracy in unsampled states. No-
+tice that the sampled states are spaced further apart near the
+left side of the left plots, resulting in larger estimation errors.
+In many ways this is a typical learning setting, where at each
+point in time we only have limited data.
+
+The middle column of plots in Figure 2 shows estimated
+action value functions for all 10 actions (green lines), as
+functions of state, along with the maximum action value in
+each state (black dashed line). Although the true value func-
+tion is the same for all actions, the approximations differ
+because we have supplied different sets of sampled states.1
+The maximum is often higher than the ground truth shown
+in purple on the left. This is conﬁrmed in the right plots,
+which shows the difference between the black and purple
+curves in orange. The orange line is almost always positive,
+
+1Each action-value function is ﬁt with a different subset of in-
+teger states. States −6 and 6 are always included to avoid extrap-
+olations, and for each action two adjacent integers are missing: for
+action a1 states −5 and −4 are not sampled, for a2 states −4 and
+−3 are not sampled, and so on. This causes the estimated values to
+differ.
+
+indicating an upward bias. The right plots also show the es-
+timates from Double Q-learning in blue2, which are on aver-
+age much closer to zero. This demonstrates that Double Q-
+learning indeed can successfully reduce the overoptimism of
+Q-learning.
+
+The different rows in Figure 2 show variations of the same
+experiment. The difference between the top and middle rows
+is the true value function, demonstrating that overestima-
+tions are not an artifact of a speciﬁc true value function.
+The difference between the middle and bottom rows is the
+ﬂexibility of the function approximation. In the left-middle
+plot, the estimates are even incorrect for some of the sam-
+pled states because the function is insufﬁciently ﬂexible.
+The function in the bottom-left plot is more ﬂexible but this
+causes higher estimation errors for unseen states, resulting
+in higher overestimations. This is important because ﬂexi-
+ble parametric function approximators are often employed
+in reinforcement learning (see, e.g., Tesauro 1995; Sallans
+and Hinton 2004; Riedmiller 2005; Mnih et al. 2015).
+
+In contrast to van Hasselt (2010) we did not use a sta-
+tistical argument to ﬁnd overestimations, the process to ob-
+tain Figure 2 is fully deterministic. In contrast to Thrun and
+Schwartz (1993), we did not rely on inﬂexible function ap-
+proximation with irreducible asymptotic errors; the bottom
+row shows that a function that is ﬂexible enough to cover all
+samples leads to high overestimations. This indicates that
+the overestimations can occur quite generally.
+
+In the examples above, overestimations occur even when
+assuming we have samples of the true action value at cer-
+tain states. The value estimates can further deteriorate if we
+bootstrap off of action values that are already overoptimistic,
+since this causes overestimations to propagate throughout
+our estimates. Although uniformly overestimating values
+might not hurt the resulting policy, in practice overestima-
+tion errors will differ for different states and actions. Over-
+estimation combined with bootstrapping then has the perni-
+cious effect of propagating the wrong relative information
+about which states are more valuable than others, directly
+affecting the quality of the learned policies.
+
+The overestimations should not be confused with opti-
+mism in the face of uncertainty (Sutton, 1990; Agrawal,
+1995; Kaelbling et al., 1996; Auer et al., 2002; Brafman and
+Tennenholtz, 2003; Szita and L˝orincz, 2008; Strehl et al.,
+2009), where an exploration bonus is given to states or
+actions with uncertain values. Conversely, the overestima-
+tions discussed here occur only after updating, resulting in
+overoptimism in the face of apparent certainty. This was al-
+ready observed by Thrun and Schwartz (1993), who noted
+that, in contrast to optimism in the face of uncertainty, these
+overestimations actually can impede learning an optimal
+policy. We will see this negative effect on policy quality con-
+ﬁrmed later in the experiments as well: when we reduce the
+overestimations using Double Q-learning, the policies im-
+prove.
+
+2We arbitrarily used the samples of action ai+5 (for i ≤ 5)
+or ai−5 (for i > 5) as the second set of samples for the double
+estimator of action ai.
+
+Figure 2:
+Illustration of overestimations during learning. In each state (x-axis), there are 10 actions. The left column shows the true values
+V∗(s) (purple line). All true action values are deﬁned by Q∗(s, a) = V∗(s). The green line shows estimated values Q(s, a) for one action
+as a function of state, ﬁtted to the true value at several sampled states (green dots). The middle column plots show all the estimated values
+(green), and the maximum of these values (dashed black). The maximum is higher than the true value (purple, left plot) almost everywhere.
+The right column plots shows the difference in orange. The blue line in the right plots is the estimate used by Double Q-learning with a
+second set of samples for each state. The blue line is much closer to zero, indicating less bias. The three rows correspond to different true
+functions (left, purple) or capacities of the ﬁtted function (left, green). (Details in the text)
+
+Double DQN
+
+The idea of Double Q-learning is to reduce overestimations
+by decomposing the max operation in the target into action
+selection and action evaluation. Although not fully decou-
+pled, the target network in the DQN architecture provides
+a natural candidate for the second value function, without
+having to introduce additional networks. We therefore pro-
+pose to evaluate the greedy policy according to the online
+network, but using the target network to estimate its value.
+In reference to both Double Q-learning and DQN, we refer
+to the resulting algorithm as Double DQN. Its update is the
+same as for DQN, but replacing the target Y DQN
+Y DoubleDQN
+
+t
+In comparison to Double Q-learning (4), the weights of the
+second network θ(cid:48)t are replaced with the weights of the tar-
+get network θ−t for the evaluation of the current greedy pol-
+icy. The update to the target network stays unchanged from
+DQN, and remains a periodic copy of the online network.
+
+This version of Double DQN is perhaps the minimal pos-
+sible change to DQN towards Double Q-learning. The goal
+is to get most of the beneﬁt of Double Q-learning, while
+keeping the rest of the DQN algorithm intact for a fair com-
+parison, and with minimal computational overhead.
+
+≡ Rt+1+γQ(St+1, argmax
+
+a
+
+with
+
+t
+
+Q(St+1, a; θt), θ−t ) .
+
+Empirical results
+
+In this section, we analyze the overestimations of DQN and
+show that Double DQN improves over DQN both in terms of
+value accuracy and in terms of policy quality. To further test
+the robustness of the approach we additionally evaluate the
+algorithms with random starts generated from expert human
+trajectories, as proposed by Nair et al. (2015).
+
+Our testbed consists of Atari 2600 games, using the Ar-
+cade Learning Environment (Bellemare et al., 2013). The
+
+goal is for a single algorithm, with a ﬁxed set of hyperpa-
+rameters, to learn to play each of the games separately from
+interaction given only the screen pixels as input. This is a de-
+manding testbed: not only are the inputs high-dimensional,
+the game visuals and game mechanics vary substantially be-
+tween games. Good solutions must therefore rely heavily
+on the learning algorithm — it is not practically feasible to
+overﬁt the domain by relying only on tuning.
+
+We closely follow the experimental setting and net-
+work architecture outlined by Mnih et al. (2015). Brieﬂy,
+the network architecture is a convolutional neural network
+(Fukushima, 1988; LeCun et al., 1998) with 3 convolution
+layers and a fully-connected hidden layer (approximately
+1.5M parameters in total). The network takes the last four
+frames as input and outputs the action value of each action.
+On each game, the network is trained on a single GPU for
+200M frames, or approximately 1 week.
+
+Results on overoptimism
+
+Figure 3 shows examples of DQN’s overestimations in six
+Atari games. DQN and Double DQN were both trained un-
+der the exact conditions described by Mnih et al. (2015).
+DQN is consistently and sometimes vastly overoptimistic
+about the value of the current greedy policy, as can be seen
+by comparing the orange learning curves in the top row of
+plots to the straight orange lines, which represent the ac-
+tual discounted value of the best learned policy. More pre-
+cisely, the (averaged) value estimates are computed regu-
+larly during training with full evaluation phases of length
+T = 125, 000 steps as
+
+T(cid:88)
+
+t=1
+
+1
+T
+
+argmax
+
+a
+
+Q(St, a; θ) .
+
+Figure 3: The top and middle rows show value estimates by DQN (orange) and Double DQN (blue) on six Atari games. The results are
+obtained by running DQN and Double DQN with 6 different random seeds with the hyper-parameters employed by Mnih et al. (2015). The
+darker line shows the median over seeds and we average the two extreme values to obtain the shaded area (i.e., 10% and 90% quantiles with
+linear interpolation). The straight horizontal orange (for DQN) and blue (for Double DQN) lines in the top row are computed by running the
+corresponding agents after learning concluded, and averaging the actual discounted return obtained from each visited state. These straight
+lines would match the learning curves at the right side of the plots if there is no bias. The middle row shows the value estimates (in log scale)
+for two games in which DQN’s overoptimism is quite extreme. The bottom row shows the detrimental effect of this on the score achieved by
+the agent as it is evaluated during training: the scores drop when the overestimations begin. Learning with Double DQN is much more stable.
+
+The ground truth averaged values are obtained by running
+the best learned policies for several episodes and computing
+the actual cumulative rewards. Without overestimations we
+would expect these quantities to match up (i.e., the curve to
+match the straight line at the right of each plot). Instead, the
+learning curves of DQN consistently end up much higher
+than the true values. The learning curves for Double DQN,
+shown in blue, are much closer to the blue straight line rep-
+resenting the true value of the ﬁnal policy. Note that the blue
+straight line is often higher than the orange straight line. This
+indicates that Double DQN does not just produce more ac-
+curate value estimates but also better policies.
+
+More extreme overestimations are shown in the middle
+two plots, where DQN is highly unstable on the games As-
+terix and Wizard of Wor. Notice the log scale for the values
+on the y-axis. The bottom two plots shows the correspond-
+ing scores for these two games. Notice that the increases in
+value estimates for DQN in the middle plots coincide with
+decreasing scores in bottom plots. Again, this indicates that
+the overestimations are harming the quality of the resulting
+policies. If seen in isolation, one might perhaps be tempted
+to think the observed instability is related to inherent insta-
+bility problems of off-policy learning with function approx-
+imation (Baird, 1995; Tsitsiklis and Van Roy, 1997; Sutton
+et al., 2008; Maei, 2011; Sutton et al., 2015). However, we
+see that learning is much more stable with Double DQN,
+
+Median
+Mean
+
+DQN Double DQN
+93.5%
+114.7%
+330.3%
+241.1%
+
+Table 1: Summary of normalized performance up to 5 minutes of
+play on 49 games. Results for DQN are from Mnih et al. (2015)
+suggesting that the cause for these instabilities is in fact Q-
+learning’s overoptimism. Figure 3 only shows a few exam-
+ples, but overestimations were observed for DQN in all 49
+tested Atari games, albeit in varying amounts.
+
+Quality of the learned policies
+Overoptimism does not always adversely affect the quality
+of the learned policy. For example, DQN achieves optimal
+behavior in Pong despite slightly overestimating the policy
+value. Nevertheless, reducing overestimations can signiﬁ-
+cantly beneﬁt the stability of learning; we see clear examples
+of this in Figure 3. We now assess more generally how much
+Double DQN helps in terms of policy quality by evaluating
+on all 49 games that DQN was tested on.
+
+As described by Mnih et al. (2015) each evaluation
+episode starts by executing a special no-op action that does
+not affect the environment up to 30 times, to provide differ-
+ent starting points for the agent. Some exploration during
+evaluation provides additional randomization. For Double
+DQN we used the exact same hyper-parameters as for DQN,
+
+Median
+Mean
+
+DQN Double DQN Double DQN (tuned)
+116.7%
+47.5%
+122.0%
+475.2%
+
+88.4%
+273.1%
+
+Table 2: Summary of normalized performance up to 30 minutes
+of play on 49 games with human starts. Results for DQN are from
+Nair et al. (2015).
+to allow for a controlled experiment focused just on re-
+ducing overestimations. The learned policies are evaluated
+for 5 mins of emulator time (18,000 frames) with an -
+greedy policy where  = 0.05. The scores are averaged over
+100 episodes. The only difference between Double DQN
+and DQN is the target, using Y DoubleDQN
+rather than Y DQN.
+This evaluation is somewhat adversarial, as the used hyper-
+parameters were tuned for DQN but not for Double DQN.
+
+To obtain summary statistics across games, we normalize
+
+t
+
+the score for each game as follows:
+
+.
+
+(5)
+
+scorenormalized =
+
+scoreagent − scorerandom
+scorehuman − scorerandom
+The ‘random’ and ‘human’ scores are the same as used by
+Mnih et al. (2015), and are given in the appendix.
+
+Table 1, under no ops, shows that on the whole Double
+DQN clearly improves over DQN. A detailed comparison
+(in appendix) shows that there are several games in which
+Double DQN greatly improves upon DQN. Noteworthy ex-
+amples include Road Runner (from 233% to 617%), Asterix
+(from 70% to 180%), Zaxxon (from 54% to 111%), and
+Double Dunk (from 17% to 397%).
+
+The Gorila algorithm (Nair et al., 2015), which is a mas-
+sively distributed version of DQN, is not included in the ta-
+ble because the architecture and infrastructure is sufﬁciently
+different to make a direct comparison unclear. For complete-
+ness, we note that Gorila obtained median and mean normal-
+ized scores of 96% and 495%, respectively.
+Robustness to Human starts
+One concern with the previous evaluation is that in deter-
+ministic games with a unique starting point the learner could
+potentially learn to remember sequences of actions with-
+out much need to generalize. While successful, the solution
+would not be particularly robust. By testing the agents from
+various starting points, we can test whether the found so-
+lutions generalize well, and as such provide a challenging
+testbed for the learned polices (Nair et al., 2015).
+
+We obtained 100 starting points sampled for each game
+from a human expert’s trajectory, as proposed by Nair et al.
+(2015). We start an evaluation episode from each of these
+starting points and run the emulator for up to 108,000 frames
+(30 mins at 60Hz including the trajectory before the starting
+point). Each agent is only evaluated on the rewards accumu-
+lated after the starting point.
+
+For this evaluation we include a tuned version of Double
+DQN. Some tuning is appropriate because the hyperparame-
+ters were tuned for DQN, which is a different algorithm. For
+the tuned version of Double DQN, we increased the num-
+ber of frames between each two copies of the target network
+from 10,000 to 30,000, to reduce overestimations further be-
+cause immediately after each switch DQN and Double DQN
+
+Figure 4: Normalized scores on 57 Atari games, tested
+for 100 episodes per game with human starts. Compared
+to Mnih et al. (2015), eight games additional games were
+tested. These are indicated with stars and a bold font.
+
+both revert to Q-learning. In addition, we reduced the explo-
+ration during learning from  = 0.1 to  = 0.01, and then
+used  = 0.001 during evaluation. Finally, the tuned ver-
+sion uses a single shared bias for all action values in the top
+layer of the network. Each of these changes improved per-
+formance and together they result in clearly better results.3
+Table 2 reports summary statistics for this evaluation on
+the 49 games from Mnih et al. (2015). Double DQN ob-
+tains clearly higher median and mean scores. Again Gorila
+DQN (Nair et al., 2015) is not included in the table, but for
+completeness note it obtained a median of 78% and a mean
+of 259%. Detailed results, plus results for an additional 8
+games, are available in Figure 4 and in the appendix. On
+several games the improvements from DQN to Double DQN
+are striking, in some cases bringing scores much closer to
+
+3Except for Tennis, where the lower  during training seemed
+
+to hurt rather than help.
+
+human, or even surpassing these.
+
+Double DQN appears more robust to this more challeng-
+ing evaluation, suggesting that appropriate generalizations
+occur and that the found solutions do not exploit the deter-
+minism of the environments. This is appealing, as it indi-
+cates progress towards ﬁnding general solutions rather than
+a deterministic sequence of steps that would be less robust.
+
+Discussion
+
+This paper has ﬁve contributions. First, we have shown why
+Q-learning can be overoptimistic in large-scale problems,
+even if these are deterministic, due to the inherent estima-
+tion errors of learning. Second, by analyzing the value es-
+timates on Atari games we have shown that these overesti-
+mations are more common and severe in practice than pre-
+viously acknowledged. Third, we have shown that Double
+Q-learning can be used at scale to successfully reduce this
+overoptimism, resulting in more stable and reliable learning.
+Fourth, we have proposed a speciﬁc implementation called
+Double DQN, that uses the existing architecture and deep
+neural network of the DQN algorithm without requiring ad-
+ditional networks or parameters. Finally, we have shown that
+Double DQN ﬁnds better policies, obtaining new state-of-
+the-art results on the Atari 2600 domain.
+Acknowledgments
+
+We would like to thank Tom Schaul, Volodymyr Mnih, Marc
+Bellemare, Thomas Degris, Georg Ostrovski, and Richard
+Sutton for helpful comments, and everyone at Google Deep-
+Mind for a constructive research environment.
+
+References
+
+R. Agrawal. Sample mean based index policies with O(log n) re-
+gret for the multi-armed bandit problem. Advances in Applied
+Probability, pages 1054–1078, 1995.
+
+P. Auer, N. Cesa-Bianchi, and P. Fischer. Finite-time analysis of the
+multiarmed bandit problem. Machine learning, 47(2-3):235–
+256, 2002.
+
+L. Baird. Residual algorithms: Reinforcement learning with func-
+tion approximation. In Machine Learning: Proceedings of the
+Twelfth International Conference, pages 30–37, 1995.
+
+M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling. The ar-
+cade learning environment: An evaluation platform for general
+agents. J. Artif. Intell. Res. (JAIR), 47:253–279, 2013.
+
+R. I. Brafman and M. Tennenholtz. R-max-a general polynomial
+time algorithm for near-optimal reinforcement learning. The
+Journal of Machine Learning Research, 3:213–231, 2003.
+
+K. Fukushima. Neocognitron: A hierarchical neural network ca-
+pable of visual pattern recognition. Neural networks, 1(2):119–
+130, 1988.
+
+L. P. Kaelbling, M. L. Littman, and A. W. Moore. Reinforcement
+learning: A survey. Journal of Artiﬁcial Intelligence Research,
+4:237–285, 1996.
+
+Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner. Gradient-based
+learning applied to document recognition. Proceedings of the
+IEEE, 86(11):2278–2324, 1998.
+
+L. Lin. Self-improving reactive agents based on reinforcement
+learning, planning and teaching. Machine learning, 8(3):293–
+321, 1992.
+
+H. R. Maei. Gradient temporal-difference learning algorithms.
+
+PhD thesis, University of Alberta, 2011.
+
+V. Mnih, K. Kavukcuoglu, D. Silver, A. A. Rusu, J. Veness, M. G.
+Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostro-
+vski, S. Petersen, C. Beattie, A. Sadik, I. Antonoglou, H. King,
+D. Kumaran, D. Wierstra, S. Legg, and D. Hassabis. Human-
+level control through deep reinforcement learning. Nature, 518
+(7540):529–533, 2015.
+
+A. Nair, P. Srinivasan, S. Blackwell, C. Alcicek, R. Fearon, A. D.
+Maria, V. Panneershelvam, M. Suleyman, C. Beattie, S. Pe-
+tersen, S. Legg, V. Mnih, K. Kavukcuoglu, and D. Silver. Mas-
+sively parallel methods for deep reinforcement learning. In Deep
+Learning Workshop, ICML, 2015.
+
+M. Riedmiller. Neural ﬁtted Q iteration - ﬁrst experiences with a
+data efﬁcient neural reinforcement learning method. In J. Gama,
+R. Camacho, P. Brazdil, A. Jorge, and L. Torgo, editors, Pro-
+ceedings of the 16th European Conference on Machine Learning
+(ECML’05), pages 317–328. Springer, 2005.
+
+B. Sallans and G. E. Hinton. Reinforcement learning with factored
+states and actions. The Journal of Machine Learning Research,
+5:1063–1088, 2004.
+
+A. L. Strehl, L. Li, and M. L. Littman. Reinforcement learning in
+ﬁnite MDPs: PAC analysis. The Journal of Machine Learning
+Research, 10:2413–2444, 2009.
+
+R. S. Sutton. Learning to predict by the methods of temporal dif-
+
+ferences. Machine learning, 3(1):9–44, 1988.
+
+R. S. Sutton. Integrated architectures for learning, planning, and
+reacting based on approximating dynamic programming.
+In
+Proceedings of the seventh international conference on machine
+learning, pages 216–224, 1990.
+
+R. S. Sutton and A. G. Barto. Introduction to reinforcement learn-
+
+ing. MIT Press, 1998.
+
+R. S. Sutton, C. Szepesv´ari, and H. R. Maei. A convergent O(n)
+algorithm for off-policy temporal-difference learning with lin-
+ear function approximation. Advances in Neural Information
+Processing Systems 21 (NIPS-08), 21:1609–1616, 2008.
+
+R. S. Sutton, A. R. Mahmood, and M. White. An emphatic ap-
+proach to the problem of off-policy temporal-difference learn-
+ing. arXiv preprint arXiv:1503.04269, 2015.
+
+I. Szita and A. L˝orincz. The many faces of optimism: a unifying
+approach. In Proceedings of the 25th international conference
+on Machine learning, pages 1048–1055. ACM, 2008.
+
+G. Tesauro. Temporal difference learning and td-gammon. Com-
+
+munications of the ACM, 38(3):58–68, 1995.
+
+S. Thrun and A. Schwartz.
+
+Issues in using function approxima-
+tion for reinforcement learning.
+In M. Mozer, P. Smolensky,
+D. Touretzky, J. Elman, and A. Weigend, editors, Proceedings
+of the 1993 Connectionist Models Summer School, Hillsdale, NJ,
+1993. Lawrence Erlbaum.
+
+J. N. Tsitsiklis and B. Van Roy. An analysis of temporal-difference
+IEEE Transactions on
+
+learning with function approximation.
+Automatic Control, 42(5):674–690, 1997.
+
+H. van Hasselt. Double Q-learning. Advances in Neural Informa-
+
+tion Processing Systems, 23:2613–2621, 2010.
+
+H. van Hasselt. Insights in Reinforcement Learning. PhD thesis,
+
+Utrecht University, 2011.
+
+C. J. C. H. Watkins. Learning from delayed rewards. PhD thesis,
+
+University of Cambridge England, 1989.
+
+Appendix
+
+the sense that(cid:80)
+
+Theorem 1. Consider a state s in which all the true optimal ac-
+tion values are equal at Q∗(s, a) = V∗(s) for some V∗(s). Let
+(cid:80)
+Qt be arbitrary value estimates that are on the whole unbiased in
+a(Qt(s, a) − V∗(s)) = 0, but that are not all
+zero, such that 1
+a(Qt(s, a) − V∗(s))2 = C for some C > 0,
+m
+where m ≥ 2 is the number of actions in s. Under these conditions,
+m−1 . This lower bound is tight. Un-
+maxa Qt(s, a) ≥ V∗(s) +
+der the same conditions, the lower bound on the absolute error of
+the Double Q-learning estimate is zero.
+
+(cid:113) C
+
+(cid:113) C
+
+−
+i } ∪ {
+
+m−1 . Let {+
+
+j }). If n = m, then (cid:80)
+
+Proof of Theorem 1. Deﬁne the errors for each action a as a =
+Qt(s, a) − V∗(s). Suppose that there exists a setting of {a} such
+that maxa a <
+i } be the set of positive  of size
+−
+a = 0 ∀a, which contradicts(cid:80)
+n, and {
+j } the set of strictly negative  of size m − n (such
+that {} = {+
+that n ≤ m − 1. Then, (cid:80)n
+a a = 0 =⇒
+a = mC. Hence, it must be
+and therefore (using the constraint(cid:80)
+m−1 ,
+(cid:80)m−n
+a a = 0) we also have that
+m−1 . By
+m−n(cid:88)
+−
+(cid:114) C
+j=1 |
+j | · max
+
+(cid:113) C
+m−n(cid:88)
+
+(cid:113) C
+(cid:113) C
+
+a 2
+i ≤ n maxi +
+
+m−1 . This implies maxj |
+
+H¨older’s inequality, then
+
+(cid:114) C
+
+−
+j | < n
+
+−
+j | < n
+
+−
+j )2 ≤
+
+j=1 |
+
+−
+|
+j |
+
+i < n
+
+i=1 +
+
+j=1
+
+(
+
+j
+
+< n
+
+n
+
+m − 1
+
+.
+
+m − 1
+
+We can now combine these relations to compute an upper-bound
+on the sum of squares for all a:
+
+m(cid:88)
+
+n(cid:88)
+
+(a)2 =
+
+(+
+
+i )2 +
+
+a=1
+
+i=1
+
+< n
+
+= C
+
+C
+
++ n
+
+m − 1
+n(n + 1)
+m − 1
+
+m−n(cid:88)
+(cid:114) C
+
+j=1
+
+(
+
+−
+j )2
+
+(cid:114) C
+
+n
+
+m − 1
+
+m − 1
+
+a=1 2
+
+≤ mC.
+
+This contradicts the assumption that(cid:80)m
+
+(cid:113) C
+a = mC and(cid:80)
+
+a < mC, and there-
+(cid:113) C
+(cid:112)
+fore maxa a ≥
+m−1 for all settings of  that satisfy the con-
+straints. We can check that the lower-bound is tight by setting
+This veriﬁes(cid:80)
+(m − 1)C.
+a =
+The only tight lower bound on the absolute error for Double Q-
+learning |Q(cid:48)
+t(s, argmaxa Qt(s, a)) − V∗(s)| is zero. This can be
+seen by because we can have
+
+m−1 for a = 1, . . . , m − 1 and m = −
+
+a a = 0.
+
+a 2
+
+Qt(s, a1) = V∗(s) +
+
+C
+
+m − 1
+
+m
+
+,
+
+and
+
+Qt(s, ai) = V∗(s) −
+
+C
+
+1
+
+m(m − 1)
+
+, for i > 1.
+
+Then the conditions of the theorem hold. If then, furthermore, we
+have Q(cid:48)
+t(s, a1) = V∗(s) then the error is zero. The remaining ac-
+tion values Q(cid:48)
+
+t(s, ai), for i > 1, are arbitrary.
+
+(cid:114)
+
+(cid:115)
+
+Theorem 2. Consider a state s in which all the true optimal action
+values are equal at Q∗(s, a) = V∗(s). Suppose that the estimation
+errors Qt(s, a)−Q∗(s, a) are independently distributed uniformly
+randomly in [−1, 1]. Then,
+
+E(cid:104)
+
+max
+
+a
+
+(cid:105)
+Qt(s, a) − V∗(s)
+
+=
+
+m − 1
+m + 1
+
+Proof. Deﬁne a = Qt(s, a) − Q∗(s, a); this is a uniform ran-
+dom variable in [−1, 1]. The probability that maxa Qt(s, a) ≤ x
+for some x is equal to the probability that a ≤ x for all a simul-
+taneously. Because the estimation errors are independent, we can
+derive
+
+P (max
+
+a
+
+a ≤ x) = P (X1 ≤ x ∧ X2 ≤ x ∧ . . . ∧ Xm ≤ x)
+
+m(cid:89)
+
+a=1
+
+=
+
+P (a ≤ x) .
+
+The function P (a ≤ x) is the cumulative distribution function
+(CDF) of a, which here is simply deﬁned as
+
+if x ≤ −1
+if x ∈ (−1, 1)
+if x ≥ 1
+
+P (a ≤ x)
+
+(cid:1)m if x ∈ (−1, 1)
+
+if x ≤ −1
+if x ≥ 1
+
+2
+
+1
+
+1+x
+
+ 0
+m(cid:89)
+ 0
+(cid:0) 1+x
+(cid:90) 1
+(cid:105)
+
+a=1
+
+1
+
+2
+
+P (a ≤ x) =
+
+This implies that
+
+P (max
+
+a
+
+a ≤ x) =
+
+=
+
+This gives us the CDF of the random variable maxa a. Its expec-
+tation can be written as an integral
+
+E(cid:104)
+
+max
+
+a
+
+a
+
+=
+
+−1
+
+xfmax(x) dx ,
+
+(cid:0) 1+x
+
+where fmax is the probability density function of this variable, de-
+ﬁned as the derivative of the CDF: fmax(x) = d
+dx P (maxa a ≤
+x), so that for x ∈ [−1, 1] we have fmax(x) = m
+Evaluating the integral yields
+(cid:21)1
+
+(cid:90) 1
+(cid:20)(cid:18) x + 1
+
+xfmax(x) dx
+
+(cid:19)m mx − 1
+
+E(cid:104)
+
+max
+
+(cid:105)
+
+−1
+
+a
+
+=
+
+(cid:1)m−1.
+
+a
+
+2
+
+2
+
+m + 1
+
+−1
+
+=
+
+=
+
+2
+m − 1
+m + 1
+
+.
+
+Experimental Details for the Atari 2600
+
+Domain
+
+We selected the 49 games to match the list used by Mnih et al.
+(2015), see Tables below for the full list. Each agent step is com-
+posed of four frames (the last selected action is repeated during
+these frames) and reward values (obtained from the Arcade Learn-
+ing Environment (Bellemare et al., 2013)) are clipped between -1
+and 1.
+
+Network Architecture
+The convolution network used in the experiment is exactly the one
+proposed by proposed by Mnih et al. (2015), we only provide de-
+tails here for completeness. The input to the network is a 84x84x4
+tensor containing a rescaled, and gray-scale, version of the last four
+frames. The ﬁrst convolution layer convolves the input with 32 ﬁl-
+ters of size 8 (stride 4), the second layer has 64 layers of size 4
+(stride 2), the ﬁnal convolution layer has 64 ﬁlters of size 3 (stride
+1). This is followed by a fully-connected hidden layer of 512 units.
+All these layers are separated by Rectiﬁer Linear Units (ReLu). Fi-
+nally, a fully-connected linear layer projects to the output of the
+network, i.e., the Q-values. The optimization employed to train the
+network is RMSProp (with momentum parameter 0.95).
+Hyper-parameters
+In all experiments, the discount was set to γ = 0.99, and the learn-
+ing rate to α = 0.00025. The number of steps between target net-
+work updates was τ = 10, 000. Training is done over 50M steps
+(i.e., 200M frames). The agent is evaluated every 1M steps, and
+the best policy across these evaluations is kept as the output of the
+learning process. The size of the experience replay memory is 1M
+tuples. The memory gets sampled to update the network every 4
+steps with minibatches of size 32. The simple exploration policy
+used is an -greedy policy with the  decreasing linearly from 1 to
+0.1 over 1M steps.
+
+Supplementary Results in the Atari 2600
+
+Domain
+
+The Tables below provide further detailed results for our experi-
+ments in the Atari domain.
+
+Game
+Alien
+Amidar
+Assault
+Asterix
+Asteroids
+Atlantis
+Bank Heist
+Battle Zone
+Beam Rider
+Bowling
+Boxing
+Breakout
+Centipede
+Chopper Command
+Crazy Climber
+Demon Attack
+Double Dunk
+Enduro
+Fishing Derby
+Freeway
+Frostbite
+Gopher
+Gravitar
+H.E.R.O.
+Ice Hockey
+James Bond
+Kangaroo
+Krull
+Kung-Fu Master
+Montezuma’s Revenge
+Ms. Pacman
+Name This Game
+Pong
+Private Eye
+Q*Bert
+River Raid
+Road Runner
+Robotank
+Seaquest
+Space Invaders
+Star Gunner
+Tennis
+Time Pilot
+Tutankham
+Up and Down
+Venture
+Video Pinball
+Wizard of Wor
+Zaxxon
+
+Random
+227.80
+5.80
+222.40
+210.00
+719.10
+12850.00
+14.20
+2360.00
+363.90
+23.10
+0.10
+1.70
+2090.90
+811.00
+10780.50
+152.10
+-18.60
+0.00
+-91.70
+0.00
+65.20
+257.60
+173.00
+1027.00
+-11.20
+29.00
+52.00
+1598.00
+258.50
+0.00
+307.30
+2292.30
+-20.70
+24.90
+163.90
+1338.50
+11.50
+2.20
+68.40
+148.00
+664.00
+-23.80
+3568.00
+11.40
+533.40
+0.00
+16256.90
+563.50
+32.50
+
+Human
+6875.40
+1675.80
+1496.40
+8503.30
+13156.70
+29028.10
+734.40
+37800.00
+5774.70
+154.80
+4.30
+31.80
+11963.20
+9881.80
+35410.50
+3401.30
+-15.50
+309.60
+5.50
+29.60
+4334.70
+2321.00
+2672.00
+25762.50
+0.90
+406.70
+3035.00
+2394.60
+22736.20
+4366.70
+15693.40
+4076.20
+9.30
+69571.30
+13455.00
+13513.30
+7845.00
+11.90
+20181.80
+1652.30
+10250.00
+-8.90
+5925.00
+167.60
+9082.00
+1187.50
+17297.60
+4756.50
+9173.30
+
+DQN Double DQN
+2907.30
+702.10
+5022.90
+15150.00
+930.60
+64758.00
+728.30
+25730.00
+7654.00
+70.50
+81.70
+375.00
+4139.40
+4653.00
+101874.00
+9711.90
+-6.30
+319.50
+20.30
+31.80
+241.50
+8215.40
+170.50
+20357.00
+-2.40
+438.00
+13651.00
+4396.70
+29486.00
+0.00
+3210.00
+6997.10
+21.00
+670.10
+14875.00
+12015.30
+48377.00
+46.70
+7995.00
+3154.60
+65188.00
+1.70
+7964.00
+190.60
+16769.90
+93.00
+70009.00
+5204.00
+10182.00
+
+3069.33
+739.50
+3358.63
+6011.67
+1629.33
+85950.00
+429.67
+26300.00
+6845.93
+42.40
+71.83
+401.20
+8309.40
+6686.67
+114103.33
+9711.17
+-18.07
+301.77
+-0.80
+30.30
+328.33
+8520.00
+306.67
+19950.33
+-1.60
+576.67
+6740.00
+3804.67
+23270.00
+0.00
+2311.00
+7256.67
+18.90
+1787.57
+10595.83
+8315.67
+18256.67
+51.57
+5286.00
+1975.50
+57996.67
+-2.47
+5946.67
+186.70
+8456.33
+380.00
+42684.07
+3393.33
+4976.67
+
+Table 3: Raw scores for the no-op evaluation condition (5 minutes emulator time). DQN as given by Mnih et al. (2015).
+
+Game
+Alien
+Amidar
+Assault
+Asterix
+Asteroids
+Atlantis
+Bank Heist
+Battle Zone
+Beam Rider
+Bowling
+Boxing
+Breakout
+Centipede
+Chopper Command
+Crazy Climber
+Demon Attack
+Double Dunk
+Enduro
+Fishing Derby
+Freeway
+Frostbite
+Gopher
+Gravitar
+H.E.R.O.
+Ice Hockey
+James Bond
+Kangaroo
+Krull
+Kung-Fu Master
+Montezuma’s Revenge
+Ms. Pacman
+Name This Game
+Pong
+Private Eye
+Q*Bert
+River Raid
+Road Runner
+Robotank
+Seaquest
+Space Invaders
+Star Gunner
+Tennis
+Time Pilot
+Tutankham
+Up and Down
+Venture
+Video Pinball
+Wizard of Wor
+Zaxxon
+
+DQN Double DQN
+40.31 %
+41.69 %
+376.81 %
+180.15 %
+1.70 %
+320.85 %
+99.15 %
+65.94 %
+134.73 %
+35.99 %
+1942.86 %
+1240.20 %
+20.75 %
+42.36 %
+369.85 %
+294.22 %
+396.77 %
+103.20 %
+115.23 %
+107.43 %
+4.13 %
+385.66 %
+-0.10 %
+78.15 %
+72.73 %
+108.29 %
+455.88 %
+351.33 %
+130.03 %
+0.00 %
+18.87 %
+263.74 %
+139.00 %
+0.93 %
+110.68 %
+87.70 %
+617.42 %
+458.76 %
+39.41 %
+199.87 %
+673.11 %
+171.14 %
+186.51 %
+114.72 %
+189.93 %
+7.83 %
+5164.99 %
+110.67 %
+111.04 %
+
+42.75 %
+43.93 %
+246.17 %
+69.96 %
+7.32 %
+451.85 %
+57.69 %
+67.55 %
+119.80 %
+14.65 %
+1707.86 %
+1327.24 %
+62.99 %
+64.78 %
+419.50 %
+294.20 %
+17.10 %
+97.47 %
+93.52 %
+102.36 %
+6.16 %
+400.43 %
+5.35 %
+76.50 %
+79.34 %
+145.00 %
+224.20 %
+277.01 %
+102.37 %
+0.00 %
+13.02 %
+278.29 %
+132.00 %
+2.53 %
+78.49 %
+57.31 %
+232.91 %
+508.97 %
+25.94 %
+121.49 %
+598.09 %
+143.15 %
+100.92 %
+112.23 %
+92.68 %
+32.00 %
+2539.36 %
+67.49 %
+54.09 %
+
+Table 4: Normalized results for no-op evaluation condition (5 minutes emulator time).
+
+Game
+Alien
+Amidar
+Assault
+Asterix
+Asteroids
+Atlantis
+Bank Heist
+Battle Zone
+Beam Rider
+Berzerk
+Bowling
+Boxing
+Breakout
+Centipede
+Chopper Command
+Crazy Climber
+Defender
+Demon Attack
+Double Dunk
+Enduro
+Fishing Derby
+Freeway
+Frostbite
+Gopher
+Gravitar
+H.E.R.O.
+Ice Hockey
+James Bond
+Kangaroo
+Krull
+Kung-Fu Master
+Montezuma’s Revenge
+Ms. Pacman
+Name This Game
+Phoenix
+Pit Fall
+Pong
+Private Eye
+Q*Bert
+River Raid
+Road Runner
+Robotank
+Seaquest
+Skiing
+Solaris
+Space Invaders
+Star Gunner
+Surround
+Tennis
+Time Pilot
+Tutankham
+Up and Down
+Venture
+Video Pinball
+Wizard of Wor
+Yars Revenge
+Zaxxon
+
+Random
+128.30
+11.80
+166.90
+164.50
+871.30
+13463.00
+21.70
+3560.00
+254.60
+196.10
+35.20
+-1.50
+1.60
+1925.50
+644.00
+9337.00
+1965.50
+208.30
+-16.00
+-81.80
+-77.10
+0.10
+66.40
+250.00
+245.50
+1580.30
+-9.70
+33.50
+100.00
+1151.90
+304.00
+25.00
+197.80
+1747.80
+1134.40
+-348.80
+-18.00
+662.80
+183.00
+588.30
+200.00
+2.40
+215.50
+-15287.40
+2047.20
+182.60
+697.00
+-9.70
+-21.40
+3273.00
+12.70
+707.20
+18.00
+20452.0
+804.00
+1476.90
+475.00
+
+Human
+6371.30
+1540.40
+628.90
+7536.00
+36517.30
+26575.00
+644.50
+33030.00
+14961.00
+2237.50
+146.50
+9.60
+27.90
+10321.90
+8930.00
+32667.00
+14296.00
+3442.80
+-14.40
+740.20
+5.10
+25.60
+4202.80
+2311.00
+3116.00
+25839.40
+0.50
+368.50
+2739.00
+2109.10
+20786.80
+4182.00
+15375.00
+6796.00
+6686.20
+5998.90
+15.50
+64169.10
+12085.00
+14382.20
+6878.00
+8.90
+40425.80
+-3686.60
+11032.60
+1464.90
+9528.00
+5.40
+-6.70
+5650.00
+138.30
+9896.10
+1039.00
+15641.10
+4556.00
+47135.20
+8443.00
+
+41.2
+25.8
+303.9
+3773.1
+3046.0
+50992.0
+
+12835.2
+-21.6
+475.6
+-2.3
+25.8
+157.4
+2731.8
+216.5
+12952.5
+-3.8
+348.5
+2696.0
+3864.0
+11875.0
+50.0
+763.5
+5439.9
+
+DQN Double DQN Double DQN (tuned)
+1033.4
+570.2
+133.4
+169.1
+6060.8
+3332.3
+16837.0
+124.5
+1193.2
+697.1
+319688.0
+76108.0
+176.3
+886.0
+24740.0
+17560.0
+17417.2
+8672.4
+1011.1
+69.6
+73.5
+368.9
+3853.5
+3495.0
+113782.0
+27510.0
+69803.4
+-0.3
+1216.6
+3.2
+28.8
+1448.1
+15253.0
+200.5
+14892.5
+-2.5
+573.0
+11204.0
+6796.1
+30207.0
+42.0
+1241.3
+8960.3
+12366.5
+-186.7
+19.1
+-575.5
+11020.8
+10838.4
+43156.0
+59.1
+14498.0
+-11490.4
+810.0
+2628.7
+58365.0
+1.9
+-7.8
+6608.0
+92.2
+19086.9
+21.0
+367823.7
+6201.0
+6270.6
+8593.0
+
+621.6
+188.2
+2774.3
+5285.0
+1219.0
+260556.0
+469.8
+25240.0
+9107.9
+635.8
+62.3
+52.1
+338.7
+5166.6
+2483.0
+94315.0
+8531.0
+13943.5
+-6.4
+475.9
+-3.4
+26.3
+258.3
+8742.8
+170.0
+15341.4
+-3.6
+416.0
+6138.0
+6130.4
+22771.0
+30.0
+1401.8
+7871.5
+10364.0
+-432.9
+17.7
+346.3
+10713.3
+6579.0
+43884.0
+52.0
+4199.4
+-29404.3
+2166.8
+1495.7
+53052.0
+-7.6
+11.0
+5375.0
+63.6
+4721.1
+75.0
+148883.6
+155.0
+5439.5
+7874.0
+
+-2.3
+5640.0
+32.4
+3311.3
+54.0
+20228.1
+246.0
+
+16.2
+298.2
+4589.8
+4065.3
+9264.0
+58.5
+2793.9
+
+1449.7
+34081.0
+
+831.0
+
+Table 5: Raw scores for the human start condition (30 minutes emulator time). DQN as given by Nair et al. (2015).
+
+Game
+Alien
+Amidar
+Assault
+Asterix
+Asteroids
+Atlantis
+Bank Heist
+Battle Zone
+Beam Rider
+Berzerk
+Bowling
+Boxing
+Breakout
+Centipede
+Chopper Command
+Crazy Climber
+Defender
+Demon Attack
+Double Dunk
+Enduro
+Fishing Derby
+Freeway
+Frostbite
+Gopher
+Gravitar
+H.E.R.O.
+Ice Hockey
+James Bond
+Kangaroo
+Krull
+Kung-Fu Master
+Montezuma’s Revenge
+Ms. Pacman
+Name This Game
+Phoenix
+Pit Fall
+Pong
+Private Eye
+Q*Bert
+River Raid
+Road Runner
+Robotank
+Seaquest
+Skiing
+Solaris
+Space Invaders
+Star Gunner
+Surround
+Tennis
+Time Pilot
+Tutankham
+Up and Down
+Venture
+Video Pinball
+Wizard of Wor
+Yars Revenge
+Zaxxon
+
+390.38%
+-350.00%
+67.81%
+91.00%
+100.78%
+2.20%
+120.42%
+-1.01%
+46.88%
+57.84%
+94.03%
+98.37%
+283.34%
+56.49%
+0.60%
+3.73%
+73.14%
+
+DQN Double DQN Double DQN (tuned)
+14.50%
+7.08%
+7.95%
+10.29%
+1275.74%
+685.15%
+226.18%
+-0.54%
+0.90%
+-0.49%
+2335.46%
+477.77%
+24.82%
+138.78%
+71.87%
+47.51%
+116.70%
+57.24%
+39.92%
+30.91%
+675.68%
+1396.58%
+22.96%
+34.41%
+447.69%
+207.17%
+2151.65%
+981.25%
+157.96%
+97.69%
+112.55%
+33.40%
+727.95%
+-1.57%
+54.88%
+70.59%
+161.04%
+420.77%
+589.66%
+145.99%
+0.41%
+6.88%
+142.87%
+202.31%
+2.55%
+110.75%
+-1.95%
+91.06%
+74.31%
+643.25%
+872.31%
+35.52%
+32.73%
+-13.77%
+190.76%
+653.02%
+76.82%
+92.52%
+140.30%
+63.30%
+200.02%
+0.29%
+7220.51%
+143.84%
+10.50%
+101.88%
+
+7.90%
+11.54%
+564.37%
+69.46%
+0.98%
+1884.48%
+71.95%
+73.57%
+60.20%
+21.54%
+24.35%
+482.88%
+1281.75%
+38.60%
+22.19%
+364.24%
+53.25%
+424.65%
+600.00%
+67.85%
+89.66%
+102.75%
+4.64%
+412.07%
+-2.63%
+56.73%
+59.80%
+114.18%
+228.80%
+520.11%
+109.69%
+0.12%
+7.93%
+121.30%
+166.25%
+-1.32%
+106.57%
+-0.50%
+88.48%
+43.43%
+654.15%
+763.08%
+9.91%
+-121.69%
+1.33%
+102.40%
+592.85%
+13.91%
+220.41%
+88.43%
+40.53%
+43.68%
+5.58%
+2669.60%
+-17.30%
+8.68%
+92.86%
+
+102.09%
+-0.57%
+37.03%
+25.21%
+135.73%
+863.08%
+6.41%
+
+5.39%
+245.95%
+1149.43%
+22.00%
+28.99%
+178.55%
+
+98.81%
+378.03%
+
+129.93%
+99.58%
+15.68%
+28.34%
+3.53%
+-4.65%
+-14.87%
+
+4.47%
+
+Table 6: Normalized scores for the human start condition (30 minutes emulator time).
+

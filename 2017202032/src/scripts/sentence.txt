@@ -1,0 +1,2 @@
+A distributed storage system to efficiently manage structured data with little cost.
+The network handles input sentences of varying length and induces a feature graph over the sentence.

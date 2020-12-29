@@ -1,0 +1,1136 @@
+ Deeper neural networks are more difﬁcult to train.
+We present a residual learning framework to ease the training of networks that are substantially deeper than those used previously.
+We explicitly reformulate the layers as learning residual functions with reference to the layer inputs, instead of learning unreferenced functions.
+We provide comprehensive empirical evidence showing that these residual networks are easier to optimize, and can gain accuracy from considerably increased depth.
+On the ImageNet dataset we evaluate residual nets with a depth of up to 152 layers—8× deeper than VGG nets [41] but still having lower complexity.
+An ensemble of these residual nets achieves 3.57% error on the ImageNet test set.
+This result won the 1st place on the ILSVRC 2015 classiﬁcation task.
+We also present analysis on CIFAR-10 with 100 and 1000 layers.
+The depth of representations is of central importance for many visual recognition tasks.
+Solely due to our extremely deep representations, we obtain a 28% relative improvement on the COCO object detection dataset.
+Deep residual nets are foundations of our submissions to ILSVRC & COCO 2015 competitions1, where we also won the 1st places on the tasks of ImageNet detection, ImageNet localization, COCO detection, and COCO segmentation.
+ We propose a deep convolutional neural network architecture codenamed Inception that achieves the new state of the art for classiﬁcation and detection in the ImageNet Large-Scale Visual Recognition Challenge 2014 (ILSVRC14).
+The main hallmark of this architecture is the improved utilization of the computing resources inside the network.
+By a carefully crafted design, we increased the depth and width of the network while keeping the computational budget constant.
+To optimize quality, the architectural decisions were based on the Hebbian principle and the intuition of multi-scale processing.
+One particular incarnation used in our submission for ILSVRC14 is called GoogLeNet, a 22 layers deep network, the quality of which is assessed in the context of classiﬁcation and detection.
+ We trained a large, deep convolutional neural network to classify the 1.2 million high-resolution images in the ImageNet LSVRC-2010 contest into the 1000 different classes.
+On the test data, we achieved top-1 and top-5 error rates of 37.5% and 17.0% which is considerably better than the previous state-of-the-art.
+The neural network, which has 60 million parameters and 650,000 neurons, consists of ﬁve convolutional layers, some of which are followed by max-pooling layers, and three fully-connected layers with a ﬁnal 1000-way softmax.
+To make training faster, we used non-saturating neurons and a very efﬁcient GPU implementation of the convolution operation.
+To reduce overﬁtting in the fully-connected layers we employed a recently-developed regularization method called “dropout” that proved to be very effective.
+We also entered a variant of this model in the ILSVRC-2012 competition and achieved a winning top-5 test error rate of 15.3%, compared to 26.2% achieved by the second-best entry.
+ Very deep convolutional networks have been central to the largest advances in image recognition performance in recent years.
+One example is the Inception architecture that has been shown to achieve very good performance at relatively low computational cost.
+Recently, the introduction of residual connections in conjunction with a more traditional architecture has yielded state-of-the-art performance in the 2015 ILSVRC challenge; its performance was similar to the latest generation Inception-v3 network.
+This raises the question of whether there are any beneﬁt in combining the Inception architecture with residual connections.
+Here we give clear empirical evidence that training with residual connections accelerates the training of Inception networks signiﬁcantly.
+There is also some evidence of residual Inception networks outperforming similarly expensive Inception networks without residual connections by a thin margin.
+We also present several new streamlined architectures for both residual and non-residual Inception networks.
+These variations improve the single-frame recognition performance on the ILSVRC 2012 classiﬁcation task signiﬁcantly.
+We further demonstrate how proper activation scaling stabilizes the training of very wide residual Inception networks.
+With an ensemble of three residual and one Inception-v4, we achieve 3.08% top-5 error on the test set of the ImageNet classiﬁcation (CLS) challenge.
+ We consider the problem of designing models to leverage a recently introduced approximate model averaging technique called dropout.
+We deﬁne a simple new model called maxout (so named because its output is the max of a set of inputs, and because it is a natural companion to dropout) designed to both facilitate optimization by dropout and improve the accuracy of dropout’s fast approximate model averaging technique.
+We empirically verify that the model successfully accomplishes both of these tasks.
+We use maxout and dropout to demonstrate state of the art classiﬁcation performance on four benchmark datasets: MNIST, CIFAR-10, CIFAR100, and SVHN.
+ We propose a novel deep network structure called “Network In Network”(NIN) to enhance model discriminability for local patches within the receptive ﬁeld.
+The conventional convolutional layer uses linear ﬁlters followed by a nonlinear activation function to scan the input.
+Instead, we build micro neural networks with more complex structures to abstract the data within the receptive ﬁeld.
+We instantiate the micro neural network with a multilayer perceptron, which is a potent function approximator.
+The feature maps are obtained by sliding the micro networks over the input in a similar manner as CNN; they are then fed into the next layer.
+Deep NIN can be implemented by stacking mutiple of the above described structure.
+With enhanced local modeling via the micro network, we are able to utilize global average pooling over feature maps in the classiﬁcation layer, which is easier to interpret and less prone to overﬁtting than traditional fully connected layers.
+We demonstrated the state-of-the-art classiﬁcation performances with NIN on CIFAR-10 and CIFAR-100, and reasonable performances on SVHN and MNIST datasets.
+ We present an integrated framework for using Convolutional Networks for classiﬁcation, localization and detection.
+We show how a multiscale and sliding window approach can be efﬁciently implemented within a ConvNet.
+We also introduce a novel deep learning approach to localization by learning to predict object boundaries.
+Bounding boxes are then accumulated rather than suppressed in order to increase detection conﬁdence.
+We show that different tasks can be learned simultaneously using a single shared network.
+This integrated framework is the winner of the localization task of the ImageNet Large Scale Visual Recognition Challenge 2013 (ILSVRC2013) and obtained very competitive results for the detection and classiﬁcations tasks.
+In post-competition work, we establish a new state of the art for the detection task.
+Finally, we release a feature extractor from our best model called OverFeat.
+ Convolutional networks are at the core of most stateof-the-art computer vision solutions for a wide variety of tasks.
+Since 2014 very deep convolutional networks started to become mainstream, yielding substantial gains in various benchmarks.
+Although increased model size and computational cost tend to translate to immediate quality gains for most tasks (as long as enough labeled data is provided for training), computational efﬁciency and low parameter count are still enabling factors for various use cases such as mobile vision and big-data scenarios.
+Here we are exploring ways to scale up networks in ways that aim at utilizing the added computation as efﬁciently as possible by suitably factorized convolutions and aggressive regularization.
+We benchmark our methods on the ILSVRC 2012 classiﬁcation challenge validation set demonstrate substantial gains over the state of the art: 21.2% top-1 and 5.6% top-5 error for single frame evaluation using a network with a computational cost of 5 billion multiply-adds per inference and with using less than 25 million parameters.
+With an ensemble of 4 models and multi-crop evaluation, we report 3.5% top-5 error and 17.3% top-1 error on the validation set and 3.6% top-5 error on the ofﬁcial test set.
+ Convolutional Neural Networks deﬁne an exceptionally powerful class of models, but are still limited by the lack of ability to be spatially invariant to the input data in a computationally and parameter efﬁcient manner.
+In this work we introduce a new learnable module, the Spatial Transformer, which explicitly allows the spatial manipulation of data within the network.
+This differentiable module can be inserted into existing convolutional architectures, giving neural networks the ability to actively spatially transform feature maps, conditional on the feature map itself, without any extra training supervision or modiﬁcation to the optimisation process.
+We show that the use of spatial transformers results in models which learn invariance to translation, scale, rotation and more generic warping, resulting in state-of-the-art performance on several benchmarks, and for a number of classes of transformations.
+ We present a model that generates natural language descriptions of images and their regions.
+Our approach leverages datasets of images and their sentence descriptions to learn about the inter-modal correspondences between language and visual data.
+Our alignment model is based on a novel combination of Convolutional Neural Networks over image regions, bidirectional Recurrent Neural Networks over sentences, and a structured objective that aligns the two modalities through a multimodal embedding.
+We then describe a Multimodal Recurrent Neural Network architecture that uses the inferred alignments to learn to generate novel descriptions of image regions.
+We demonstrate that our alignment model produces state of the art results in retrieval experiments on Flickr8K, Flickr30K and MSCOCO datasets.
+We then show that the generated descriptions signiﬁcantly outperform retrieval baselines on both full images and on a new dataset of region-level annotations.
+ In modern face recognition, the conventional pipeline consists of four stages: detect ⇒ align ⇒ represent ⇒ classify.
+We revisit both the alignment step and the representation step by employing explicit 3D face modeling in order to apply a piecewise afﬁne transformation, and derive a face representation from a nine-layer deep neural network.
+This deep network involves more than 120 million parameters using several locally connected layers without weight sharing, rather than the standard convolutional layers.
+Thus we trained it on the largest facial dataset to-date, an identity labeled dataset of four million facial images belonging to more than 4,000 identities.
+The learned representations coupling the accurate model-based alignment with the large facial database generalize remarkably well to faces in unconstrained environments, even with a simple classiﬁer.
+Our method reaches an accuracy of 97.35% on the Labeled Faces in the Wild (LFW) dataset, reducing the error of the current state of the art by more than 27%, closely approaching human-level performance.
+ Convolutional Neural Networks (CNNs) have been established as a powerful class of models for image recognition problems.
+Encouraged by these results, we provide an extensive empirical evaluation of CNNs on largescale video classiﬁcation using a new dataset of 1 million YouTube videos belonging to 487 classes.
+We study multiple approaches for extending the connectivity of a CNN in time domain to take advantage of local spatio-temporal information and suggest a multiresolution, foveated architecture as a promising way of speeding up the training.
+Our best spatio-temporal networks display signiﬁcant performance improvements compared to strong feature-based baselines (55.3% to 63.9%), but only a surprisingly modest improvement compared to single-frame models (59.3% to 60.9%).
+We further study the generalization performance of our best model by retraining the top layers on the UCF101 Action Recognition dataset and observe signiﬁcant performance improvements compared to the UCF-101 baseline model (63.3% up from 43.9%).
+ Models based on deep convolutional networks have dominated recent image interpretation tasks; we investigate whether models which are also recurrent, or “temporally deep”, are effective for tasks involving sequences, visual and otherwise.
+We develop a novel recurrent convolutional architecture suitable for large-scale visual learning which is end-to-end trainable, and demonstrate the value of these models on benchmark video recognition tasks, image description and retrieval problems, and video narration challenges.
+In contrast to current models which assume a ﬁxed spatio-temporal receptive ﬁeld or simple temporal averaging for sequential processing, recurrent convolutional models are “doubly deep” in that they can be compositional in spatial and temporal “layers”.
+Such models may have advantages when target concepts are complex and/or training data are limited.
+Learning long-term dependencies is possible when nonlinearities are incorporated into the network state updates.
+Long-term RNN models are appealing in that they directly can map variable-length inputs (e.g., video frames) to variable length outputs (e.g., natural language text) and can model complex temporal dynamics; yet they can be optimized with backpropagation.
+Our recurrent long-term models are directly connected to modern visual convnet models and can be jointly trained to simultaneously learn temporal dynamics and convolutional perceptual representations.
+Our results show such models have distinct advantages over state-of-the-art models for recognition or generation which are separately deﬁned and/or optimized.
+ Automatically describing the content of an image is a fundamental problem in artiﬁcial intelligence that connects computer vision and natural language processing.
+In this paper, we present a generative model based on a deep recurrent architecture that combines recent advances in computer vision and machine translation and that can be used to generate natural sentences describing an image.
+The model is trained to maximize the likelihood of the target description sentence given the training image.
+Experiments on several datasets show the accuracy of the model and the ﬂuency of the language it learns solely from image descriptions.
+Our model is often quite accurate, which we verify both qualitatively and quantitatively.
+For instance, while the current state-of-the-art BLEU-1 score (the higher the better) on the Pascal dataset is 25, our approach yields 59, to be compared to human performance around 69.
+We also show BLEU-1 score improvements on Flickr30k, from 56 to 66, and on SBU, from 19 to 28.
+Lastly, on the newly released COCO dataset, we achieve a BLEU-4 of 27.7, which is the current state-of-the-art.
+ Inspired by recent work in machine translation and object detection, we introduce an attention based model that automatically learns to describe the content of images.
+We describe how we can train this model in a deterministic manner using standard backpropagation techniques and stochastically by maximizing a variational lower bound.
+We also show through visualization how the model is able to automatically learn to ﬁx its gaze on salient objects while generating the corresponding words in the output sequence.
+We validate the use of attention with state-of-theart performance on three benchmark datasets: Flickr8k, Flickr30k and MS COCO.
+ We investigate architectures of discriminatively trained deep Convolutional Networks (ConvNets) for action recognition in video.
+The challenge is to capture the complementary information on appearance from still frames and motion between frames.
+We also aim to generalise the best performing hand-crafted features within a data-driven learning framework.
+Our contribution is three-fold.
+First, we propose a two-stream ConvNet architecture which incorporates spatial and temporal networks.
+Second, we demonstrate that a ConvNet trained on multi-frame dense optical ﬂow is able to achieve very good performance in spite of limited training data.
+Finally, we show that multitask learning, applied to two different action classiﬁcation datasets, can be used to increase the amount of training data and improve the performance on both.
+Our architecture is trained and evaluated on the standard video actions benchmarks of UCF-101 and HMDB-51, where it is competitive with the state of the art.
+It also exceeds by a large margin previous attempts to use deep nets for video classiﬁcation.
+ We propose the task of free-form and open-ended Visual Question Answering (VQA).
+Given an image and a natural language question about the image, the task is to provide an accurate natural language answer.
+Mirroring real-world scenarios, such as helping the visually impaired, both the questions and answers are open-ended.
+Visual questions selectively target different areas of an image, including background details and underlying context.
+As a result, a system that succeeds at VQA typically needs a more detailed understanding of the image and complex reasoning than a system producing generic image captions.
+Moreover, VQA is amenable to automatic evaluation, since many open-ended answers contain only a few words or a closed set of answers that can be provided in a multiple-choice format.
+We provide a dataset containing ∼0.25M images, ∼0.76M questions, and ∼10M answers (www.visualqa.org), and discuss the information it provides.
+Numerous baselines for VQA are provided and compared with human performance.
+ This paper proposes a Fast Region-based Convolutional Network method (Fast R-CNN) for object detection.
+Fast R-CNN builds on previous work to efﬁciently classify object proposals using deep convolutional networks.
+Compared to previous work, Fast R-CNN employs several innovations to improve training and testing speed while also increasing detection accuracy.
+Fast R-CNN trains the very deep VGG16 network 9× faster than R-CNN, is 213× faster at test-time, and achieves a higher mAP on PASCAL VOC 2012.
+Compared to SPPnet, Fast R-CNN trains VGG16 3× faster, tests 10× faster, and is more accurate.
+Fast R-CNN is implemented in Python and C++ (using Caffe) and is available under the open-source MIT License at https: //github.com/rbgirshick/fast-rcnn.
+ State-of-the-art object detection networks depend on region proposal algorithms to hypothesize object locations.
+Advances like SPPnet [7] and Fast R-CNN [5] have reduced the running time of these detection networks, exposing region proIn this work, we introduce a Region Proposal computation as a bottleneck.
+posal Network (RPN) that shares full-image convolutional features with the detection network, thus enabling nearly cost-free region proposals.
+An RPN is a fully-convolutional network that simultaneously predicts object bounds and objectness scores at each position.
+RPNs are trained end-to-end to generate highquality region proposals, which are used by Fast R-CNN for detection.
+With a simple alternating optimization, RPN and Fast R-CNN can be trained to share convolutional features.
+For the very deep VGG-16 model [19], our detection system has a frame rate of 5fps (including all steps) on a GPU, while achieving state-of-the-art object detection accuracy on PASCAL VOC 2007 (73.2% mAP) and 2012 (70.4% mAP) using 300 proposals per image.
+Code is available at https://github.com/ShaoqingRen/faster_rcnn.
+ Convolutional networks are powerful visual models that yield hierarchies of features.
+We show that convolutional networks by themselves, trained end-to-end, pixelsto-pixels, exceed the state-of-the-art in semantic segmentation.
+Our key insight is to build “fully convolutional” networks that take input of arbitrary size and produce correspondingly-sized output with efﬁcient inference and learning.
+We deﬁne and detail the space of fully convolutional networks, explain their application to spatially dense prediction tasks, and draw connections to prior models.
+We adapt contemporary classiﬁcation networks (AlexNet [20], the VGG net [31], and GoogLeNet [32]) into fully convolutional networks and transfer their learned representations by ﬁne-tuning [3] to the segmentation task.
+We then deﬁne a skip architecture that combines semantic information from a deep, coarse layer with appearance information from a shallow, ﬁne layer to produce accurate and detailed segmentations.
+Our fully convolutional network achieves stateof-the-art segmentation of PASCAL VOC (20% relative improvement to 62.2% mean IU on 2012), NYUDv2, and SIFT Flow, while inference takes less than one ﬁfth of a second for a typical image.
+ Object detection performance, as measured on the canonical PASCAL VOC dataset, has plateaued in the last few years.
+The best-performing methods are complex ensemble systems that typically combine multiple low-level image features with high-level context.
+In this paper, we propose a simple and scalable detection algorithm that improves mean average precision (mAP) by more than 30% relative to the previous best result on VOC 2012—achieving a mAP of 53.3%.
+Our approach combines two key insights: (1) one can apply high-capacity convolutional neural networks (CNNs) to bottom-up region proposals in order to localize and segment objects and (2) when labeled training data is scarce, supervised pre-training for an auxiliary task, followed by domain-speciﬁc ﬁne-tuning, yields a signiﬁcant performance boost.
+Since we combine region proposals with CNNs, we call our method R-CNN: Regions with CNN features.
+We also present experiments that provide insight into what the network learns, revealing a rich hierarchy of image features.
+Source code for the complete system is available at http://www.cs.berkeley.edu/ ˜rbg/rcnn.
+ We present YOLO, a new approach to object detection.
+Prior work on object detection repurposes classiﬁers to perform detection.
+Instead, we frame object detection as a regression problem to spatially separated bounding boxes and associated class probabilities.
+A single neural network predicts bounding boxes and class probabilities directly from full images in one evaluation.
+Since the whole detection pipeline is a single network, it can be optimized end-to-end directly on detection performance.
+Our uniﬁed architecture is extremely fast.
+Our base YOLO model processes images in real-time at 45 frames per second.
+A smaller version of the network, Fast YOLO, processes an astounding 155 frames per second while still achieving double the mAP of other real-time detectors.
+Compared to state-of-the-art detection systems, YOLO makes more localization errors but is less likely to predict false positives on background.
+Finally, YOLO learns very general representations of objects.
+It outperforms other detection methods, including DPM and R-CNN, when generalizing from natural images to other domains like artwork.
+ We introduce a method to train Binarized Neural Networks (BNNs) - neural networks with binary weights and activations at run-time.
+At training-time the binary weights and activations are used for computing the parameters gradients.
+During the forward pass, BNNs drastically reduce memory size and accesses, and replace most arithmetic operations with bit-wise operations, which is expected to substantially improve power-efﬁciency.
+To validate the effectiveness of BNNs we conduct two sets of experiments on the Torch7 and Theano frameworks.
+On both, BNNs achieved nearly state-of-the-art results over the MNIST, CIFAR-10 and SVHN datasets.
+Last but not least, we wrote a binary matrix multiplication GPU kernel with which it is possible to run our MNIST BNN 7 times faster than with an unoptimized GPU kernel, without suffering any loss in classiﬁcation accuracy.
+The code for training and running our BNNs is available on-line.
+ Neural network architectures with memory and attention mechanisms exhibit certain reasoning capabilities required for question answering.
+One such architecture, the dynamic memory network (DMN), obtained high accuracy on a variety of language tasks.
+However, it was not shown whether the architecture achieves strong results for question answering when supporting facts are not marked during training or whether it could be applied to other modalities such as images.
+Based on an analysis of the DMN, we propose several improvements to its memory and input modules.
+Together with these changes we introduce a novel input module for images in order to be able to answer visual questions.
+Our new DMN+ model improves the state of the art on both the Visual Question Answering dataset and the bAbI-10k text question-answering dataset without supporting fact supervision.
+ Neural Machine Translation (NMT) is an end-to-end learning approach for automated translation, with the potential to overcome many of the weaknesses of conventional phrase-based translation systems.
+Unfortunately, NMT systems are known to be computationally expensive both in training and in translation inference – sometimes prohibitively so in the case of very large data sets and large models.
+Several authors have also charged that NMT systems lack robustness, particularly when input sentences contain rare words.
+These issues have hindered NMT’s use in practical deployments and services, where both accuracy and speed are essential.
+In this work, we present GNMT, Google’s Neural Machine Translation system, which attempts to address many of these issues.
+Our model consists of a deep LSTM network with 8 encoder and 8 decoder layers using residual connections as well as attention connections from the decoder network to the encoder.
+To improve parallelism and therefore decrease training time, our attention mechanism connects the bottom layer of the decoder to the top layer of the encoder.
+To accelerate the ﬁnal translation speed, we employ low-precision arithmetic during inference computations.
+To improve handling of rare words, we divide words into a limited set of common sub-word units (“wordpieces”) for both input and output.
+This method provides a good balance between the ﬂexibility of “character”-delimited models and the eﬃciency of “word”-delimited models, naturally handles translation of rare words, and ultimately improves the overall accuracy of the system.
+Our beam search technique employs a length-normalization procedure and uses a coverage penalty, which encourages generation of an output sentence that is most likely to cover all the words in the source sentence.
+To directly optimize the translation BLEU scores, we consider reﬁning the models by using reinforcement learning, but we found that the improvement in the BLEU scores did not reﬂect in the human evaluation.
+On the WMT’14 English-to-French and English-to-German benchmarks, GNMT achieves competitive results to state-of-the-art.
+Using a human side-by-side evaluation on a set of isolated simple sentences, it reduces translation errors by an average of 60% compared to Google’s phrase-based production system.
+ Training state-of-the-art, deep neural networks is computationally expensive.
+One way to reduce the training time is to normalize the activities of the neurons.
+A recently introduced technique called batch normalization uses the distribution of the summed input to a neuron over a mini-batch of training cases to compute a mean and variance which are then used to normalize the summed input to that neuron on each training case.
+This signiﬁcantly reduces the training time in feedforward neural networks.
+However, the effect of batch normalization is dependent on the mini-batch size and it is not obvious how to apply it to recurrent neural networks.
+In this paper, we transpose batch normalization into layer normalization by computing the mean and variance used for normalization from all of the summed inputs to the neurons in a layer on a single training case.
+Like batch normalization, we also give each neuron its own adaptive bias and gain which are applied after the normalization but before the non-linearity.
+Unlike batch normalization, layer normalization performs exactly the same computation at training and test times.
+It is also straightforward to apply to recurrent neural networks by computing the normalization statistics separately at each time step.
+Layer normalization is very effective at stabilizing the hidden state dynamics in recurrent networks.
+Empirically, we show that layer normalization can substantially reduce the training time compared with previously published techniques.
+ The move from hand-designed features to learned features in machine learning has been wildly successful.
+In spite of this, optimization algorithms are still designed by hand.
+In this paper we show how the design of an optimization algorithm can be cast as a learning problem, allowing the algorithm to learn to exploit structure in the problems of interest in an automatic way.
+Our learned algorithms, implemented by LSTMs, outperform generic, hand-designed competitors on the tasks for which they are trained, and also generalize well to new tasks with similar structure.
+We demonstrate this on a number of tasks, including simple convex problems, training neural networks, and styling images with neural art.
+ This paper presents stacked attention networks (SANs) that learn to answer natural language questions from images.
+SANs use semantic representation of a question as query to search for the regions in an image that are related to the answer.
+We argue that image question answering (QA) often requires multiple steps of reasoning.
+Thus, we develop a multiple-layer SAN in which we query an image multiple times to infer the answer progressively.
+Experiments conducted on four image QA data sets demonstrate that the proposed SANs signiﬁcantly outperform previous state-of-the-art approaches.
+The visualization of the attention layers illustrates the progress that the SAN locates the relevant visual clues that lead to the answer of the question layer-by-layer.
+ Gatys et al.
+recently demonstrated that deep networks can generate beautiful textures and stylized images from a single texture example.
+However, their methods require a slow and memoryconsuming optimization process.
+We propose here an alternative approach that moves the computational burden to a learning stage.
+Given a single example of a texture, our approach trains compact feed-forward convolutional networks to generate multiple samples of the same texture of arbitrary size and to transfer artistic style from a given image to any other image.
+The resulting networks are remarkably light-weight and can generate textures of quality comparable to Gatys et al., but hundreds of times faster.
+More generally, our approach highlights the power and ﬂexibility of generative feed-forward models trained with complex and expressive loss functions.
+ The ability to accurately represent sentences is central to language understanding.
+We describe a convolutional architecture dubbed the Dynamic Convolutional Neural Network (DCNN) that we adopt for the semantic modelling of sentences.
+The network uses Dynamic k-Max Pooling, a global pooling operation over linear sequences.
+The network handles input sentences of varying length and induces a feature graph over the sentence that is capable of explicitly capturing short and long-range relations.
+The network does not rely on a parse tree and is easily applicable to any language.
+We test the DCNN in four experiments: small scale binary and multi-class sentiment prediction, six-way question classiﬁcation and Twitter sentiment prediction by distant supervision.
+The network achieves excellent performance in the ﬁrst three tasks and a greater than 25% error reduction in the last task with respect to the strongest baseline.
+ Pixel-level labelling tasks, such as semantic segmentation, play a central role in image understanding.
+Recent approaches have attempted to harness the capabilities of deep learning techniques for image recognition to tackle pixellevel labelling tasks.
+One central issue in this methodology is the limited capacity of deep learning techniques to delineate visual objects.
+To solve this problem, we introduce a new form of convolutional neural network that combines the strengths of Convolutional Neural Networks (CNNs) and Conditional Random Fields (CRFs)-based probabilistic graphical modelling.
+To this end, we formulate Conditional Random Fields with Gaussian pairwise potentials and mean-ﬁeld approximate inference as Recurrent Neural Networks.
+This network, called CRF-RNN, is then plugged in as a part of a CNN to obtain a deep network that has desirable properties of both CNNs and CRFs.
+Importantly, our system fully integrates CRF modelling with CNNs, making it possible to train the whole deep network end-to-end with the usual back-propagation algorithm, avoiding ofﬂine post-processing methods for object delineation.
+We apply the proposed method to the problem of semantic image segmentation, obtaining top results on the challenging Pascal VOC 2012 segmentation benchmark.
+ We report on a series of experiments with convolutional neural networks (CNN) trained on top of pre-trained word vectors for sentence-level classiﬁcation tasks.
+We show that a simple CNN with little hyperparameter tuning and static vectors achieves excellent results on multiple benchmarks.
+Learning task-speciﬁc vectors through ﬁne-tuning offers further gains in performance.
+We additionally propose a simple modiﬁcation to the architecture to allow for the use of both task-speciﬁc and static vectors.
+The CNN models discussed herein improve upon the state of the art on 4 out of 7 tasks, which include sentiment analysis and question classiﬁcation.
+ Many machine learning algorithms require the input to be represented as a ﬁxed-length feature vector.
+When it comes to texts, one of the most common ﬁxed-length features is bag-of-words.
+Despite their popularity, bag-of-words features have two major weaknesses: they lose the ordering of the words and they also ignore semantics of the words.
+For example, “powerful,” “strong” and “Paris” are equally distant.
+In this paper, we propose Paragraph Vector, an unsupervised algorithm that learns ﬁxed-length feature representations from variable-length pieces of texts, such as sentences, paragraphs, and documents.
+Our algorithm represents each document by a dense vector which is trained to predict words in the document.
+Its construction gives our algorithm the potential to overcome the weaknesses of bag-ofwords models.
+Empirical results show that Paragraph Vectors outperform bag-of-words models as well as other techniques for text representations.
+Finally, we achieve new state-of-the-art results on several text classiﬁcation and sentiment analysis tasks.
+ The recently introduced continuous Skip-gram model is an efﬁcient method for learning high-quality distributed vector representations that capture a large number of precise syntactic and semantic word relationships.
+In this paper we present several extensions that improve both the quality of the vectors and the training speed.
+By subsampling of the frequent words we obtain signiﬁcant speedup and also learn more regular word representations.
+We also describe a simple alternative to the hierarchical softmax called negative sampling.
+An inherent limitation of word representations is their indifference to word order and their inability to represent idiomatic phrases.
+For example, the meanings of “Canada” and “Air” cannot be easily combined to obtain “Air Canada”.
+Motivated by this example, we present a simple method for ﬁnding phrases in text, and show that learning good vector representations for millions of phrases is possible.
+ X  Y  Z  <eos>  5 1 0 2     p e S 0 2         ] L C .
+s c [      5 v 5 2 0 4 0  .
+8 0 5 1 : v i X r a  An attentional mechanism has lately been used to improve neural machine translation (NMT) by selectively focusing on parts of the source sentence during translation.
+However, there has been little work exploring useful architectures for attention-based NMT.
+This paper examines two simple and effective classes of attentional mechanism: a global approach which always attends to all source words and a local one that only looks at a subset of source words at a time.
+We demonstrate the effectiveness of both approaches on the WMT translation tasks between English and German in both directions.
+With local attention, we achieve a signiﬁcant gain of 5.0 BLEU points over non-attentional systems that already incorporate known techniques such as dropout.
+Our ensemble model using different attention architectures yields a new state-of-the-art result in the WMT’15 English to German translation task with 25.9 BLEU points, an improvement of 1.0 BLEU points over the existing best system backed by NMT and an n-gram reranker.1
+ We propose two novel model architectures for computing continuous vector representations of words from very large data sets.
+The quality of these representations is measured in a word similarity task, and the results are compared to the previously best performing techniques based on different types of neural networks.
+We observe large improvements in accuracy at much lower computational cost, i.e.
+it takes less than a day to learn high quality word vectors from a 1.6 billion words data set.
+Furthermore, we show that these vectors provide state-of-the-art performance on our test set for measuring syntactic and semantic word similarities.
+ In this work we explore recent advances in Recurrent Neural Networks for large scale Language Modeling, a task central to language understanding.
+We extend current models to deal with two key challenges present in this task: corpora and vocabulary sizes, and complex, long term structure of language.
+We perform an exhaustive study on techniques such as character Convolutional Neural Networks or Long-Short Term Memory, on the One Billion Word Benchmark.
+Our best single model signiﬁcantly improves state-of-the-art perplexity from 51.3 down to 30.0 (whilst reducing the number of parameters by a factor of 20), while an ensemble of models sets a new record by improving perplexity from 41.0 down to 23.7.
+We also release these models for the NLP and ML community to study and improve upon.
+ This paper shows how Long Short-term Memory recurrent neural networks can be used to generate complex sequences with long-range structure, simply by predicting one data point at a time.
+The approach is demonstrated for text (where the data are discrete) and online handwriting (where the data are real-valued).
+It is then extended to handwriting synthesis by allowing the network to condition its predictions on a text sequence.
+The resulting system is able to generate highly realistic cursive handwriting in a wide variety of styles.
+ In this paper, we propose a novel neural network model called RNN Encoder– Decoder that consists of two recurrent neural networks (RNN).
+One RNN encodes a sequence of symbols into a ﬁxedlength vector representation, and the other decodes the representation into another sequence of symbols.
+The encoder and decoder of the proposed model are jointly trained to maximize the conditional probability of a target sequence given a source sequence.
+The performance of a statistical machine translation system is empirically found to improve by using the conditional probabilities of phrase pairs computed by the RNN Encoder–Decoder as an additional feature in the existing log-linear model.
+Qualitatively, we show that the proposed model learns a semantically and syntactically meaningful representation of linguistic phrases.
+ We extend the capabilities of neural networks by coupling them to external memory resources, which they can interact with by attentional processes.
+The combined system is analogous to a Turing Machine or Von Neumann architecture but is differentiable end-toend, allowing it to be efﬁciently trained with gradient descent.
+Preliminary results demonstrate that Neural Turing Machines can infer simple algorithms such as copying, sorting, and associative recall from input and output examples.
+ Semantic word spaces have been very useful but cannot express the meaning of longer phrases in a principled way.
+Further progress towards understanding compositionality in tasks such as sentiment detection requires richer supervised training and evaluation resources and more powerful models of composition.
+To remedy this, we introduce a Sentiment Treebank.
+It includes ﬁne grained sentiment labels for 215,154 phrases in the parse trees of 11,855 sentences and presents new challenges for sentiment compositionality.
+To address them, we introduce the Recursive Neural Tensor Network.
+When trained on the new treebank, this model outperforms all previous methods on several metrics.
+It pushes the state of the art in single sentence positive/negative classiﬁcation from 80% up to 85.4%.
+The accuracy of predicting ﬁne-grained sentiment labels for all phrases reaches 80.7%, an improvement of 9.7% over bag of features baselines.
+Lastly, it is the only model that can accurately capture the effects of negation and its scope at various tree levels for both positive and negative phrases.
+ Deep Neural Networks (DNNs) are powerful models that have achieved excellent performance on difﬁcult learning tasks.
+Although DNNs work well whenever large labeled training sets are available, they cannot be used to map sequences to sequences.
+In this paper, we present a general end-to-end approach to sequence learning that makes minimal assumptions on the sequence structure.
+Our method uses a multilayered Long Short-Term Memory (LSTM) to map the input sequence to a vector of a ﬁxed dimensionality, and then another deep LSTM to decode the target sequence from the vector.
+Our main result is that on an English to French translation task from the WMT-14 dataset, the translations produced by the LSTM achieve a BLEU score of 34.8 on the entire test set, where the LSTM’s BLEU score was penalized on out-of-vocabulary words.
+Additionally, the LSTM did not have difﬁculty on long sentences.
+For comparison, a phrase-based SMT system achieves a BLEU score of 33.3 on the same dataset.
+When we used the LSTM to rerank the 1000 hypotheses produced by the aforementioned SMT system, its BLEU score increases to 36.5, which is close to the previous state of the art.
+The LSTM also learned sensible phrase and sentence representations that are sensitive to word order and are relatively invariant to the active and the passive voice.
+Finally, we found that reversing the order of the words in all source sentences (but not target sentences) improved the LSTM’s performance markedly, because doing so introduced many short term dependencies between the source and the target sentence which made the optimization problem easier.
+ Teaching machines to read natural language documents remains an elusive challenge.
+Machine reading systems can be tested on their ability to answer questions posed on the contents of documents that they have seen, but until now large scale training and test datasets have been missing for this type of evaluation.
+In this work we deﬁne a new methodology that resolves this bottleneck and provides large scale supervised reading comprehension data.
+This allows us to develop a class of attention based deep neural networks that learn to read real documents and answer complex questions with minimal prior knowledge of language structure.
+ Training Deep Neural Networks is complicated by the fact that the distribution of each layer’s inputs changes during training, as the parameters of the previous layers change.
+This slows down the training by requiring lower learning rates and careful parameter initialization, and makes it notoriously hard to train models with saturating nonlinearities.
+We refer to this phenomenon as internal covariate shift, and address the problem by normalizing layer inputs.
+Our method draws its strength from making normalization a part of the model architecture and performing the normalization for each training mini-batch.
+Batch Normalization allows us to use much higher learning rates and be less careful about initialization.
+It also acts as a regularizer, in some cases eliminating the need for Dropout.
+Applied to a state-of-the-art image classiﬁcation model, Batch Normalization achieves the same accuracy with 14 times fewer training steps, and beats the original model by a signiﬁcant margin.
+Using an ensemble of batchnormalized networks, we improve upon the best published result on ImageNet classiﬁcation: reaching 4.9% top-5 validation error (and 4.8% test error), exceeding the accuracy of human raters.
+ Rectiﬁed activation units (rectiﬁers) are essential for state-of-the-art neural networks.
+In this work, we study rectiﬁer neural networks for image classiﬁcation from two aspects.
+First, we propose a Parametric Rectiﬁed Linear Unit (PReLU) that generalizes the traditional rectiﬁed unit.
+PReLU improves model ﬁtting with nearly zero extra computational cost and little overﬁtting risk.
+Second, we derive a robust initialization method that particularly considers the rectiﬁer nonlinearities.
+This method enables us to train extremely deep rectiﬁed models directly from scratch and to investigate deeper or wider network architectures.
+Based on the learnable activation and advanced initialization, we achieve 4.94% top-5 test error on the ImageNet 2012 classiﬁcation dataset.
+This is a 26% relative improvement over the ILSVRC 2014 winner (GoogLeNet, 6.66% [33]).
+To our knowledge, our result is the ﬁrst1 to surpass the reported human-level performance (5.1%, [26]) on this dataset.
+ Deep neural nets with a large number of parameters are very powerful machine learning systems.
+However, overﬁtting is a serious problem in such networks.
+Large networks are also slow to use, making it diﬃcult to deal with overﬁtting by combining the predictions of many diﬀerent large neural nets at test time.
+Dropout is a technique for addressing this problem.
+The key idea is to randomly drop units (along with their connections) from the neural network during training.
+This prevents units from co-adapting too much.
+During training, dropout samples from an exponential number of diﬀerent “thinned” networks.
+At test time, it is easy to approximate the eﬀect of averaging the predictions of all these thinned networks by simply using a single unthinned network that has smaller weights.
+This signiﬁcantly reduces overﬁtting and gives major improvements over other regularization methods.
+We show that dropout improves the performance of neural networks on supervised learning tasks in vision, speech recognition, document classiﬁcation and computational biology, obtaining state-of-the-art results on many benchmark data sets.
+Keywords: neural networks, regularization, model combination, deep learning
+ Grid search and manual search are the most widely used strategies for hyper-parameter optimization.
+This paper shows empirically and theoretically that randomly chosen trials are more efﬁcient for hyper-parameter optimization than trials on a grid.
+Empirical evidence comes from a comparison with a large previous study that used grid search and manual search to conﬁgure neural networks and deep belief networks.
+Compared with neural networks conﬁgured by a pure grid search, we ﬁnd that random search over the same domain is able to ﬁnd models that are as good or better within a small fraction of the computation time.
+Granting random search the same computational budget, random search ﬁnds better models by effectively searching a larger, less promising conﬁguration space.
+Compared with deep belief networks conﬁgured by a thoughtful combination of manual search and grid search, purely random search over the same 32-dimensional conﬁguration space found statistically equal performance on four of seven data sets, and superior performance on one of seven.
+A Gaussian process analysis of the function from hyper-parameters to validation set performance reveals that for most data sets only a few of the hyper-parameters really matter, but that different hyper-parameters are important on different data sets.
+This phenomenon makes grid search a poor choice for conﬁguring algorithms for new data sets.
+Our analysis casts some light on why recent “High Throughput” methods achieve surprising success—they appear to search through a large number of hyper-parameters because most hyper-parameters do not matter much.
+We anticipate that growing interest in large hierarchical models will place an increasing burden on techniques for hyper-parameter optimization; this work shows that random search is a natural baseline against which to judge progress in the development of adaptive (sequential) hyper-parameter optimization algorithms.
+Keywords: global optimization, model selection, neural networks, deep learning, response surface modeling
+ Theoretical and empirical evidence indicates that the depth of neural networks is crucial for their success.
+However, training becomes more difﬁcult as depth increases, and training of very deep networks remains an open problem.
+Here we introduce a new architecture designed to overcome this.
+Our so-called highway networks allow unimpeded information ﬂow across many layers on information highways.
+They are inspired by Long Short-Term Memory recurrent networks and use adaptive gating units to regulate the information ﬂow.
+Even with hundreds of layers, highway networks can be trained directly through simple gradient descent.
+This enables the study of extremely deep and efﬁcient architectures.
+1  Introduction & Previous Work  Many recent empirical breakthroughs in supervised machine learning have been achieved through large and deep neural networks.
+Network depth (the number of successive computational layers) has played perhaps the most important role in these successes.
+For instance, within just a few years, the top-5 image classiﬁcation accuracy on the 1000-class ImageNet dataset has increased from ∼84% [1] to ∼95% [2, 3] using deeper networks with rather small receptive ﬁelds [4, 5].
+Other results on practical machine learning problems have also underscored the superiority of deeper networks [6] in terms of accuracy and/or performance.
+In fact, deep networks can represent certain function classes far more efﬁciently than shallow ones.
+This is perhaps most obvious for recurrent nets, the deepest of them all.
+For example, the n bit parity problem can in principle be learned by a large feedforward net with n binary input units, 1 output unit, and a single but large hidden layer.
+But the natural solution for arbitrary n is a recurrent net with only 3 units and 5 weights, reading the input bit string one bit at a time, making a single recurrent hidden unit ﬂip its state whenever a new 1 is observed [7].
+Related observations hold for Boolean circuits [8, 9] and modern neural networks [10, 11, 12].
+To deal with the difﬁculties of training deep networks, some researchers have focused on developing better optimizers (e.g.
+[13, 14, 15]).
+Well-designed initialization strategies, in particular the normalized variance-preserving initialization for certain activation functions [16, 17], have been widely adopted for training moderately deep networks.
+Other similarly motivated strategies have shown promising results in preliminary experiments [18, 19].
+Experiments showed that certain activation functions based on local competition [20, 21] may help to train deeper networks.
+Skip connections between layers or to output layers (where error is “injected”) have long been used in neural networks, more recently with the explicit aim to improve the ﬂow of information [22, 23, 2, 24].
+A related recent technique is based on using soft targets from a shallow teacher network to aid in training deeper student networks in multiple stages [25], similar to the neural history compressor for sequences, where a slowly ticking teacher recurrent net is “distilled” into a quickly ticking student recurrent net by forcing the latter to predict the hidden units of the former [26].
+Finally, deep networks can be trained layer-wise to help in credit assignment [26, 27], but this approach is less attractive compared to direct training.
+1  Very deep network training still faces problems, albeit perhaps less fundamental ones than the problem of vanishing gradients in standard recurrent networks [28].
+The stacking of several non-linear transformations in conventional feed-forward network architectures typically results in poor propagation of activations and gradients.
+Hence it remains hard to investigate the beneﬁts of very deep networks for a variety of problems.
+To overcome this, we take inspiration from Long Short Term Memory (LSTM) recurrent networks [29, 30].
+We propose to modify the architecture of very deep feedforward networks such that information ﬂow across layers becomes much easier.
+This is accomplished through an LSTM-inspired adaptive gating mechanism that allows for computation paths along which information can ﬂow across many layers without attenuation.
+We call such paths information highways.
+They yield highway networks, as opposed to traditional ‘plain’ networks.1 Our primary contribution is to show that extremely deep highway networks can be trained directly using stochastic gradient descent (SGD), in contrast to plain networks which become hard to optimize as depth increases (Section 3.1).
+Deep networks with limited computational budget (for which a two-stage training procedure mentioned above was recently proposed [25]) can also be directly trained in a single stage when converted to highway networks.
+Their ease of training is supported by experimental results demonstrating that highway networks also generalize well to unseen data.
+2 Highway Networks  Notation We use boldface letters for vectors and matrices, and italicized capital letters to denote transformation functions.
+0 and 1 denote vectors of zeros and ones respectively, and I denotes an 1+e−x , x ∈ R. The dot operator (·) is used identity matrix.
+The function σ(x) is deﬁned as σ(x) = 1 to denote element-wise multiplication.
+A plain feedforward neural network typically consists of L layers where the lth layer (l ∈ {1, 2, ..., L}) applies a non-linear transformation H (parameterized by WH,l) on its input xl to produce its output yl.
+Thus, x1 is the input to the network and yL is the network’s output.
+Omitting the layer index and biases for clarity,  y = H(x, WH).
+(1)  H is usually an afﬁne transform followed by a non-linear activation function, but in general it may take other forms, possibly convolutional or recurrent.
+For a highway network, we additionally deﬁne two non-linear transforms T (x, WT) and C(x, WC) such that  y = H(x, WH)· T (x, WT) + x · C(x, WC).
+(2)  We refer to T as the transform gate and C as the carry gate, since they express how much of the output is produced by transforming the input and carrying it, respectively.
+For simplicity, in this paper we set C = 1 − T , giving  y = H(x, WH)· T (x, WT) + x · (1 − T (x, WT)).
+(3)  The dimensionality of x, y, H(x, WH) and T (x, WT) must be the same for Equation 3 to be valid.
+Note that this layer transformation is much more ﬂexible than Equation 1.
+In particular, observe that for particular values of T ,  (cid:26)x,  y =  H(x, WH),  if T (x, WT) = 0, if T (x, WT) = 1.
+(4)  Similarly, for the Jacobian of the layer transform,  1This paper expands upon a shorter report on Highway Networks [31].
+More recently, a similar LSTM inspired model was also proposed [32].
+2  Figure 1: Comparison of optimization of plain networks and highway networks of various depths.
+Left: The training curves for the best hyperparameter settings obtained for each network depth.
+Right: Mean performance of top 10 (out of 100) hyperparameter settings.
+Plain networks become much harder to optimize with increasing depth, while highway networks with up to 100 layers can still be optimized well.
+Best viewed on screen (larger version included in Supplementary Material).
+(cid:26)I,  H(cid:48)(x, WH),  dy dx  =  if T (x, WT) = 0, if T (x, WT) = 1.
+(5)  Thus, depending on the output of the transform gates, a highway layer can smoothly vary its behavior between that of H and that of a layer which simply passes its inputs through.
+Just as a plain layer consists of multiple computing units such that the ith unit computes yi = Hi(x), a highway network consists of multiple blocks such that the ith block computes a block state Hi(x) and transform gate output Ti(x).
+Finally, it produces the block output yi = Hi(x) ∗ Ti(x) + xi ∗ (1 − Ti(x)), which is connected to the next layer.2  2.1 Constructing Highway Networks  As mentioned earlier, Equation 3 requires that the dimensionality of x, y, H(x, WH) and T (x, WT) be the same.
+To change the size of the intermediate representation, one can replace x with ˆx obtained by suitably sub-sampling or zero-padding x.
+Another alternative is to use a plain layer (without highways) to change dimensionality, which is the strategy we use in this study.
+Convolutional highway layers utilize weight-sharing and local receptive ﬁelds for both H and T transforms.
+We used the same sized receptive ﬁelds for both, and zero-padding to ensure that the block state and transform gate feature maps match the input size.
+2.2 Training Deep Highway Networks  T x + bT), where WT is the weight matrix We use the transform gate deﬁned as T (x) = σ(WT and bT the bias vector for the transform gates.
+This suggests a simple initialization scheme which is independent of the nature of H: bT can be initialized with a negative value (e.g.
+-1, -3 etc.)
+such that the network is initially biased towards carry behavior.
+This scheme is strongly inspired by the proposal [30] to initially bias the gates in an LSTM network, to help bridge long-term temporal dependencies early in learning.
+Note that σ(x) ∈ (0, 1),∀x ∈ R, so the conditions in Equation 4 can never be met exactly.
+In our experiments, we found that a negative bias initialization for the transform gates was sufﬁcient for training to proceed in very deep networks for various zero-mean initial distributions of WH and different activation functions used by H. In pilot experiments, SGD did not stall for networks with more than 1000 layers.
+Although the initial bias is best treated as a hyperparameter, as a general guideline we suggest values of -1, -2 and -3 for convolutional highway networks of depth approximately 10, 20 and 30.
+2Our pilot experiments on training very deep networks were successful with a more complex block design closely resembling an LSTM block “unrolled in time”.
+Here we report results only for a much simpliﬁed form.
+3  Network  No.
+of parameters Test Accuracy (in %)  Highway Networks  10-layer (width 16) 99.43 (99.4±0.03)  39 K  10-layer (width 32) 99.55 (99.54±0.02)  151 K  Maxout [20] DSN [24]  420 K 99.55  350 K 99.61  Table 1: Test set classiﬁcation accuracy for pilot experiments on the MNIST dataset.
+Network Fitnet Results (reported by Romero et.
+al.
+[25])  No.
+of Layers  Teacher Fitnet A Fitnet B  Highway networks  Highway A (Fitnet A) Highway B (Fitnet B) Highway C  5 11 19  11 19 32  No.
+of Parameters Accuracy (in %) ∼9M ∼250K ∼2.5M ∼236K ∼2.3M ∼1.25M  89.18 92.46 (92.28±0.16) 91.20  90.18 89.01 91.61  Table 2: CIFAR-10 test set accuracy of convolutional highway networks.
+Architectures tested were based on ﬁtnets trained by Romero et.
+al.
+[25] using two-stage hint based training.
+Highway networks were trained in a single stage without hints, matching or exceeding the performance of ﬁtnets.
+3 Experiments  All networks were trained using SGD with momentum.
+An exponentially decaying learning rate was used in Section 3.1.
+For the rest of the experiments, a simpler commonly used strategy was employed where the learning rate starts at a value λ and decays according to a ﬁxed schedule by a factor γ. λ, γ and the schedule were selected once based on validation set performance on the CIFAR-10 dataset, and kept ﬁxed for all experiments.
+All convolutional highway networks utilize the rectiﬁed linear activation function [16] to compute the block state H. To provide a better estimate of the variability of classiﬁcation results due to random initialization, we report our results in the format Best (mean ± std.dev.)
+based on 5 runs wherever available.
+Experiments were conducted using Caffe [33] and Brainstorm (https://github.com/IDSIA/brainstorm) frameworks.
+Source code, hyperparameter search results and related scripts are publicly available at http://people.
+idsia.ch/˜rupesh/very_deep_learning/.
+3.1 Optimization  To support the hypothesis that highway networks do not suffer from increasing depth, we conducted a series of rigorous optimization experiments, comparing them to plain networks with normalized initialization [16, 17].
+We trained both plain and highway networks of varying varying depths on the MNIST digit classiﬁcation dataset.
+All networks are thin: each layer has 50 blocks for highway networks and 71 units for plain networks, yielding roughly identical numbers of parameters (≈5000) per layer.
+In all networks, the ﬁrst layer is a fully connected plain layer followed by 9, 19, 49, or 99 fully connected plain or highway layers.
+Finally, the network output is produced by a softmax layer.
+We performed a random search of 100 runs for both plain and highway networks to ﬁnd good settings for the following hyperparameters: initial learning rate, momentum, learning rate exponential decay factor & activation function (either rectiﬁed linear or tanh).
+For highway networks, an additional hyperparameter was the initial value for the transform gate bias (between -1 and -10).
+Other weights were initialized using the same normalized initialization as plain networks.
+The training curves for the best performing networks for each depth are shown in Figure 1.
+As expected, 10 and 20-layer plain networks exhibit very good performance (mean loss < 1e−4), which signiﬁcantly degrades as depth increases, even though network capacity increases.
+Highway networks do not suffer from an increase in depth, and 50/100 layer highway networks perform similar to 10/20 layer networks.
+The 100-layer highway network performed more than 2 orders of magnitude better compared to a similarly-sized plain network.
+It was also observed that highway networks consistently converged signiﬁcantly faster than plain ones.
+4  Network Maxout [20] dasNet [36] NiN [35] DSN [24] All-CNN [37] Highway Network  CIFAR-10 Accuracy (in %) CIFAR-100 Accuracy (in %) 90.62 90.78 91.19 92.03 92.75 92.40 (92.31±0.12)  61.42 66.22 64.32 65.43 66.29 67.76 (67.61±0.15)  Table 3: Test set accuracy of convolutional highway networks on the CIFAR-10 and CIFAR-100 object recognition datasets with typical data augmentation.
+For comparison, we list the accuracy reported by recent studies in similar experimental settings.
+3.2 Pilot Experiments on MNIST Digit Classiﬁcation  As a sanity check for the generalization capability of highway networks, we trained 10-layer convolutional highway networks on MNIST, using two architectures, each with 9 convolutional layers followed by a softmax output.
+The number of ﬁlter maps (width) was set to 16 and 32 for all the layers.
+We obtained test set performance competitive with state-of-the-art methods with much fewer parameters, as show in Table 1.
+3.3 Experiments on CIFAR-10 and CIFAR-100 Object Recognition  3.3.1 Comparison to Fitnets Fitnet training Maxout networks can cope much better with increased depth than those with traditional activation functions [20].
+However, Romero et.
+al.
+[25] recently reported that training on CIFAR-10 through plain backpropogation was only possible for maxout networks with a depth up to 5 layers when the number of parameters was limited to ∼250K and the number of multiplications to ∼30M.
+Similar limitations were observed for higher computational budgets.
+Training of deeper networks was only possible through the use of a two-stage training procedure and addition of soft targets produced from a pre-trained shallow teacher network (hint-based training).
+We found that it was easy to train highway networks with numbers of parameters and operations comparable to those of ﬁtnets in a single stage using SGD.
+As shown in Table 2, Highway A and Highway B, which are based on the architectures of Fitnet A and Fitnet B, respectively, obtain similar or higher accuracy on the test set.
+We were also able to train thinner and deeper networks: for example a 32-layer highway network consisting of alternating receptive ﬁelds of size 3x3 and 1x1 with ∼1.25M parameters performs better than the earlier teacher network [20].
+3.3.2 Comparison to State-of-the-art Methods  It is possible to obtain high performance on the CIFAR-10 and CIFAR-100 datasets by utilizing very large networks and extensive data augmentation.
+This approach was popularized by Ciresan et.
+al.
+[5] and recently extended by Graham [34].
+Since our aim is only to demonstrate that deeper networks can be trained without sacriﬁcing ease of training or generalization ability, we only performed experiments in the more common setting of global contrast normalization, small translations and mirroring of images.
+Following Lin et.
+al.
+[35], we replaced the fully connected layer used in the networks in the previous section with a convolutional layer with a receptive ﬁeld of size one and a global average pooling layer.
+The hyperparameters from the last section were re-used for both CIFAR-10 and CIFAR-100, therefore it is quite possible to obtain much better results with better architectures/hyperparameters.
+The results are tabulated in Table 3.
+4 Analysis  Figure 2 illustrates the inner workings of the best3 50 hidden layer fully-connected highway networks trained on MNIST (top row) and CIFAR-100 (bottom row).
+The ﬁrst three columns show  3obtained via random search over hyperparameters to minimize the best training set error achieved using  each conﬁguration  5  Figure 2: Visualization of best 50 hidden-layer highway networks trained on MNIST (top row) and CIFAR-100 (bottom row).
+The ﬁrst hidden layer is a plain layer which changes the dimensionality of the representation to 50.
+Each of the 49 highway layers (y-axis) consists of 50 blocks (x-axis).
+The ﬁrst column shows the transform gate biases, which were initialized to -2 and -4 respectively.
+In the second column the mean output of the transform gate over all training examples is depicted.
+The third and fourth columns show the output of the transform gates and the block outputs (both networks using tanh) for a single random training sample.
+Best viewed in color.
+the bias, the mean activity over all training samples, and the activity for a single random sample for each transform gate respectively.
+Block outputs for the same single sample are displayed in the last column.
+The transform gate biases of the two networks were initialized to -2 and -4 respectively.
+It is interesting to note that contrary to our expectations most biases decreased further during training.
+For the CIFAR-100 network the biases increase with depth forming a gradient.
+Curiously this gradient is inversely correlated with the average activity of the transform gates, as seen in the second column.
+This indicates that the strong negative biases at low depths are not used to shut down the gates, but to make them more selective.
+This behavior is also suggested by the fact that the transform gate activity for a single example (column 3) is very sparse.
+The effect is more pronounced for the CIFAR-100 network, but can also be observed to a lesser extent in the MNIST network.
+The last column of Figure 2 displays the block outputs and visualizes the concept of “information highways”.
+Most of the outputs stay constant over many layers forming a pattern of stripes.
+Most of the change in outputs happens in the early layers (≈ 15 for MNIST and ≈ 40 for CIFAR-100).
+4.1 Routing of Information  One possible advantage of the highway architecture over hard-wired shortcut connections is that the network can learn to dynamically adjust the routing of the information based on the current input.
+This begs the question: does this behaviour manifest itself in trained networks or do they just learn a static routing that applies to all inputs similarly.
+A partial answer can be found by looking at the mean transform gate activity (second column) and the single example transform gate outputs (third column) in Figure 2.
+Especially for the CIFAR-100 case, most transform gates are active on average, while they show very selective activity for the single example.
+This implies that for each sample only a few blocks perform transformation but different blocks are utilized by different samples.
+This data-dependent routing mechanism is further investigated in Figure 3.
+In each of the columns we show how the average over all samples of one speciﬁc class differs from the total average shown in the second column of Figure 2.
+For MNIST digits 0 and 7 substantial differences can be seen  6  Figure 3: Visualization showing the extent to which the mean transform gate activity for certain classes differs from the mean activity over all training samples.
+Generated using the same 50-layer highway networks on MNIST on CIFAR-100 as Figure 2.
+Best viewed in color.
+within the ﬁrst 15 layers, while for CIFAR class numbers 0 and 1 the differences are sparser and spread out over all layers.
+In both cases it is clear that the mean activity pattern differs between classes.
+The gating system acts not just as a mechanism to ease training, but also as an important part of the computation in a trained network.
+4.2 Layer Importance  Since we bias all the transform gates towards being closed, in the beginning every layer mostly copies the activations of the previous layer.
+Does training indeed change this behaviour, or is the ﬁnal network still essentially equivalent to a network with a much fewer layers?
+To shed light on this issue, we investigated the extent to which lesioning a single layer affects the total performance of trained networks from Section 3.1.
+By lesioning, we mean manually setting all the transform gates of a layer to 0 forcing it to simply copy its inputs.
+For each layer, we evaluated the network on the full training set with the gates of that layer closed.
+The resulting performance as a function of the lesioned layer is shown in Figure 4.
+For MNIST (left) it can be seen that the error rises signiﬁcantly if any one of the early layers is removed, but layers 15− 45 seem to have close to no effect on the ﬁnal performance.
+About 60% of the layers don’t learn to contribute to the ﬁnal result, likely because MNIST is a simple dataset that doesn’t require much depth.
+We see a different picture for the CIFAR-100 dataset (right) with performance degrading noticeably when removing any of the ﬁrst ≈ 40 layers.
+This suggests that for complex problems a highway network can learn to utilize all of its layers, while for simpler problems like MNIST it will keep many of the unneeded layers idle.
+Such behavior is desirable for deep networks in general, but appears difﬁcult to obtain using plain networks.
+5 Discussion  Alternative approaches to counter the difﬁculties posed by depth mentioned in Section 1 often have several limitations.
+Learning to route information through neural networks with the help of competitive interactions has helped to scale up their application to challenging problems by improving credit assignment [38], but they still suffer when depth increases beyond ≈20 even with careful initialization [17].
+Effective initialization methods can be difﬁcult to derive for a variety of activation functions.
+Deep supervision [24] has been shown to hurt performance of thin deep networks [25].
+Very deep highway networks, on the other hand, can directly be trained with simple gradient descent methods due to their speciﬁc architecture.
+This property does not rely on speciﬁc non-linear transformations, which may be complex convolutional or recurrent transforms, and derivation of a suitable initialization scheme is not essential.
+The additional parameters required by the gating mechanism help in routing information through the use of multiplicative connections, responding differently to different inputs, unlike ﬁxed “skip” connections.
+7  Figure 4: Lesioned training set performance (y-axis) of the best 50-layer highway networks on MNIST (left) and CIFAR-100 (right), as a function of the lesioned layer (x-axis).
+Evaluated on the full training set while forcefully closing all the transform gates of a single layer at a time.
+The non-lesioned performance is indicated as a dashed line at the bottom.
+A possible objection is that many layers might remain unused if the transform gates stay closed.
+Our experiments show that this possibility does not affect networks adversely—deep and narrow highway networks can match/exceed the accuracy of wide and shallow maxout networks, which would not be possible if layers did not perform useful computations.
+Additionally, we can exploit the structure of highways to directly evaluate the contribution of each layer as shown in Figure 4.
+For the ﬁrst time, highway networks allow us to examine how much computation depth is needed for a given problem, which can not be easily done with plain networks.
+Acknowledgments  We thank NVIDIA Corporation for their donation of GPUs and acknowledge funding from the EU project NASCENCE (FP7-ICT-317662).
+We are grateful to Sepp Hochreiter and Thomas Unterthiner for helpful comments and Jan Koutn´ık for help in conducting experiments.
+References [1] Alex Krizhevsky, Ilya Sutskever, and Geoffrey E. Hinton.
+Imagenet classiﬁcation with deep convolutional  neural networks.
+In Advances in Neural Information Processing Systems, 2012.
+[2] Christian Szegedy, Wei Liu, Yangqing Jia, Pierre Sermanet, Scott Reed, Dragomir Anguelov, Dumitru Erhan, Vincent Vanhoucke, and Andrew Rabinovich.
+Going deeper with convolutions.
+arXiv:1409.4842 [cs], September 2014.
+[3] Karen Simonyan and Andrew Zisserman.
+Very deep convolutional networks for large-scale image recog nition.
+arXiv:1409.1556 [cs], September 2014.
+[4] DC Ciresan, Ueli Meier, Jonathan Masci, Luca M Gambardella, and J¨urgen Schmidhuber.
+Flexible, high  performance convolutional neural networks for image classiﬁcation.
+In IJCAI, 2011.
+[5] Dan Ciresan, Ueli Meier, and J¨urgen Schmidhuber.
+Multi-column deep neural networks for image classi ﬁcation.
+In IEEE Conference on Computer Vision and Pattern Recognition, 2012.
+[6] Dong Yu, Michael L. Seltzer, Jinyu Li, Jui-Ting Huang, and Frank Seide.
+Feature learning in deep neural  networks-studies on speech recognition tasks.
+arXiv preprint arXiv:1301.3605, 2013.
+[7] Sepp Hochreiter and Jurgen Schmidhuber.
+Bridging long time lags by weight guessing and “long short term memory”.
+Spatiotemporal models in biological and artiﬁcial systems, 37:65–72, 1996.
+[8] Johan H˚astad.
+Computational limitations of small-depth circuits.
+MIT press, 1987.
+[9] Johan H˚astad and Mikael Goldmann.
+On the power of small-depth threshold circuits.
+Computational  Complexity, 1(2):113–129, 1991.
+[10] Monica Bianchini and Franco Scarselli.
+On the complexity of neural network classiﬁers: A comparison  between shallow and deep architectures.
+IEEE Transactions on Neural Networks, 2014.
+8  [11] Guido F Montufar, Razvan Pascanu, Kyunghyun Cho, and Yoshua Bengio.
+On the number of linear  regions of deep neural networks.
+In Advances in Neural Information Processing Systems.
+2014.
+[12] James Martens and Venkatesh Medabalimi.
+On the expressive efﬁciency of sum product networks.
+arXiv:1411.7717 [cs, stat], November 2014.
+[13] James Martens and Ilya Sutskever.
+Training deep and recurrent networks with hessian-free optimization.
+Neural Networks: Tricks of the Trade, pages 1–58, 2012.
+[14] Ilya Sutskever, James Martens, George Dahl, and Geoffrey Hinton.
+On the importance of initialization  and momentum in deep learning.
+pages 1139–1147, 2013.
+[15] Yann N Dauphin, Razvan Pascanu, Caglar Gulcehre, Kyunghyun Cho, Surya Ganguli, and Yoshua Bengio.
+Identifying and attacking the saddle point problem in high-dimensional non-convex optimization.
+In Advances in Neural Information Processing Systems 27, pages 2933–2941.
+2014.
+[16] Xavier Glorot and Yoshua Bengio.
+Understanding the difﬁculty of training deep feedforward neural  networks.
+In International Conference on Artiﬁcial Intelligence and Statistics, pages 249–256, 2010.
+[17] Kaiming He, Xiangyu Zhang, Shaoqing Ren, and Jian Sun.
+Delving deep into rectiﬁers: Surpassing  human-level performance on ImageNet classiﬁcation.
+arXiv:1502.01852 [cs], February 2015.
+[18] David Sussillo and L. F. Abbott.
+Random walk initialization for training very deep feedforward networks.
+arXiv:1412.6558 [cs, stat], December 2014.
+[19] Andrew M. Saxe, James L. McClelland, and Surya Ganguli.
+Exact solutions to the nonlinear dynamics of  learning in deep linear neural networks.
+arXiv:1312.6120 [cond-mat, q-bio, stat], December 2013.
+[20] Ian J. Goodfellow, David Warde-Farley, Mehdi Mirza, Aaron Courville, and Yoshua Bengio.
+Maxout  networks.
+arXiv:1302.4389 [cs, stat], February 2013.
+[21] Rupesh K. Srivastava, Jonathan Masci, Sohrob Kazerounian, Faustino Gomez, and J¨urgen Schmidhuber.
+Compete to compute.
+In Advances in Neural Information Processing Systems, pages 2310–2318, 2013.
+[22] Tapani Raiko, Harri Valpola, and Yann LeCun.
+Deep learning made easier by linear transformations in perceptrons.
+In International Conference on Artiﬁcial Intelligence and Statistics, pages 924–932, 2012.
+[23] Alex Graves.
+Generating sequences with recurrent neural networks.
+arXiv:1308.0850, 2013.
+[24] Chen-Yu Lee, Saining Xie, Patrick Gallagher, Zhengyou Zhang, and Zhuowen Tu.
+Deeply-supervised  nets.
+pages 562–570, 2015.
+[25] Adriana Romero, Nicolas Ballas, Samira Ebrahimi Kahou, Antoine Chassang, Carlo Gatta, and Yoshua  Bengio.
+FitNets: Hints for thin deep nets.
+arXiv:1412.6550 [cs], December 2014.
+[26] J¨urgen Schmidhuber.
+Learning complex, extended sequences using the principle of history compression.
+Neural Computation, 4(2):234–242, March 1992.
+[27] Geoffrey E. Hinton, Simon Osindero, and Yee-Whye Teh.
+A fast learning algorithm for deep belief nets.
+Neural computation, 18(7):1527–1554, 2006.
+[28] Sepp Hochreiter.
+Untersuchungen zu dynamischen neuronalen Netzen.
+Masters thesis, Technische Uni versit¨at M¨unchen, M¨unchen, 1991.
+[29] Sepp Hochreiter and J¨urgen Schmidhuber.
+Long short-term memory.
+Neural Computation, 9(8):1735–  1780, November 1997.
+[30] Felix A. Gers, J¨urgen Schmidhuber, and Fred Cummins.
+Learning to forget: Continual prediction with  LSTM.
+In ICANN, volume 2, pages 850–855, 1999.
+[31] Rupesh Kumar Srivastava, Klaus Greff, and J¨urgen Schmidhuber.
+Highway networks.
+arXiv:1505.00387  [cs], May 2015.
+[32] Nal Kalchbrenner, Ivo Danihelka, and Alex Graves.
+Grid long Short-Term memory.
+arXiv:1507.01526  [cs], July 2015.
+[33] Yangqing Jia, Evan Shelhamer, Jeff Donahue, Sergey Karayev, Jonathan Long, Ross Girshick, Sergio Guadarrama, and Trevor Darrell.
+Caffe: Convolutional architecture for fast feature embedding.
+arXiv:1408.5093 [cs], 2014.
+[34] Benjamin Graham.
+Spatially-sparse convolutional neural networks.
+arXiv:1409.6070, September 2014.
+[35] Min Lin, Qiang Chen, and Shuicheng Yan.
+Network in network.
+arXiv:1312.4400, 2014.
+[36] Marijn F Stollenga, Jonathan Masci, Faustino Gomez, and J¨urgen Schmidhuber.
+Deep networks with  internal selective attention through feedback connections.
+In NIPS.
+2014.
+[37] Jost Tobias Springenberg, Alexey Dosovitskiy, Thomas Brox, and Martin Riedmiller.
+Striving for sim plicity: The all convolutional net.
+arXiv:1412.6806 [cs], December 2014.
+[38] Rupesh Kumar Srivastava, Jonathan Masci, Faustino Gomez, and J¨urgen Schmidhuber.
+Understanding  locally competitive networks.
+In International Conference on Learning Representations, 2015.
+9
+conceptually  a  simple  propose  and We lightweight framework for deep reinforcement learning that uses asynchronous gradient descent for optimization of deep neural network controllers.
+We present asynchronous variants of four standard reinforcement learning algorithms and show that parallel actor-learners have a stabilizing effect on training allowing all four methods to successfully train neural network controllers.
+The best performing method, an asynchronous variant of actor-critic, surpasses the current state-of-the-art on the Atari domain while training for half the time on a single multi-core CPU instead of a GPU.
+Furthermore, we show that asynchronous actor-critic succeeds on a wide variety of continuous motor control problems as well as on a new task of navigating random 3D mazes using a visual input.
+ The popular Q-learning algorithm is known to overestimate action values under certain conditions.
+It was not previously known whether, in practice, such overestimations are common, whether they harm performance, and whether they can generally be prevented.
+In this paper, we answer all these questions afﬁrmatively.
+In particular, we ﬁrst show that the recent DQN algorithm, which combines Q-learning with a deep neural network, suffers from substantial overestimations in some games in the Atari 2600 domain.
+We then show that the idea behind the Double Q-learning algorithm, which was introduced in a tabular setting, can be generalized to work with large-scale function approximation.
+We propose a speciﬁc adaptation to the DQN algorithm and show that the resulting algorithm not only reduces the observed overestimations, as hypothesized, but that this also leads to much better performance on several games.
+The goal of reinforcement learning (Sutton and Barto, 1998) is to learn good policies for sequential decision problems, by optimizing a cumulative future reward signal.
+Q-learning (Watkins, 1989) is one of the most popular reinforcement learning algorithms, but it is known to sometimes learn unrealistically high action values because it includes a maximization step over estimated action values, which tends to prefer overestimated to underestimated values.
+In previous work, overestimations have been attributed to insufﬁciently ﬂexible function approximation (Thrun and Schwartz, 1993) and noise (van Hasselt, 2010, 2011).
+In this paper, we unify these views and show overestimations can occur when the action values are inaccurate, irrespective of the source of approximation error.
+Of course, imprecise value estimates are the norm during learning, which indicates that overestimations may be much more common than previously appreciated.
+It is an open question whether, if the overestimations do occur, this negatively affects performance in practice.
+Overoptimistic value estimates are not necessarily a problem in and of themselves.
+If all values would be uniformly higher then the relative action preferences are preserved and we would not expect the resulting policy to be any worse.
+Furthermore, it is known that sometimes it is good to be optimistic: optimism in the face of uncertainty is a well-known Copyright c(cid:13) 2016, Association for the Advancement of Artiﬁcial Intelligence (www.aaai.org).
+All rights reserved.
+exploration technique (Kaelbling et al., 1996).
+If, however, the overestimations are not uniform and not concentrated at states about which we wish to learn more, then they might negatively affect the quality of the resulting policy.
+Thrun and Schwartz (1993) give speciﬁc examples in which this leads to suboptimal policies, even asymptotically.
+To test whether overestimations occur in practice and at scale, we investigate the performance of the recent DQN algorithm (Mnih et al., 2015).
+DQN combines Q-learning with a ﬂexible deep neural network and was tested on a varied and large set of deterministic Atari 2600 games, reaching human-level performance on many games.
+In some ways, this setting is a best-case scenario for Q-learning, because the deep neural network provides ﬂexible function approximation with the potential for a low asymptotic approximation error, and the determinism of the environments prevents the harmful effects of noise.
+Perhaps surprisingly, we show that even in this comparatively favorable setting DQN sometimes substantially overestimates the values of the actions.
+We show that the idea behind the Double Q-learning algorithm (van Hasselt, 2010), which was ﬁrst proposed in a tabular setting, can be generalized to work with arbitrary function approximation, including deep neural networks.
+We use this to construct a new algorithm we call Double DQN.
+We then show that this algorithm not only yields more accurate value estimates, but leads to much higher scores on several games.
+This demonstrates that the overestimations of DQN were indeed leading to poorer policies and that it is beneﬁcial to reduce them.
+In addition, by improving upon DQN we obtain state-of-the-art results on the Atari domain.
+Background  To solve sequential decision problems we can learn estimates for the optimal value of each action, deﬁned as the expected sum of future rewards when taking that action and following the optimal policy thereafter.
+Under a given policy π, the true value of an action a in a state s is Qπ(s, a) ≡ E [R1 + γR2 + .
+.
+.
+| S0 = s, A0 = a, π] , where γ ∈ [0, 1] is a discount factor that trades off the importance of immediate and later rewards.
+The optimal value is then Q∗(s, a) = maxπ Qπ(s, a).
+An optimal policy is easily derived from the optimal values by selecting the highestvalued action in each state.
+Estimates for the optimal action values can be learned using Q-learning (Watkins, 1989), a form of temporal difference learning (Sutton, 1988).
+Most interesting problems are too large to learn all action values in all states separately.
+Instead, we can learn a parameterized value function Q(s, a; θt).
+The standard Q-learning update for the parameters after taking action At in state St and observing the immediate reward Rt+1 and resulting state St+1 is then θt+1 = θt +α(Y Q where α is a scalar step size and the target Y Q  t −Q(St, At; θt))∇θtQ(St, At; θt) .
+(1) is deﬁned as  t  Y Q t ≡ Rt+1 + γ max  a  Q(St+1, a; θt) .
+(2)  This update resembles stochastic gradient descent, updating the current value Q(St, At; θt) towards a target value Y Q t .
+Deep Q Networks A deep Q network (DQN) is a multi-layered neural network that for a given state s outputs a vector of action values Q(s,· ; θ), where θ are the parameters of the network.
+For an n-dimensional state space and an action space containing m actions, the neural network is a function from Rn to Rm.
+Two important ingredients of the DQN algorithm as proposed by Mnih et al.
+(2015) are the use of a target network, and the use of experience replay.
+The target network, with parameters θ−, is the same as the online network except that its parameters are copied every τ steps from the online network, so that then θ−t = θt, and kept ﬁxed on all other steps.
+The target used by DQN is then  Y DQN  t  ≡ Rt+1 + γ max  a  Q(St+1, a; θ−t ) .
+(3)  For the experience replay (Lin, 1992), observed transitions are stored for some time and sampled uniformly from this memory bank to update the network.
+Both the target network and the experience replay dramatically improve the performance of the algorithm (Mnih et al., 2015).
+Double Q-learning The max operator in standard Q-learning and DQN, in (2) and (3), uses the same values both to select and to evaluate an action.
+This makes it more likely to select overestimated values, resulting in overoptimistic value estimates.
+To prevent this, we can decouple the selection from the evaluation.
+This is the idea behind Double Q-learning (van Hasselt, 2010).
+In the original Double Q-learning algorithm, two value functions are learned by assigning each experience randomly to update one of the two value functions, such that there are two sets of weights, θ and θ(cid:48).
+For each update, one set of weights is used to determine the greedy policy and the other to determine its value.
+For a clear comparison, we can ﬁrst untangle the selection and evaluation in Q-learning and rewrite its target (2) as  Y Q t = Rt+1 + γQ(St+1, argmax  a  Q(St+1, a; θt); θt) .
+t  a  The Double Q-learning error can then be written as Y DoubleQ  ≡ Rt+1 + γQ(St+1, argmax  Q(St+1, a; θt); θ(cid:48)t) .
+(4) Notice that the selection of the action, in the argmax, is still due to the online weights θt.
+This means that, as in Qlearning, we are still estimating the value of the greedy policy according to the current values, as deﬁned by θt.
+However, we use the second set of weights θ(cid:48)t to fairly evaluate the value of this policy.
+This second set of weights can be updated symmetrically by switching the roles of θ and θ(cid:48).
+Overoptimism due to estimation errors  Q-learning’s overestimations were ﬁrst investigated by Thrun and Schwartz (1993), who showed that if the action values contain random errors uniformly distributed in an interval [−, ] then each target is overestimated up to γ m−1 m+1 , where m is the number of actions.
+In addition, Thrun and Schwartz give a concrete example in which these overestimations even asymptotically lead to sub-optimal policies, and show the overestimations manifest themselves in a small toy problem when using function approximation.
+Later van Hasselt (2010) argued that noise in the environment can lead to overestimations even when using tabular representation, and proposed Double Q-learning as a solution.
+In this section we demonstrate more generally that estimation errors of any kind can induce an upward bias, regardless of whether these errors are due to environmental noise, function approximation, non-stationarity, or any other source.
+This is important, because in practice any method will incur some inaccuracies during learning, simply due to the fact that the true values are initially unknown.
+biased in the sense that(cid:80)  The result by Thrun and Schwartz (1993) cited above gives an upper bound to the overestimation for a speciﬁc setup, but it is also possible, and potentially more interesting, to derive a lower bound.
+Theorem 1.
+Consider a state s in which all the true optimal action values are equal at Q∗(s, a) = V∗(s) for some V∗(s).
+Let Qt be arbitrary value estimates that are on the whole una(Qt(s, a)− V∗(s)) = 0, but that are not all correct, such that 1 a(Qt(s, a)−V∗(s))2 = C m for some C > 0, where m ≥ 2 is the number of actions in s. m−1 .
+Under these conditions, maxa Qt(s, a) ≥ V∗(s) + This lower bound is tight.
+Under the same conditions, the lower bound on the absolute error of the Double Q-learning estimate is zero.
+(Proof in appendix.)
+(cid:113) C  (cid:80)  Note that we did not need to assume that estimation errors for different actions are independent.
+This theorem shows that even if the value estimates are on average correct, estimation errors of any source can drive the estimates up and away from the true optimal values.
+The lower bound in Theorem 1 decreases with the number of actions.
+This is an artifact of considering the lower bound, which requires very speciﬁc values to be attained.
+More typically, the overoptimism increases with the number of actions as shown in Figure 1.
+Q-learning’s overestimations there indeed increase with the number of actions,  Figure 1: The orange bars show the bias in a single Qlearning update when the action values are Q(s, a) = V∗(s) + a and the errors {a}m a=1 are independent standard normal random variables.
+The second set of action values Q(cid:48), used for the blue bars, was generated identically and independently.
+All bars are the average of 100 repetitions.
+m+1 .
+(Proof in appendix.)
+while Double Q-learning is unbiased.
+As another example, if for all actions Q∗(s, a) = V∗(s) and the estimation errors Qt(s, a) − V∗(s) are uniformly random in [−1, 1], then the overoptimism is m−1 We now turn to function approximation and consider a real-valued continuous state space with 10 discrete actions in each state.
+For simplicity, the true optimal action values in this example depend only on state so that in each state all actions have the same true value.
+These true values are shown in the left column of plots in Figure 2 (purple lines) and are deﬁned as either Q∗(s, a) = sin(s) (top row) or Q∗(s, a) = 2 exp(−s2) (middle and bottom rows).
+The left plots also show an approximation for a single action (green lines) as a function of state as well as the samples the estimate is based on (green dots).
+The estimate is a d-degree polynomial that is ﬁt to the true values at sampled states, where d = 6 (top and middle rows) or d = 9 (bottom row).
+The samples match the true function exactly: there is no noise and we assume we have ground truth for the action value on these sampled states.
+The approximation is inexact even on the sampled states for the top two rows because the function approximation is insufﬁciently ﬂexible.
+In the bottom row, the function is ﬂexible enough to ﬁt the green dots, but this reduces the accuracy in unsampled states.
+Notice that the sampled states are spaced further apart near the left side of the left plots, resulting in larger estimation errors.
+In many ways this is a typical learning setting, where at each point in time we only have limited data.
+The middle column of plots in Figure 2 shows estimated action value functions for all 10 actions (green lines), as functions of state, along with the maximum action value in each state (black dashed line).
+Although the true value function is the same for all actions, the approximations differ because we have supplied different sets of sampled states.1 The maximum is often higher than the ground truth shown in purple on the left.
+This is conﬁrmed in the right plots, which shows the difference between the black and purple curves in orange.
+The orange line is almost always positive,  1Each action-value function is ﬁt with a different subset of integer states.
+States −6 and 6 are always included to avoid extrapolations, and for each action two adjacent integers are missing: for action a1 states −5 and −4 are not sampled, for a2 states −4 and −3 are not sampled, and so on.
+This causes the estimated values to differ.
+indicating an upward bias.
+The right plots also show the estimates from Double Q-learning in blue2, which are on average much closer to zero.
+This demonstrates that Double Qlearning indeed can successfully reduce the overoptimism of Q-learning.
+The different rows in Figure 2 show variations of the same experiment.
+The difference between the top and middle rows is the true value function, demonstrating that overestimations are not an artifact of a speciﬁc true value function.
+The difference between the middle and bottom rows is the ﬂexibility of the function approximation.
+In the left-middle plot, the estimates are even incorrect for some of the sampled states because the function is insufﬁciently ﬂexible.
+The function in the bottom-left plot is more ﬂexible but this causes higher estimation errors for unseen states, resulting in higher overestimations.
+This is important because ﬂexible parametric function approximators are often employed in reinforcement learning (see, e.g., Tesauro 1995; Sallans and Hinton 2004; Riedmiller 2005; Mnih et al.
+2015).
+In contrast to van Hasselt (2010) we did not use a statistical argument to ﬁnd overestimations, the process to obtain Figure 2 is fully deterministic.
+In contrast to Thrun and Schwartz (1993), we did not rely on inﬂexible function approximation with irreducible asymptotic errors; the bottom row shows that a function that is ﬂexible enough to cover all samples leads to high overestimations.
+This indicates that the overestimations can occur quite generally.
+In the examples above, overestimations occur even when assuming we have samples of the true action value at certain states.
+The value estimates can further deteriorate if we bootstrap off of action values that are already overoptimistic, since this causes overestimations to propagate throughout our estimates.
+Although uniformly overestimating values might not hurt the resulting policy, in practice overestimation errors will differ for different states and actions.
+Overestimation combined with bootstrapping then has the pernicious effect of propagating the wrong relative information about which states are more valuable than others, directly affecting the quality of the learned policies.
+The overestimations should not be confused with optimism in the face of uncertainty (Sutton, 1990; Agrawal, 1995; Kaelbling et al., 1996; Auer et al., 2002; Brafman and Tennenholtz, 2003; Szita and L˝orincz, 2008; Strehl et al., 2009), where an exploration bonus is given to states or actions with uncertain values.
+Conversely, the overestimations discussed here occur only after updating, resulting in overoptimism in the face of apparent certainty.
+This was already observed by Thrun and Schwartz (1993), who noted that, in contrast to optimism in the face of uncertainty, these overestimations actually can impede learning an optimal policy.
+We will see this negative effect on policy quality conﬁrmed later in the experiments as well: when we reduce the overestimations using Double Q-learning, the policies improve.
+2We arbitrarily used the samples of action ai+5 (for i ≤ 5) or ai−5 (for i > 5) as the second set of samples for the double estimator of action ai.
+Figure 2: Illustration of overestimations during learning.
+In each state (x-axis), there are 10 actions.
+The left column shows the true values V∗(s) (purple line).
+All true action values are deﬁned by Q∗(s, a) = V∗(s).
+The green line shows estimated values Q(s, a) for one action as a function of state, ﬁtted to the true value at several sampled states (green dots).
+The middle column plots show all the estimated values (green), and the maximum of these values (dashed black).
+The maximum is higher than the true value (purple, left plot) almost everywhere.
+The right column plots shows the difference in orange.
+The blue line in the right plots is the estimate used by Double Q-learning with a second set of samples for each state.
+The blue line is much closer to zero, indicating less bias.
+The three rows correspond to different true functions (left, purple) or capacities of the ﬁtted function (left, green).
+(Details in the text)  Double DQN  The idea of Double Q-learning is to reduce overestimations by decomposing the max operation in the target into action selection and action evaluation.
+Although not fully decoupled, the target network in the DQN architecture provides a natural candidate for the second value function, without having to introduce additional networks.
+We therefore propose to evaluate the greedy policy according to the online network, but using the target network to estimate its value.
+In reference to both Double Q-learning and DQN, we refer to the resulting algorithm as Double DQN.
+Its update is the same as for DQN, but replacing the target Y DQN Y DoubleDQN  t In comparison to Double Q-learning (4), the weights of the second network θ(cid:48)t are replaced with the weights of the target network θ−t for the evaluation of the current greedy policy.
+The update to the target network stays unchanged from DQN, and remains a periodic copy of the online network.
+This version of Double DQN is perhaps the minimal possible change to DQN towards Double Q-learning.
+The goal is to get most of the beneﬁt of Double Q-learning, while keeping the rest of the DQN algorithm intact for a fair comparison, and with minimal computational overhead.
+≡ Rt+1+γQ(St+1, argmax  a  with  t  Q(St+1, a; θt), θ−t ) .
+Empirical results  In this section, we analyze the overestimations of DQN and show that Double DQN improves over DQN both in terms of value accuracy and in terms of policy quality.
+To further test the robustness of the approach we additionally evaluate the algorithms with random starts generated from expert human trajectories, as proposed by Nair et al.
+(2015).
+Our testbed consists of Atari 2600 games, using the Arcade Learning Environment (Bellemare et al., 2013).
+The  goal is for a single algorithm, with a ﬁxed set of hyperparameters, to learn to play each of the games separately from interaction given only the screen pixels as input.
+This is a demanding testbed: not only are the inputs high-dimensional, the game visuals and game mechanics vary substantially between games.
+Good solutions must therefore rely heavily on the learning algorithm — it is not practically feasible to overﬁt the domain by relying only on tuning.
+We closely follow the experimental setting and network architecture outlined by Mnih et al.
+(2015).
+Brieﬂy, the network architecture is a convolutional neural network (Fukushima, 1988; LeCun et al., 1998) with 3 convolution layers and a fully-connected hidden layer (approximately 1.5M parameters in total).
+The network takes the last four frames as input and outputs the action value of each action.
+On each game, the network is trained on a single GPU for 200M frames, or approximately 1 week.
+Results on overoptimism  Figure 3 shows examples of DQN’s overestimations in six Atari games.
+DQN and Double DQN were both trained under the exact conditions described by Mnih et al.
+(2015).
+DQN is consistently and sometimes vastly overoptimistic about the value of the current greedy policy, as can be seen by comparing the orange learning curves in the top row of plots to the straight orange lines, which represent the actual discounted value of the best learned policy.
+More precisely, the (averaged) value estimates are computed regularly during training with full evaluation phases of length T = 125, 000 steps as  T(cid:88)  t=1  1 T  argmax  a  Q(St, a; θ) .
+Figure 3: The top and middle rows show value estimates by DQN (orange) and Double DQN (blue) on six Atari games.
+The results are obtained by running DQN and Double DQN with 6 different random seeds with the hyper-parameters employed by Mnih et al.
+(2015).
+The darker line shows the median over seeds and we average the two extreme values to obtain the shaded area (i.e., 10% and 90% quantiles with linear interpolation).
+The straight horizontal orange (for DQN) and blue (for Double DQN) lines in the top row are computed by running the corresponding agents after learning concluded, and averaging the actual discounted return obtained from each visited state.
+These straight lines would match the learning curves at the right side of the plots if there is no bias.
+The middle row shows the value estimates (in log scale) for two games in which DQN’s overoptimism is quite extreme.
+The bottom row shows the detrimental effect of this on the score achieved by the agent as it is evaluated during training: the scores drop when the overestimations begin.
+Learning with Double DQN is much more stable.
+The ground truth averaged values are obtained by running the best learned policies for several episodes and computing the actual cumulative rewards.
+Without overestimations we would expect these quantities to match up (i.e., the curve to match the straight line at the right of each plot).
+Instead, the learning curves of DQN consistently end up much higher than the true values.
+The learning curves for Double DQN, shown in blue, are much closer to the blue straight line representing the true value of the ﬁnal policy.
+Note that the blue straight line is often higher than the orange straight line.
+This indicates that Double DQN does not just produce more accurate value estimates but also better policies.
+More extreme overestimations are shown in the middle two plots, where DQN is highly unstable on the games Asterix and Wizard of Wor.
+Notice the log scale for the values on the y-axis.
+The bottom two plots shows the corresponding scores for these two games.
+Notice that the increases in value estimates for DQN in the middle plots coincide with decreasing scores in bottom plots.
+Again, this indicates that the overestimations are harming the quality of the resulting policies.
+If seen in isolation, one might perhaps be tempted to think the observed instability is related to inherent instability problems of off-policy learning with function approximation (Baird, 1995; Tsitsiklis and Van Roy, 1997; Sutton et al., 2008; Maei, 2011; Sutton et al., 2015).
+However, we see that learning is much more stable with Double DQN,  Median Mean  DQN Double DQN 93.5% 114.7% 330.3% 241.1%  Table 1: Summary of normalized performance up to 5 minutes of play on 49 games.
+Results for DQN are from Mnih et al.
+(2015) suggesting that the cause for these instabilities is in fact Qlearning’s overoptimism.
+Figure 3 only shows a few examples, but overestimations were observed for DQN in all 49 tested Atari games, albeit in varying amounts.
+Quality of the learned policies Overoptimism does not always adversely affect the quality of the learned policy.
+For example, DQN achieves optimal behavior in Pong despite slightly overestimating the policy value.
+Nevertheless, reducing overestimations can signiﬁcantly beneﬁt the stability of learning; we see clear examples of this in Figure 3.
+We now assess more generally how much Double DQN helps in terms of policy quality by evaluating on all 49 games that DQN was tested on.
+As described by Mnih et al.
+(2015) each evaluation episode starts by executing a special no-op action that does not affect the environment up to 30 times, to provide different starting points for the agent.
+Some exploration during evaluation provides additional randomization.
+For Double DQN we used the exact same hyper-parameters as for DQN,  Median Mean  DQN Double DQN Double DQN (tuned) 116.7% 47.5% 122.0% 475.2%  88.4% 273.1%  Table 2: Summary of normalized performance up to 30 minutes of play on 49 games with human starts.
+Results for DQN are from Nair et al.
+(2015).
+to allow for a controlled experiment focused just on reducing overestimations.
+The learned policies are evaluated for 5 mins of emulator time (18,000 frames) with an greedy policy where  = 0.05.
+The scores are averaged over 100 episodes.
+The only difference between Double DQN and DQN is the target, using Y DoubleDQN rather than Y DQN.
+This evaluation is somewhat adversarial, as the used hyperparameters were tuned for DQN but not for Double DQN.
+To obtain summary statistics across games, we normalize  t  the score for each game as follows:  .
+(5)  scorenormalized =  scoreagent − scorerandom scorehuman − scorerandom The ‘random’ and ‘human’ scores are the same as used by Mnih et al.
+(2015), and are given in the appendix.
+Table 1, under no ops, shows that on the whole Double DQN clearly improves over DQN.
+A detailed comparison (in appendix) shows that there are several games in which Double DQN greatly improves upon DQN.
+Noteworthy examples include Road Runner (from 233% to 617%), Asterix (from 70% to 180%), Zaxxon (from 54% to 111%), and Double Dunk (from 17% to 397%).
+The Gorila algorithm (Nair et al., 2015), which is a massively distributed version of DQN, is not included in the table because the architecture and infrastructure is sufﬁciently different to make a direct comparison unclear.
+For completeness, we note that Gorila obtained median and mean normalized scores of 96% and 495%, respectively.
+Robustness to Human starts One concern with the previous evaluation is that in deterministic games with a unique starting point the learner could potentially learn to remember sequences of actions without much need to generalize.
+While successful, the solution would not be particularly robust.
+By testing the agents from various starting points, we can test whether the found solutions generalize well, and as such provide a challenging testbed for the learned polices (Nair et al., 2015).
+We obtained 100 starting points sampled for each game from a human expert’s trajectory, as proposed by Nair et al.
+(2015).
+We start an evaluation episode from each of these starting points and run the emulator for up to 108,000 frames (30 mins at 60Hz including the trajectory before the starting point).
+Each agent is only evaluated on the rewards accumulated after the starting point.
+For this evaluation we include a tuned version of Double DQN.
+Some tuning is appropriate because the hyperparameters were tuned for DQN, which is a different algorithm.
+For the tuned version of Double DQN, we increased the number of frames between each two copies of the target network from 10,000 to 30,000, to reduce overestimations further because immediately after each switch DQN and Double DQN  Figure 4: Normalized scores on 57 Atari games, tested for 100 episodes per game with human starts.
+Compared to Mnih et al.
+(2015), eight games additional games were tested.
+These are indicated with stars and a bold font.
+both revert to Q-learning.
+In addition, we reduced the exploration during learning from  = 0.1 to  = 0.01, and then used  = 0.001 during evaluation.
+Finally, the tuned version uses a single shared bias for all action values in the top layer of the network.
+Each of these changes improved performance and together they result in clearly better results.3 Table 2 reports summary statistics for this evaluation on the 49 games from Mnih et al.
+(2015).
+Double DQN obtains clearly higher median and mean scores.
+Again Gorila DQN (Nair et al., 2015) is not included in the table, but for completeness note it obtained a median of 78% and a mean of 259%.
+Detailed results, plus results for an additional 8 games, are available in Figure 4 and in the appendix.
+On several games the improvements from DQN to Double DQN are striking, in some cases bringing scores much closer to  3Except for Tennis, where the lower  during training seemed  to hurt rather than help.
+human, or even surpassing these.
+Double DQN appears more robust to this more challenging evaluation, suggesting that appropriate generalizations occur and that the found solutions do not exploit the determinism of the environments.
+This is appealing, as it indicates progress towards ﬁnding general solutions rather than a deterministic sequence of steps that would be less robust.
+Discussion  This paper has ﬁve contributions.
+First, we have shown why Q-learning can be overoptimistic in large-scale problems, even if these are deterministic, due to the inherent estimation errors of learning.
+Second, by analyzing the value estimates on Atari games we have shown that these overestimations are more common and severe in practice than previously acknowledged.
+Third, we have shown that Double Q-learning can be used at scale to successfully reduce this overoptimism, resulting in more stable and reliable learning.
+Fourth, we have proposed a speciﬁc implementation called Double DQN, that uses the existing architecture and deep neural network of the DQN algorithm without requiring additional networks or parameters.
+Finally, we have shown that Double DQN ﬁnds better policies, obtaining new state-ofthe-art results on the Atari 2600 domain.
+Acknowledgments  We would like to thank Tom Schaul, Volodymyr Mnih, Marc Bellemare, Thomas Degris, Georg Ostrovski, and Richard Sutton for helpful comments, and everyone at Google DeepMind for a constructive research environment.
+References  R. Agrawal.
+Sample mean based index policies with O(log n) regret for the multi-armed bandit problem.
+Advances in Applied Probability, pages 1054–1078, 1995.
+P. Auer, N. Cesa-Bianchi, and P. Fischer.
+Finite-time analysis of the multiarmed bandit problem.
+Machine learning, 47(2-3):235– 256, 2002.
+L. Baird.
+Residual algorithms: Reinforcement learning with function approximation.
+In Machine Learning: Proceedings of the Twelfth International Conference, pages 30–37, 1995.
+M. G. Bellemare, Y. Naddaf, J. Veness, and M. Bowling.
+The arcade learning environment: An evaluation platform for general agents.
+J. Artif.
+Intell.
+Res.
+(JAIR), 47:253–279, 2013.
+R. I. Brafman and M. Tennenholtz.
+R-max-a general polynomial time algorithm for near-optimal reinforcement learning.
+The Journal of Machine Learning Research, 3:213–231, 2003.
+K. Fukushima.
+Neocognitron: A hierarchical neural network capable of visual pattern recognition.
+Neural networks, 1(2):119– 130, 1988.
+L. P. Kaelbling, M. L. Littman, and A. W. Moore.
+Reinforcement learning: A survey.
+Journal of Artiﬁcial Intelligence Research, 4:237–285, 1996.
+Y. LeCun, L. Bottou, Y. Bengio, and P. Haffner.
+Gradient-based learning applied to document recognition.
+Proceedings of the IEEE, 86(11):2278–2324, 1998.
+L. Lin.
+Self-improving reactive agents based on reinforcement learning, planning and teaching.
+Machine learning, 8(3):293– 321, 1992.
+H. R. Maei.
+Gradient temporal-difference learning algorithms.
+PhD thesis, University of Alberta, 2011.
+V. Mnih, K. Kavukcuoglu, D. Silver, A.
+A. Rusu, J. Veness, M. G. Bellemare, A. Graves, M. Riedmiller, A. K. Fidjeland, G. Ostrovski, S. Petersen, C. Beattie, A. Sadik, I. Antonoglou, H. King, D. Kumaran, D. Wierstra, S. Legg, and D. Hassabis.
+Humanlevel control through deep reinforcement learning.
+Nature, 518 (7540):529–533, 2015.
+A. Nair, P. Srinivasan, S. Blackwell, C. Alcicek, R. Fearon, A. D. Maria, V. Panneershelvam, M. Suleyman, C. Beattie, S. Petersen, S. Legg, V. Mnih, K. Kavukcuoglu, and D. Silver.
+Massively parallel methods for deep reinforcement learning.
+In Deep Learning Workshop, ICML, 2015.
+M. Riedmiller.
+Neural ﬁtted Q iteration - ﬁrst experiences with a data efﬁcient neural reinforcement learning method.
+In J. Gama, R. Camacho, P. Brazdil, A. Jorge, and L. Torgo, editors, Proceedings of the 16th European Conference on Machine Learning (ECML’05), pages 317–328.
+Springer, 2005.
+B. Sallans and G. E. Hinton.
+Reinforcement learning with factored states and actions.
+The Journal of Machine Learning Research, 5:1063–1088, 2004.
+A. L. Strehl, L. Li, and M. L. Littman.
+Reinforcement learning in ﬁnite MDPs: PAC analysis.
+The Journal of Machine Learning Research, 10:2413–2444, 2009.
+R. S. Sutton.
+Learning to predict by the methods of temporal dif ferences.
+Machine learning, 3(1):9–44, 1988.
+R. S. Sutton.
+Integrated architectures for learning, planning, and reacting based on approximating dynamic programming.
+In Proceedings of the seventh international conference on machine learning, pages 216–224, 1990.
+R. S. Sutton and A. G. Barto.
+Introduction to reinforcement learn ing.
+MIT Press, 1998.
+R. S. Sutton, C. Szepesv´ari, and H. R. Maei.
+A convergent O(n) algorithm for off-policy temporal-difference learning with linear function approximation.
+Advances in Neural Information Processing Systems 21 (NIPS-08), 21:1609–1616, 2008.
+R. S. Sutton, A. R. Mahmood, and M. White.
+An emphatic approach to the problem of off-policy temporal-difference learning.
+arXiv preprint arXiv:1503.04269, 2015.
+I. Szita and A. L˝orincz.
+The many faces of optimism: a unifying approach.
+In Proceedings of the 25th international conference on Machine learning, pages 1048–1055.
+ACM, 2008.
+G. Tesauro.
+Temporal difference learning and td-gammon.
+Com munications of the ACM, 38(3):58–68, 1995.
+S. Thrun and A. Schwartz.
+Issues in using function approximation for reinforcement learning.
+In M. Mozer, P. Smolensky, D. Touretzky, J. Elman, and A. Weigend, editors, Proceedings of the 1993 Connectionist Models Summer School, Hillsdale, NJ, 1993.
+Lawrence Erlbaum.
+J. N. Tsitsiklis and B.
+Van Roy.
+An analysis of temporal-difference IEEE Transactions on  learning with function approximation.
+Automatic Control, 42(5):674–690, 1997.
+H. van Hasselt.
+Double Q-learning.
+Advances in Neural Informa tion Processing Systems, 23:2613–2621, 2010.
+H. van Hasselt.
+Insights in Reinforcement Learning.
+PhD thesis,  Utrecht University, 2011.
+C. J. C. H. Watkins.
+Learning from delayed rewards.
+PhD thesis,  University of Cambridge England, 1989.
+Appendix  the sense that(cid:80)  Theorem 1.
+Consider a state s in which all the true optimal action values are equal at Q∗(s, a) = V∗(s) for some V∗(s).
+Let (cid:80) Qt be arbitrary value estimates that are on the whole unbiased in a(Qt(s, a) − V∗(s)) = 0, but that are not all zero, such that 1 a(Qt(s, a) − V∗(s))2 = C for some C > 0, m where m ≥ 2 is the number of actions in s. Under these conditions, m−1 .
+This lower bound is tight.
+Unmaxa Qt(s, a) ≥ V∗(s) + der the same conditions, the lower bound on the absolute error of the Double Q-learning estimate is zero.
+(cid:113) C  (cid:113) C  − i } ∪ {  m−1 .
+Let {+  j }).
+If n = m, then (cid:80)  Proof of Theorem 1.
+Deﬁne the errors for each action a as a = Qt(s, a) − V∗(s).
+Suppose that there exists a setting of {a} such that maxa a < i } be the set of positive  of size − a = 0 ∀a, which contradicts(cid:80) n, and { j } the set of strictly negative  of size m − n (such that {} = {+ that n ≤ m − 1.
+Then, (cid:80)n a a = 0 =⇒ a = mC.
+Hence, it must be and therefore (using the constraint(cid:80) m−1 , (cid:80)m−n a a = 0) we also have that m−1 .
+By m−n(cid:88) − (cid:114) C j=1 | j | · max  (cid:113) C m−n(cid:88)  (cid:113) C (cid:113) C  a 2 i ≤ n maxi +  m−1 .
+This implies maxj |  H¨older’s inequality, then  (cid:114) C  − j | < n  − j | < n  − j )2 ≤  j=1 |  − | j |  i < n  i=1 +  j=1  (  j  < n  n  m − 1  .
+m − 1  We can now combine these relations to compute an upper-bound on the sum of squares for all a:  m(cid:88)  n(cid:88)  (a)2 =  (+  i )2 +  a=1  i=1  < n  = C  C  + n  m − 1 n(n + 1) m − 1  m−n(cid:88) (cid:114) C  j=1  (  − j )2  (cid:114) C  n  m − 1  m − 1  a=1 2  ≤ mC.
+This contradicts the assumption that(cid:80)m  (cid:113) C a = mC and(cid:80)  a < mC, and there(cid:113) C (cid:112) fore maxa a ≥ m−1 for all settings of  that satisfy the constraints.
+We can check that the lower-bound is tight by setting This veriﬁes(cid:80) (m − 1)C. a = The only tight lower bound on the absolute error for Double Qlearning |Q(cid:48) t(s, argmaxa Qt(s, a)) − V∗(s)| is zero.
+This can be seen by because we can have  m−1 for a = 1, .
+.
+.
+, m − 1 and m = −  a a = 0.  a 2  Qt(s, a1) = V∗(s) +  C  m − 1  m  ,  and  Qt(s, ai) = V∗(s) −  C  1  m(m − 1)  , for i > 1.
+Then the conditions of the theorem hold.
+If then, furthermore, we have Q(cid:48) t(s, a1) = V∗(s) then the error is zero.
+The remaining action values Q(cid:48)  t(s, ai), for i > 1, are arbitrary.
+(cid:114)  (cid:115)  Theorem 2.
+Consider a state s in which all the true optimal action values are equal at Q∗(s, a) = V∗(s).
+Suppose that the estimation errors Qt(s, a)−Q∗(s, a) are independently distributed uniformly randomly in [−1, 1].
+Then,  E(cid:104)  max  a  (cid:105) Qt(s, a) − V∗(s)  =  m − 1 m + 1  Proof.
+Deﬁne a = Qt(s, a) − Q∗(s, a); this is a uniform random variable in [−1, 1].
+The probability that maxa Qt(s, a) ≤ x for some x is equal to the probability that a ≤ x for all a simultaneously.
+Because the estimation errors are independent, we can derive  P (max  a  a ≤ x) = P (X1 ≤ x ∧ X2 ≤ x ∧ .
+.
+.
+∧ Xm ≤ x)  m(cid:89)  a=1  =  P (a ≤ x) .
+The function P (a ≤ x) is the cumulative distribution function (CDF) of a, which here is simply deﬁned as  if x ≤ −1 if x ∈ (−1, 1) if x ≥ 1  P (a ≤ x)  (cid:1)m if x ∈ (−1, 1)  if x ≤ −1 if x ≥ 1  2  1  1+x   0 m(cid:89)  0 (cid:0) 1+x (cid:90) 1 (cid:105)  a=1  1  2  P (a ≤ x) =  This implies that  P (max  a  a ≤ x) =  =  This gives us the CDF of the random variable maxa a.
+Its expectation can be written as an integral  E(cid:104)  max  a  a  =  −1  xfmax(x) dx ,  (cid:0) 1+x  where fmax is the probability density function of this variable, deﬁned as the derivative of the CDF: fmax(x) = d dx P (maxa a ≤ x), so that for x ∈ [−1, 1] we have fmax(x) = m Evaluating the integral yields (cid:21)1  (cid:90) 1 (cid:20)(cid:18) x + 1  xfmax(x) dx  (cid:19)m mx − 1  E(cid:104)  max  (cid:105)  −1  a  =  (cid:1)m−1.
+a  2  2  m + 1  −1  =  =  2 m − 1 m + 1  .
+Experimental Details for the Atari 2600  Domain  We selected the 49 games to match the list used by Mnih et al.
+(2015), see Tables below for the full list.
+Each agent step is composed of four frames (the last selected action is repeated during these frames) and reward values (obtained from the Arcade Learning Environment (Bellemare et al., 2013)) are clipped between -1 and 1.
+Network Architecture The convolution network used in the experiment is exactly the one proposed by proposed by Mnih et al.
+(2015), we only provide details here for completeness.
+The input to the network is a 84x84x4 tensor containing a rescaled, and gray-scale, version of the last four frames.
+The ﬁrst convolution layer convolves the input with 32 ﬁlters of size 8 (stride 4), the second layer has 64 layers of size 4 (stride 2), the ﬁnal convolution layer has 64 ﬁlters of size 3 (stride 1).
+This is followed by a fully-connected hidden layer of 512 units.
+All these layers are separated by Rectiﬁer Linear Units (ReLu).
+Finally, a fully-connected linear layer projects to the output of the network, i.e., the Q-values.
+The optimization employed to train the network is RMSProp (with momentum parameter 0.95).
+Hyper-parameters In all experiments, the discount was set to γ = 0.99, and the learning rate to α = 0.00025.
+The number of steps between target network updates was τ = 10, 000.
+Training is done over 50M steps (i.e., 200M frames).
+The agent is evaluated every 1M steps, and the best policy across these evaluations is kept as the output of the learning process.
+The size of the experience replay memory is 1M tuples.
+The memory gets sampled to update the network every 4 steps with minibatches of size 32.
+The simple exploration policy used is an -greedy policy with the  decreasing linearly from 1 to 0.1 over 1M steps.
+Supplementary Results in the Atari 2600  Domain  The Tables below provide further detailed results for our experiments in the Atari domain.
+Game Alien Amidar Assault Asterix Asteroids Atlantis Bank Heist Battle Zone Beam Rider Bowling Boxing Breakout Centipede Chopper Command Crazy Climber Demon Attack Double Dunk Enduro Fishing Derby Freeway Frostbite Gopher Gravitar H.E.R.O.
+Ice Hockey James Bond Kangaroo Krull Kung-Fu Master Montezuma’s Revenge Ms. Pacman Name This Game Pong Private Eye Q*Bert River Raid Road Runner Robotank Seaquest Space Invaders Star Gunner Tennis Time Pilot Tutankham Up and Down Venture Video Pinball Wizard of Wor Zaxxon  Random 227.80 5.80 222.40 210.00 719.10 12850.00 14.20 2360.00 363.90 23.10 0.10 1.70 2090.90 811.00 10780.50 152.10 -18.60 0.00 -91.70 0.00 65.20 257.60 173.00 1027.00 -11.20 29.00 52.00 1598.00 258.50 0.00 307.30 2292.30 -20.70 24.90 163.90 1338.50 11.50 2.20 68.40 148.00 664.00 -23.80 3568.00 11.40 533.40 0.00 16256.90 563.50 32.50  Human 6875.40 1675.80 1496.40 8503.30 13156.70 29028.10 734.40 37800.00 5774.70 154.80 4.30 31.80 11963.20 9881.80 35410.50 3401.30 -15.50 309.60 5.50 29.60 4334.70 2321.00 2672.00 25762.50 0.90 406.70 3035.00 2394.60 22736.20 4366.70 15693.40 4076.20 9.30 69571.30 13455.00 13513.30 7845.00 11.90 20181.80 1652.30 10250.00 -8.90 5925.00 167.60 9082.00 1187.50 17297.60 4756.50 9173.30  DQN Double DQN 2907.30 702.10 5022.90 15150.00 930.60 64758.00 728.30 25730.00 7654.00 70.50 81.70 375.00 4139.40 4653.00 101874.00 9711.90 -6.30 319.50 20.30 31.80 241.50 8215.40 170.50 20357.00 -2.40 438.00 13651.00 4396.70 29486.00 0.00 3210.00 6997.10 21.00 670.10 14875.00 12015.30 48377.00 46.70 7995.00 3154.60 65188.00 1.70 7964.00 190.60 16769.90 93.00 70009.00 5204.00 10182.00  3069.33 739.50 3358.63 6011.67 1629.33 85950.00 429.67 26300.00 6845.93 42.40 71.83 401.20 8309.40 6686.67 114103.33 9711.17 -18.07 301.77 -0.80 30.30 328.33 8520.00 306.67 19950.33 -1.60 576.67 6740.00 3804.67 23270.00 0.00 2311.00 7256.67 18.90 1787.57 10595.83 8315.67 18256.67 51.57 5286.00 1975.50 57996.67 -2.47 5946.67 186.70 8456.33 380.00 42684.07 3393.33 4976.67  Table 3: Raw scores for the no-op evaluation condition (5 minutes emulator time).
+DQN as given by Mnih et al.
+(2015).
+Game Alien Amidar Assault Asterix Asteroids Atlantis Bank Heist Battle Zone Beam Rider Bowling Boxing Breakout Centipede Chopper Command Crazy Climber Demon Attack Double Dunk Enduro Fishing Derby Freeway Frostbite Gopher Gravitar H.E.R.O.
+Ice Hockey James Bond Kangaroo Krull Kung-Fu Master Montezuma’s Revenge Ms. Pacman Name This Game Pong Private Eye Q*Bert River Raid Road Runner Robotank Seaquest Space Invaders Star Gunner Tennis Time Pilot Tutankham Up and Down Venture Video Pinball Wizard of Wor Zaxxon  DQN Double DQN 40.31 % 41.69 % 376.81 % 180.15 % 1.70 % 320.85 % 99.15 % 65.94 % 134.73 % 35.99 % 1942.86 % 1240.20 % 20.75 % 42.36 % 369.85 % 294.22 % 396.77 % 103.20 % 115.23 % 107.43 % 4.13 % 385.66 % -0.10 % 78.15 % 72.73 % 108.29 % 455.88 % 351.33 % 130.03 % 0.00 % 18.87 % 263.74 % 139.00 % 0.93 % 110.68 % 87.70 % 617.42 % 458.76 % 39.41 % 199.87 % 673.11 % 171.14 % 186.51 % 114.72 % 189.93 % 7.83 % 5164.99 % 110.67 % 111.04 %  42.75 % 43.93 % 246.17 % 69.96 % 7.32 % 451.85 % 57.69 % 67.55 % 119.80 % 14.65 % 1707.86 % 1327.24 % 62.99 % 64.78 % 419.50 % 294.20 % 17.10 % 97.47 % 93.52 % 102.36 % 6.16 % 400.43 % 5.35 % 76.50 % 79.34 % 145.00 % 224.20 % 277.01 % 102.37 % 0.00 % 13.02 % 278.29 % 132.00 % 2.53 % 78.49 % 57.31 % 232.91 % 508.97 % 25.94 % 121.49 % 598.09 % 143.15 % 100.92 % 112.23 % 92.68 % 32.00 % 2539.36 % 67.49 % 54.09 %  Table 4: Normalized results for no-op evaluation condition (5 minutes emulator time).
+Game Alien Amidar Assault Asterix Asteroids Atlantis Bank Heist Battle Zone Beam Rider Berzerk Bowling Boxing Breakout Centipede Chopper Command Crazy Climber Defender Demon Attack Double Dunk Enduro Fishing Derby Freeway Frostbite Gopher Gravitar H.E.R.O.
+Ice Hockey James Bond Kangaroo Krull Kung-Fu Master Montezuma’s Revenge Ms. Pacman Name This Game Phoenix Pit Fall Pong Private Eye Q*Bert River Raid Road Runner Robotank Seaquest Skiing Solaris Space Invaders Star Gunner Surround Tennis Time Pilot Tutankham Up and Down Venture Video Pinball Wizard of Wor Yars Revenge Zaxxon  Random 128.30 11.80 166.90 164.50 871.30 13463.00 21.70 3560.00 254.60 196.10 35.20 -1.50 1.60 1925.50 644.00 9337.00 1965.50 208.30 -16.00 -81.80 -77.10 0.10 66.40 250.00 245.50 1580.30 -9.70 33.50 100.00 1151.90 304.00 25.00 197.80 1747.80 1134.40 -348.80 -18.00 662.80 183.00 588.30 200.00 2.40 215.50 -15287.40 2047.20 182.60 697.00 -9.70 -21.40 3273.00 12.70 707.20 18.00 20452.0 804.00 1476.90 475.00  Human 6371.30 1540.40 628.90 7536.00 36517.30 26575.00 644.50 33030.00 14961.00 2237.50 146.50 9.60 27.90 10321.90 8930.00 32667.00 14296.00 3442.80 -14.40 740.20 5.10 25.60 4202.80 2311.00 3116.00 25839.40 0.50 368.50 2739.00 2109.10 20786.80 4182.00 15375.00 6796.00 6686.20 5998.90 15.50 64169.10 12085.00 14382.20 6878.00 8.90 40425.80 -3686.60 11032.60 1464.90 9528.00 5.40 -6.70 5650.00 138.30 9896.10 1039.00 15641.10 4556.00 47135.20 8443.00  41.2 25.8 303.9 3773.1 3046.0 50992.0  12835.2 -21.6 475.6 -2.3 25.8 157.4 2731.8 216.5 12952.5 -3.8 348.5 2696.0 3864.0 11875.0 50.0 763.5 5439.9  DQN Double DQN Double DQN (tuned) 1033.4 570.2 133.4 169.1 6060.8 3332.3 16837.0 124.5 1193.2 697.1 319688.0 76108.0 176.3 886.0 24740.0 17560.0 17417.2 8672.4 1011.1 69.6 73.5 368.9 3853.5 3495.0 113782.0 27510.0 69803.4 -0.3 1216.6 3.2 28.8 1448.1 15253.0 200.5 14892.5 -2.5 573.0 11204.0 6796.1 30207.0 42.0 1241.3 8960.3 12366.5 -186.7 19.1 -575.5 11020.8 10838.4 43156.0 59.1 14498.0 -11490.4 810.0 2628.7 58365.0 1.9 -7.8 6608.0 92.2 19086.9 21.0 367823.7 6201.0 6270.6 8593.0  621.6 188.2 2774.3 5285.0 1219.0 260556.0 469.8 25240.0 9107.9 635.8 62.3 52.1 338.7 5166.6 2483.0 94315.0 8531.0 13943.5 -6.4 475.9 -3.4 26.3 258.3 8742.8 170.0 15341.4 -3.6 416.0 6138.0 6130.4 22771.0 30.0 1401.8 7871.5 10364.0 -432.9 17.7 346.3 10713.3 6579.0 43884.0 52.0 4199.4 -29404.3 2166.8 1495.7 53052.0 -7.6 11.0 5375.0 63.6 4721.1 75.0 148883.6 155.0 5439.5 7874.0  -2.3 5640.0 32.4 3311.3 54.0 20228.1 246.0  16.2 298.2 4589.8 4065.3 9264.0 58.5 2793.9  1449.7 34081.0  831.0  Table 5: Raw scores for the human start condition (30 minutes emulator time).
+DQN as given by Nair et al.
+(2015).
+Game Alien Amidar Assault Asterix Asteroids Atlantis Bank Heist Battle Zone Beam Rider Berzerk Bowling Boxing Breakout Centipede Chopper Command Crazy Climber Defender Demon Attack Double Dunk Enduro Fishing Derby Freeway Frostbite Gopher Gravitar H.E.R.O.
+Ice Hockey James Bond Kangaroo Krull Kung-Fu Master Montezuma’s Revenge Ms. Pacman Name This Game Phoenix Pit Fall Pong Private Eye Q*Bert River Raid Road Runner Robotank Seaquest Skiing Solaris Space Invaders Star Gunner Surround Tennis Time Pilot Tutankham Up and Down Venture Video Pinball Wizard of Wor Yars Revenge Zaxxon  390.38% -350.00% 67.81% 91.00% 100.78% 2.20% 120.42% -1.01% 46.88% 57.84% 94.03% 98.37% 283.34% 56.49% 0.60% 3.73% 73.14%  DQN Double DQN Double DQN (tuned) 14.50% 7.08% 7.95% 10.29% 1275.74% 685.15% 226.18% -0.54% 0.90% -0.49% 2335.46% 477.77% 24.82% 138.78% 71.87% 47.51% 116.70% 57.24% 39.92% 30.91% 675.68% 1396.58% 22.96% 34.41% 447.69% 207.17% 2151.65% 981.25% 157.96% 97.69% 112.55% 33.40% 727.95% -1.57% 54.88% 70.59% 161.04% 420.77% 589.66% 145.99% 0.41% 6.88% 142.87% 202.31% 2.55% 110.75% -1.95% 91.06% 74.31% 643.25% 872.31% 35.52% 32.73% -13.77% 190.76% 653.02% 76.82% 92.52% 140.30% 63.30% 200.02% 0.29% 7220.51% 143.84% 10.50% 101.88%  7.90% 11.54% 564.37% 69.46% 0.98% 1884.48% 71.95% 73.57% 60.20% 21.54% 24.35% 482.88% 1281.75% 38.60% 22.19% 364.24% 53.25% 424.65% 600.00% 67.85% 89.66% 102.75% 4.64% 412.07% -2.63% 56.73% 59.80% 114.18% 228.80% 520.11% 109.69% 0.12% 7.93% 121.30% 166.25% -1.32% 106.57% -0.50% 88.48% 43.43% 654.15% 763.08% 9.91% -121.69% 1.33% 102.40% 592.85% 13.91% 220.41% 88.43% 40.53% 43.68% 5.58% 2669.60% -17.30% 8.68% 92.86%  102.09% -0.57% 37.03% 25.21% 135.73% 863.08% 6.41%  5.39% 245.95% 1149.43% 22.00% 28.99% 178.55%  98.81% 378.03%  129.93% 99.58% 15.68% 28.34% 3.53% -4.65% -14.87%  4.47%  Table 6: Normalized scores for the human start condition (30 minutes emulator time).
+ We describe a learning-based approach to handeye coordination for robotic grasping from monocular images.
+To learn hand-eye coordination for grasping, we trained a large convolutional neural network to predict the probability that task-space motion of the gripper will result in successful grasps, using only monocular camera images and independently of camera calibration or the current robot pose.
+This requires the network to observe the spatial relationship between the gripper and objects in the scene, thus learning hand-eye coordination.
+We then use this network to servo the gripper in real time to achieve successful grasps.
+To train our network, we collected over 800,000 grasp attempts over the course of two months, using between 6 and 14 robotic manipulators at any given time, with differences in camera placement and hardware.
+Our experimental evaluation demonstrates that our method achieves effective real-time control, can successfully grasp novel objects, and corrects mistakes by continuous servoing.
+ We present the ﬁrst deep learning model to successfully learn control policies directly from high-dimensional sensory input using reinforcement learning.
+The model is a convolutional neural network, trained with a variant of Q-learning, whose input is raw pixels and whose output is a value function estimating future rewards.
+We apply our method to seven Atari 2600 games from the Arcade Learning Environment, with no adjustment of the architecture or learning algorithm.
+We ﬁnd that it outperforms all previous approaches on six of the games and surpasses a human expert on three of them.
+ We show that an end-to-end deep learning approach can be used to recognize either English or Mandarin Chinese speech—two vastly different languages.
+Because it replaces entire pipelines of hand-engineered components with neural networks, end-to-end learning allows us to handle a diverse variety of speech including noisy environments, accents and different languages.
+Key to our approach is our application of HPC techniques, resulting in a 7x speedup over our previous system [26].
+Because of this efﬁciency, experiments that previously took weeks now run in days.
+This enables us to iterate more quickly to identify superior architectures and algorithms.
+As a result, in several cases, our system is competitive with the transcription of human workers when benchmarked on standard datasets.
+Finally, using a technique called Batch Dispatch with GPUs in the data center, we show that our system can be inexpensively deployed in an online setting, delivering low latency when serving users at scale.
+ &11  5HSUHVHQWDWLRQ  Recent results indicate that the generic descriptors extracted from the convolutional neural networks are very powerful.
+This paper adds to the mounting evidence that this is indeed the case.
+We report on a series of experiments conducted for different recognition tasks using the publicly available code and model of the OverFeat network which was trained to perform object classiﬁcation on ILSVRC13.
+We use features extracted from the OverFeat network as a generic image representation to tackle the diverse range of recognition tasks of object image classiﬁcation, scene recognition, ﬁne grained recognition, attribute detection and image retrieval applied to a diverse set of datasets.
+We selected these tasks and datasets as they gradually move further away from the original task and data the OverFeat network was trained to solve.
+Astonishingly, we report consistent superior results compared to the highly tuned state-of-the-art systems in all the visual classiﬁcation tasks on various datasets.
+For instance retrieval it consistently outperforms low memory footprint methods except for sculptures dataset.
+The results are achieved using a linear SVM classiﬁer (or L2 distance in case of retrieval) applied to a feature representation of size 4096 extracted from a layer in the net.
+The representations are further modiﬁed using simple augmentation techniques e.g.
+jittering.
+The results strongly suggest that features obtained from deep learning with convolutional nets should be the primary candidate in most visual recognition tasks.
+ We evaluate whether features extracted from the activation of a deep convolutional network trained in a fully supervised fashion on a large, ﬁxed set of object recognition tasks can be repurposed to novel generic tasks.
+Our generic tasks may differ signiﬁcantly from the originally trained tasks and there may be insufﬁcient labeled or unlabeled data to conventionally train or adapt a deep architecture to the new tasks.
+We investigate and visualize the semantic clustering of deep convolutional features with respect to a variety of such tasks, including scene recognition, domain adaptation, and ﬁne-grained recognition challenges.
+We compare the efﬁcacy of relying on various network levels to deﬁne a ﬁxed feature, and report novel results that signiﬁcantly outperform the state-of-the-art on several important vision challenges.
+We are releasing DeCAF, an open-source implementation of these deep convolutional activation features, along with all associated network parameters to enable vision researchers to be able to conduct experimentation with deep representations across a range of visual concept learning paradigms.
+ A very simple way to improve the performance of almost any machine learning algorithm is to train many different models on the same data and then to average their predictions [3].
+Unfortunately, making predictions using a whole ensemble of models is cumbersome and may be too computationally expensive to allow deployment to a large number of users, especially if the individual models are large neural nets.
+Caruana and his collaborators [1] have shown that it is possible to compress the knowledge in an ensemble into a single model which is much easier to deploy and we develop this approach further using a different compression technique.
+We achieve some surprising results on MNIST and we show that we can signiﬁcantly improve the acoustic model of a heavily used commercial system by distilling the knowledge in an ensemble of models into a single model.
+We also introduce a new type of ensemble composed of one or more full models and many specialist models which learn to distinguish ﬁne-grained classes that the full models confuse.
+Unlike a mixture of experts, these specialist models can be trained rapidly and in parallel.
+ Many deep neural networks trained on natural images exhibit a curious phenomenon in common: on the ﬁrst layer they learn features similar to Gabor ﬁlters and color blobs.
+Such ﬁrst-layer features appear not to be speciﬁc to a particular dataset or task, but general in that they are applicable to many datasets and tasks.
+Features must eventually transition from general to speciﬁc by the last layer of the network, but this transition has not been studied extensively.
+In this paper we experimentally quantify the generality versus speciﬁcity of neurons in each layer of a deep convolutional neural network and report a few surprising results.
+Transferability is negatively affected by two distinct issues: (1) the specialization of higher layer neurons to their original task at the expense of performance on the target task, which was expected, and (2) optimization difﬁculties related to splitting networks between co-adapted neurons, which was not expected.
+In an example network trained on ImageNet, we demonstrate that either of these two issues may dominate, depending on whether features are transferred from the bottom, middle, or top of the network.
+We also document that the transferability of features decreases as the distance between the base task and target task increases, but that transferring features even from distant tasks can be better than using random features.
+A ﬁnal surprising result is that initializing a network with transferred features from almost any number of layers can produce a boost to generalization that lingers even after ﬁne-tuning to the target dataset.
+ Convolutional neural networks (CNN) have recently shown outstanding image classiﬁcation performance in the largescale visual recognition challenge (ILSVRC2012).
+The success of CNNs is attributed to their ability to learn rich midlevel image representations as opposed to hand-designed low-level features used in other image classiﬁcation methods.
+Learning CNNs, however, amounts to estimating millions of parameters and requires a very large number of annotated image samples.
+This property currently prevents application of CNNs to problems with limited training data.
+In this work we show how image representations learned with CNNs on large-scale annotated datasets can be efﬁciently transferred to other visual recognition tasks with limited amount of training data.
+We design a method to reuse layers trained on the ImageNet dataset to compute mid-level image representation for images in the PASCAL VOC dataset.
+We show that despite differences in image statistics and tasks in the two datasets, the transferred representation leads to signiﬁcantly improved results for object and action classiﬁcation, outperforming the current state of the art on Pascal VOC 2007 and 2012 datasets.
+We also show promising results for object and action localization.
+ Large Convolutional Network models have recently demonstrated impressive classiﬁcation performance on the ImageNet benchmark (Krizhevsky et al., 2012).
+However there is no clear understanding of why they perform so well, or how they might be improved.
+In this paper we address both issues.
+We introduce a novel visualization technique that gives insight into the function of intermediate feature layers and the operation of the classiﬁer.
+Used in a diagnostic role, these visualizations allow us to ﬁnd model architectures that outperform Krizhevsky et al.
+on the ImageNet classiﬁcation benchmark.
+We also perform an ablation study to discover the performance contribution from diﬀerent model layers.
+We show our ImageNet model generalizes well to other datasets: when the softmax classiﬁer is retrained, it convincingly beats the current state-of-the-art results on Caltech-101 and Caltech-256 datasets.
+ How can we perform efﬁcient inference and learning in directed probabilistic models, in the presence of continuous latent variables with intractable posterior distributions, and large datasets?
+We introduce a stochastic variational inference and learning algorithm that scales to large datasets and, under some mild differentiability conditions, even works in the intractable case.
+Our contributions is two-fold.
+First, we show that a reparameterization of the variational lower bound yields a lower bound estimator that can be straightforwardly optimized using standard stochastic gradient methods.
+Second, we show that for i.i.d.
+datasets with continuous latent variables per datapoint, posterior inference can be made especially efﬁcient by ﬁtting an approximate inference model (also called a recognition model) to the intractable posterior using the proposed lower bound estimator.
+Theoretical advantages are reﬂected in experimental results.
+ This paper introduces the Deep Recurrent Attentive Writer (DRAW) neural network architecture for image generation.
+DRAW networks combine a novel spatial attention mechanism that mimics the foveation of the human eye, with a sequential variational auto-encoding framework that allows for the iterative construction of complex images.
+The system substantially improves on the state of the art for generative models on MNIST, and, when trained on the Street View House Numbers dataset, it generates images that cannot be distinguished from real data with the naked eye.
+ We propose a new framework for estimating generative models via an adversarial process, in which we simultaneously train two models: a generative model G that captures the data distribution, and a discriminative model D that estimates the probability that a sample came from the training data rather than G. The training procedure for G is to maximize the probability of D making a mistake.
+This framework corresponds to a minimax two-player game.
+In the space of arbitrary functions G and D, a unique solution exists, with G recovering the training data distribution and D equal to 1 2 everywhere.
+In the case where G and D are deﬁned by multilayer perceptrons, the entire system can be trained with backpropagation.
+There is no need for any Markov chains or unrolled approximate inference networks during either training or generation of samples.
+Experiments demonstrate the potential of the framework through qualitative and quantitative evaluation of the generated samples.
+ We present a variety of new architectural features and training procedures that we apply to the generative adversarial networks (GANs) framework.
+Using our new techniques, we achieve state-of-the-art results in semi-supervised classiﬁcation on MNIST, CIFAR-10 and SVHN.
+The generated images are of high quality as conﬁrmed by a visual Turing test: our model generates MNIST samples that humans cannot distinguish from real data, and CIFAR-10 samples that yield a human error rate of 21.3%.
+We also present ImageNet samples with unprecedented resolution and show that our methods enable the model to learn recognizable features of ImageNet classes.
+ occluded  completions  original  Modeling the distribution of natural images is a landmark problem in unsupervised learning.
+This task requires an image model that is at once expressive, tractable and scalable.
+We present a deep neural network that sequentially predicts the pixels in an image along the two spatial dimensions.
+Our method models the discrete probability of the raw pixel values and encodes the complete set of dependencies in the image.
+Architectural novelties include fast twodimensional recurrent layers and an effective use of residual connections in deep recurrent networks.
+We achieve log-likelihood scores on natural images that are considerably better than the previous state of the art.
+Our main results also provide benchmarks on the diverse ImageNet dataset.
+Samples generated from the model appear crisp, varied and globally coherent.

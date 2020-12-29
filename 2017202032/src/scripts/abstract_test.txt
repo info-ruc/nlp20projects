@@ -1,0 +1,1 @@
+We develop a novel recurrent convolutional architecture suitable for large-scale visual learning which is end-to-end trainable.

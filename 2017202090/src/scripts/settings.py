@@ -1,0 +1,10 @@
+annotation_file = './../dataset/annotations/captions_train2017.json'
+PATH = './../dataset/train2017/'
+BATCH_SIZE = 64
+BUFFER_SIZE = 1000
+embedding_dim = 512
+units = 512
+vocab_size = 5000 + 1
+model_path = 'https://tfhub.dev/tensorflow/faster_rcnn/resnet152_v1_640x640/1'
+PATH_TO_LABELS = './models/research/object_detection/data/mscoco_label_map.pbtxt'
+thresh = 0.7
