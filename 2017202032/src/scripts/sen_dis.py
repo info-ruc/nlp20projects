@@ -1,6 +1,7 @@
 import logging
 import sys
 import os
+import re
 from word2vec import Word2Vec, Sent2Vec, LineSentence
 
 logging.basicConfig(format='%(asctime)s : %(threadName)s : %(levelname)s : %(message)s', level=logging.INFO)
@@ -28,6 +29,17 @@ def isvalid(s):
         if symbol in s:
             return False
     return True
+def synonyms_replace(s):
+    fdic=open("dic.txt","r")
+    content=fdic.readlines()
+    dic={}
+    for line in content:
+        line=line.split()
+        dic[line[0]]=line[1]
+    for word in s:
+        if word in dic.keys():
+            s=s.replace(word,dic[word])
+    return s
 
 f=open("abstract_sentence.txt.vec","r",encoding='utf-8')
 veclines=f.readlines()[1:]
@@ -60,7 +72,7 @@ for it in lt:
     if count>=8:
         break
     count+=1
-    fwrite.write(sentences[it[0]][:-1])
+    fwrite.write(synonyms_replace(sentences[it[0]][:-1]))
     print(sentences[it[0]],end="")
 
 fwrite.close()
